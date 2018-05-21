@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mark Metcalfe</title>
+    <base href="/portfolio/" target="_blank">
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta name="google-site-verification" content="eMxMLGu1gDgRo6p-X_QlbUIsQet6nRE-Jt3sy0AdA-A" />
+	<link href="images/icon.png" rel="icon" type="image/png">
+	<link href="style.css" rel="stylesheet">
+	<link href="/lib/jquery.fullpage.min.css" rel="stylesheet">
+	<link href="/lib/down-arrow.css" rel="stylesheet">
+    <script type='text/javascript' src='/lib/jquery-3.2.1.min.js'></script>
+    <script type="text/javascript" src="/lib/jquery.fullpage.min.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+    <div id="fullpage">
+    
+		<div class="section">
+        <div id="intro">
+            <h1>Mark Metcalfe</h1>
+            <div id="round-pic"><img src="images/profile-photo.jpg"></div>
+            <p>I'm just about to start my third year of Computer Science and History at Victoria University<br/>
+            I'm very passionate about code, and I'm always looking for ways to improve my skills</p>
+            <p>Here's a sneak peek of the passion projects I've worked on over recent years</p>
+            <p><div id="down-arrow" onclick="$.fn.fullpage.moveSectionDown();return false;" style="cursor: pointer;"><span></span></div></p>
+        </div></div>
+        
+        <div class="section white" id="light">
+            <div class="entry-container">
+                <div class="entry-title">
+                    <div class="entry-title-text">
+                        <a href="/light">Light Control</a><br/>
+                        <em>May 2016 — Python, jQuery/JavaScript</em>
+                    </div>
+                    <div class="entry-title-icon">
+                        <img src="images/light-control-icon.png">
+                    </div>
+                </div>
+                <div class="entry-main">
+                    <div class="entry-description">
+                        <p>This Raspberry Pi powered light controller changes the colour of my bedside lamp based
+                        on user input. It is controlled by a back-end script written in Python, and a website written
+                        in JavaScript/jQuery, HTML and CSS.</p>
+                        <p>Although I have disabled the back-end functionality, you can use the UI <a href="/light">here</a>.</p>
+                        <p><a href="https://github.com/markmetcalfe/LightControl">Source Code on GitHub</a></p>
+                    </div>
+                    <div class="entry-image">
+                        <img src="images/light-control-screenshot.png">
+                    </div>
+                </div>
+            </div>
+		</div>
+        
+        <div class="section white" id="trademe">
+            <div class="entry-container">
+                <div class="entry-title">
+                    <div class="entry-title-text">
+                        <a href="/roomfinder">Room Finder</a><br/>
+                        <em>December 2017 — Python, jQuery/JavaScript</em>
+                    </div>
+                </div>
+                <div class="entry-main">
+                    <div class="entry-description">
+                        <p>An aggregator that grabs TradeMe rental listings suitable for Victoria University students.
+                        It compiles a list of properties that are located near Victoria, and sorts them by the price of an individual room.</p>
+                        <p>I've also configured a script that emails me as soon as a new property is listed.</p>
+                        <p>Check it out <a href="/roomfinder">here</a>.</p>
+                        <p><a href="https://github.com/markmetcalfe/RoomFinder">Source Code on GitHub</a></p>
+                    </div>
+                </div>
+            </div>
+		</div>
+        
+        <div class="section black" id="bitcoin">
+            <div class="entry-container">
+                <div class="entry-title">
+                    <div class="entry-title-text">
+                        <a href="/bitcoin">Bitcoin Tracker</a><br/>
+                        <em>October 2017 — Python, jQuery/JavaScript</em>
+                    </div>
+                </div>
+                <div class="entry-main">
+                    <div class="entry-description">
+                        <p>A simple interface for tracking the Bitcoin portfolios of my flatmate and I.
+                        When the respective balance (NZD) is green, 
+                        this means the portfolio has made a net profit. Conversely, red represents a net loss.</p>
+                        <p>We have since cashed out our Bitcoin, so it doesn't serve any current functional purpose.<br/>
+                        Try it out <a href="/bitcoin">here</a>, although note the bitcoin balances are spoofed.</p>
+                        <p><a href="https://github.com/markmetcalfe/BitcoinTracker">Source Code on GitHub</a></p>
+                    </div>
+                </div>
+            </div>
+		</div>
+            
+		<div class="section white" id="beep">
+            <div class="entry-container">
+                <div class="entry-title">
+                    <div class="entry-title-text">
+                        <a href="https://play.google.com/store/apps/details?id=xyz.markmetcalfe.beep">Beep!</a><br/>
+                        <em>November 2016 — Java</em>
+                    </div>
+                    <div class="entry-title-icon">
+                        <img src="images/beep-icon.png">
+                    </div>
+                </div>
+                <div class="entry-main">
+                    <div class="entry-description">
+                        <p>An Android app I created to develop the habit of checking your mirrors whilst driving. 
+                        I developed Beep! in preperation for my restricted license test.</p>
+                        <p>When enabled, it emits a high-pitched tone every 10 seconds, which reminds the user to check their mirrors. 
+                        The tone and and time interval can be changed by the user.</p>
+                        <p>You can find Beep! on the <a href="https://play.google.com/store/apps/details?id=xyz.markmetcalfe.beep">
+                        Google Play Store.</a></p>
+                        <p><a href="https://github.com/markmetcalfe/BeepMirrors">Source Code on GitHub</a></p>
+                    </div>
+                    <div class="entry-image">
+                        <img src="images/beep-screenshot.png">
+                    </div>
+                </div>
+            </div>
+		</div>
+        
+        <div class="section white" id="orataiao">
+            <div class="entry-container">
+                <div class="entry-title">
+                    <div class="entry-title-text">
+                        <a href="http://archive.orataiao.org.nz/">OraTaiao Archive</a><br/>
+                        <em>2016 onward — Python, jQuery/JavaScript</em>
+                    </div>
+                </div>
+                <div class="entry-main">
+                    <div class="entry-description">
+                        <p>A site I maintain for <a href="http://www.orataiao.org.nz/">OraTaiao: New Zealand Climate & Health Council</a>.</p> 
+                        <p>They moved from WikiSpaces to NationBuilder, and wanted to have access to the webpages and files on the old site. 
+                        I used the <a href="http://www.orataiao.org.nz/">main site</a> as a template, and wrote a script that
+                        inserts the old webpages into the new website design. What's notable about this site is the use of spaces in the
+                        URLs, making reading and sharing links easier, as many pages and files have long names.</p>
+                        <p>Check it out <a href="http://archive.orataiao.org.nz/">here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>
