@@ -2,142 +2,77 @@
 <html>
 <head>
 	<title>Mark Metcalfe</title>
-    <base href="/portfolio/">
 	<meta charset="utf-8">
+	<base href="/portfolio/" target="_blank" rel="noopener">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
     <meta name="google-site-verification" content="eMxMLGu1gDgRo6p-X_QlbUIsQet6nRE-Jt3sy0AdA-A" />
-	<link href="images/icon.png" rel="icon" type="image/png">
-    <script type="text/javascript">
-        function setup(){
-            var body = document.getElementsByTagName("body")[0];
-            document.getElementById("light").onmouseover = function() { body.classList.add("light"); }
-            document.getElementById("light").onmouseout = function() { body.classList.remove("light"); }
-            document.getElementById("beep").onmouseover = function() { body.classList.add("beep"); }
-            document.getElementById("beep").onmouseout = function() { body.classList.remove("beep"); }
-            document.getElementById("trademe").onmouseover = function() { body.classList.add("trademe"); }
-            document.getElementById("trademe").onmouseout = function() { body.classList.remove("trademe"); }
-            document.getElementById("bitcoin").onmouseover = function() { body.classList.add("bitcoin"); }
-            document.getElementById("bitcoin").onmouseout = function() { body.classList.remove("bitcoin"); }
-        }
-        window.onload = setup;
-    </script>
-    <style>
-        @import url("https://fonts.googleapis.com/css?family=Roboto:300,600");
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            font-size: 3.5vmin;
-            line-height: 6.5vmin;
-            font-weight: 300;
-            background-color: #21252b;
-            color: rgba(255, 255, 255, 0.9);
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            -moz-transition: all 0.4s;
-            -webkit-transition: all 0.4s;
-            transition: all 0.4s;
-        }
-        
-        main {
-            margin: 0;
-            position: absolute;    
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            -moz-transform: translate(-50%, -50%);
-            -webkit-transform: translate(-50%, -50%);
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-        
-        h1 {
-            font-size: 11vmin;
-            font-weight: 600;
-            padding-bottom: 3vmin;
-        }
-        
-        main > a {
-            display: inline-block;
-            text-align: center;
-            width: 25vmin;
-            margin: 2vmin;
-            padding: 2vmin;
-            border-radius: 1vmin;
-            box-sizing: border-box;
-            background-color: rgba(85, 81, 106, 0.5);
-            -webkit-transform: translateZ(0);
-            -moz-transform: translateZ(0);
-            transform: translateZ(0);
-        }
-        
-        a, a:visited {
-            color: inherit;
-            text-decoration: none;
-            -moz-transition: all 0.4s;
-            -webkit-transition: all 0.4s;
-            transition: all 0.4s;
-        }
-        
-        main > a:hover, main > a:focus {
-            -moz-transform: scale(1.15);
-            -webkit-transform: scale(1.15);
-            transform: scale(1.15);
-        }
-        
-        a > h2 {
-            font-size: 3vmin;
-            margin: 0;
-        }
-        
-        a path {
-            fill: rgba(255, 255, 255, 0.9);
-            -moz-transition: all 0.4s;
-            -webkit-transition: all 0.4s;
-            transition: all 0.4s;
-        }
-        
-        a:hover, a:focus {
-            color: #31333f;
-            background-color: rgba(255, 255, 255, 0.9)
-        }
-        
-        body.light { background-color: #CE14E5 }
-        a#light:hover, a#light:focus { color: #CE14E5 }
-        a#light path:not(.st0) { fill:rgba(0,0,0,0) }
-        a#light:hover path.st0, a#light:focus path.st0{fill:#FFFFFF}
-        a#light:hover path.st1, a#light:focus path.st1{fill:#E63536}
-        a#light:hover path.st2, a#light:focus path.st2{fill:#E6AD42}
-        a#light:hover path.st3, a#light:focus path.st3{fill:#4278E6}
-        a#light:hover path.st4, a#light:focus path.st4{fill:#CE14E5}
-        a#light:hover path.st5, a#light:focus path.st5{fill:#12E537}
-        a#light:hover path.st6, a#light:focus path.st6{fill:#E6E442}
-        a#light:hover path.st7, a#light:focus path.st7{fill:#000000}
-        
-        body.beep { background-color: #5e150d }
-        a#beep:hover, a#beep:focus { color: #5e150d }
-        a#beep:hover path, a#beep:focus path { fill: #5e150d }
-        
-        body.trademe { background-color: #148fe2 }
-        a#trademe:hover, a#trademe:focus { color: #148fe2 }
-        a#trademe:hover path.st0, a#trademe:focus path.st0{fill:#148fe2}
-        
-        body.bitcoin { background-color: #F7931A }
-        a#bitcoin:hover, a#bitcoin:focus { color:#F7931A }
-        a#bitcoin:hover path.st0, a#bitcoin:focus path.st0{fill:#F7931A}
-    </style>
+    <meta class="metaColor" name="theme-color" content="#3b3b4a">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#3b3b4a">
+    <script type="text/javascript" src="script.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <header style="display:none">
-        <img src="images/me.jpg" class="circle">
-		<h3>About Me</h3>
-		<p class="collapsed">Blah Blah Blah</p>
+    <header>
+        <h1>markmetcalfe.io</h1>
+        <section>
+            <img src="me.jpg" alt="Mark holding his chicken, Tank">
+		    <div id="about">
+		        <h3>Hi, I'm Mark</h3>
+		        <p>I’m a third year Computer Science and History student, who loves solving real-world problems using code.
+                I’ve always had an analytical mind, and I love the complex yet solveable challenges that software can
+                present.</p>
+		    </div>
+		    <div id="links">
+		        <a href="https://github.com/markmetcalfe" class="icon github" target="_blank" rel="noopener">
+		            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120.8 117.7">
+                        <path d="M60.4,0C27,0,0,27,0,60.4c0,26.7,17.3,49.3,41.3,57.3c3,0.6,4.1-1.3,4.1-2.9c0-1.4-0.1-6.2-0.1-11.2
+                            C28.5,107.2,25,96.4,25,96.4c-2.7-7-6.7-8.8-6.7-8.8c-5.5-3.7,0.4-3.7,0.4-3.7c6.1,0.4,9.3,6.2,9.3,6.2c5.4,9.2,14.1,6.6,17.6,5
+                            c0.5-3.9,2.1-6.6,3.8-8.1C36,85.6,21.9,80.4,21.9,57.2c0-6.6,2.4-12,6.2-16.2c-0.6-1.5-2.7-7.7,0.6-16c0,0,5.1-1.6,16.6,6.2
+                            c4.8-1.3,10-2,15.1-2c5.1,0,10.3,0.7,15.1,2C87,23.4,92.1,25,92.1,25c3.3,8.3,1.2,14.5,0.6,16c3.9,4.2,6.2,9.6,6.2,16.2
+                            c0,23.2-14.1,28.3-27.6,29.8c2.2,1.9,4.1,5.5,4.1,11.2c0,8.1-0.1,14.6-0.1,16.6c0,1.6,1.1,3.5,4.1,2.9c24-8,41.3-30.6,41.3-57.3
+                            C120.8,27,93.7,0,60.4,0z"/>
+                    </svg>
+                    GitHub
+		        </a>
+		        <a href="/cv" class="icon pdf" target="_blank" rel="noopener">
+		            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                        <path d="M369.9,97.9L286,14c-9-9-21.2-14.1-33.9-14.1H48C21.5,0,0,21.5,0,48v416c0,26.5,21.5,48,48,48h288c26.5,0,48-21.5,48-48
+                        	V131.9C384,119.2,378.9,106.9,369.9,97.9z M332.1,128H256V51.9L332.1,128z M48,464V48h160v104c0,13.3,10.7,24,24,24h104v288H48z
+                        	 M298.2,320.3c-12.2-12-47-8.7-64.4-6.5c-17.2-10.5-28.7-25-36.8-46.3c3.9-16.1,10.1-40.6,5.4-56c-4.2-26.2-37.8-23.6-42.6-5.9
+                        	c-4.4,16.1-0.4,38.5,7,67.1c-10,23.9-24.9,56-35.4,74.4c-20,10.3-47,26.2-51,46.2c-3.3,15.8,26,55.2,76.1-31.2
+                        	c22.4-7.4,46.8-16.5,68.4-20.1c18.9,10.2,41,17,55.8,17C306.2,359,308.7,330.8,298.2,320.3z M100.1,398.1
+                        	c5.1-13.7,24.5-29.5,30.4-35C111.5,393.4,100.1,398.8,100.1,398.1z M181.7,207.5c7.4,0,6.7,32.1,1.8,40.8
+                        	C179.1,234.4,179.2,207.5,181.7,207.5z M157.3,344.1c9.7-16.9,18-37,24.7-54.7c8.3,15.1,18.9,27.2,30.1,35.5
+                        	C191.3,329.2,173.2,338,157.3,344.1z M288.9,339.1c0,0-5,6-37.3-7.8C286.7,328.7,292.5,336.7,288.9,339.1z"/>
+                    </svg>
+                    CV
+		        </a>
+		        <a href="mailto:mark@markmetcalfe.com" class="icon email" target="_blank" rel="noopener">
+		            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+		                <path d="M464 64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm0
+		                    48v40.805c-22.422 18.259-58.168 46.651-134.587 106.49-16.841 13.247-50.201 45.072-73.413 44.701-23.208.375-56.579-31.459-73.413-44.701C106.18
+		                    199.465 70.425 171.067 48 152.805V112h416zM48 400V214.398c22.914 18.251 55.409 43.862 104.938 82.646 21.857 17.205 60.134 
+		                    55.186 103.062 54.955 42.717.231 80.509-37.199 103.053-54.947 49.528-38.783 82.032-64.401 104.947-82.653V400H48z"/>
+		            </svg>
+                    Email
+		        </a>
+		        <a href="https://www.linkedin.com/in/mark-metcalfe/" class="icon linkedin" target="_blank" rel="noopener">
+		            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+		                <path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 
+		                    416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 
+		                    21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 
+		                    30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/>
+		            </svg>
+		            LinkedIn
+		        </a>
+		    </div>
+        </section>
+        
     </header>
         
     <main>    
     <a id="light" href="/light">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 470 470" style="enable-background:new 0 0 470 470;" xml:space="preserve">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 470">
         <path class="st0" d="M283.1,312.1C283.1,312.1,283.1,312.1,283.1,312.1C283.1,312.1,283.1,312.1,283.1,312.1
 			C283.1,312.1,283.1,312.1,283.1,312.1C283.1,312.1,283.1,312.1,283.1,312.1z M450,72.7c0-31.4-21.3-52.7-52.7-52.7
 			c-54,0-108,0-162,0c-54.2,0-108.3,0-162.5,0C41.3,20,20,41.2,20,72.6c0,108.2,0,216.3,0,324.5c0,31.8,21.2,52.9,53,52.9
@@ -208,13 +143,11 @@
                         c6.7,0,10.5,3.5,10.6,9.3c0,6.1-3.8,9.5-10.8,9.5C257.4,375,246.4,375,235.4,375z"/>
                 </g>
             </g>
-            
         </svg>
         <h2>Light Control</h2>
 	</a>
     <a id="beep" href="https://play.google.com/store/apps/details?id=xyz.markmetcalfe.beep">
-        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	        viewBox="0 0 400 400" style="enable-background:new 0 0 400 400;" xml:space="preserve">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
             <path d="M305.4,145.9c-13.4-3.5-27.2-5.7-40.9-7.7c-13.6-1.9-27.4-3.5-41.1-4c-15.9-0.6-31.9-0.4-47.8,0.6
 					c-8.6,0.5-16,5.2-18.7,14.2c-2.4,8.3-4.9,16.8-5.3,25.4c-0.8,17-0.5,34-0.1,51c0.3,13.6,6.7,21.1,20.3,22.8
 					c11.4,1.5,64.7,0,79.8-1.2c16.3-1.3,32.6-2.9,48.8-5.3c13-2,22.1-11.9,22.7-23.9c0.8-15.7,1.3-31.4,1.3-47.2
@@ -238,8 +171,7 @@
         <h2>Beep!</h2>
 	</a> 
     <a id="trademe" href="/roomfinder">
-        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-            viewBox="0 0 566.9 566.9" style="enable-background:new 0 0 566.9 566.9;" xml:space="preserve">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 566.9 566.9">
             <path class="st0" d="M230.6,275.9c12.5,0,22.6-10.2,22.6-22.6c0-12.5-10.2-22.6-22.6-22.6c-12.5,0-22.6,10.2-22.6,22.6
 			    C208,265.8,218.1,275.9,230.6,275.9z M550.1,246.1c-76.5-76.5-153-153-229.4-229.4c-22.2-22.2-52.3-22.2-74.5,0
 			    C208,54.9,169.8,93.1,131.6,131.2C93.3,169.5,55,207.8,16.7,246.1c-22.3,22.3-22.3,52.3-0.1,74.5c76.5,76.5,153,153,229.4,229.4
@@ -252,21 +184,16 @@
         <h2>Room Finder</h2>
 	</a>
     <a id="bitcoin" href="/bitcoin">
-        <svg version="1.1"
-            id="Layer_1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-            xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 400 400"
-            style="enable-background:new 0 0 400 400;" xml:space="preserve">
-            <g>
-                <path class="st0" d="M199.1,141.3L189,181.7c11.4,2.9,46.7,14.5,52.4-8.4C247.3,149.5,210.5,144.1,199.1,141.3z"/>
-                <path class="st0" d="M183.9,202.2l-11.1,44.6c13.7,3.4,56.1,17,62.4-8.1C241.7,212.4,197.6,205.6,183.9,202.2z"/>
-                <path class="st0" d="M244.7,20.8C145.7-3.8,45.5,56.4,20.9,155.3c-24.7,98.9,35.5,199.1,134.4,223.8
-                    c99,24.7,199.2-35.5,223.8-134.5h0C403.8,145.7,343.6,45.5,244.7,20.8z M281.4,173.7L281.4,173.7c-2.7,18-12.6,26.7-25.9,29.8
-                    c18.2,9.5,27.4,24,18.6,49.1c-10.9,31.3-36.9,33.9-71.5,27.4l-8.4,33.6l-20.3-5.1l8.3-33.2c-5.3-1.3-10.6-2.7-16.1-4.2l-8.3,33.3
-                    l-20.2-5.1l8.4-33.7c-4.7-1.2-9.5-2.5-14.4-3.7l-26.4-6.6l10.1-23.2c0,0,14.9,4,14.7,3.7c5.7,1.4,8.3-2.3,9.3-4.8l13.3-53.1
-                    c0.7,0.2,1.5,0.4,2.1,0.5c-0.8-0.3-1.5-0.5-2.1-0.7l9.5-37.9c0.2-4.3-1.2-9.7-9.4-11.8c0.3-0.2-14.7-3.7-14.7-3.7l5.4-21.6l27.9,7
-                    l0,0.1c4.2,1,8.5,2,12.9,3l8.3-33.3l20.3,5.1l-8.1,32.6c5.4,1.2,10.9,2.5,16.2,3.8l8.1-32.4l20.3,5.1l-8.3,33.3
-                    C266.4,135.9,285.1,149.1,281.4,173.7z"/>
-            </g>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+            <path class="st0" d="M199.1,141.3L189,181.7c11.4,2.9,46.7,14.5,52.4-8.4C247.3,149.5,210.5,144.1,199.1,141.3z"/>
+            <path class="st0" d="M183.9,202.2l-11.1,44.6c13.7,3.4,56.1,17,62.4-8.1C241.7,212.4,197.6,205.6,183.9,202.2z"/>
+            <path class="st0" d="M244.7,20.8C145.7-3.8,45.5,56.4,20.9,155.3c-24.7,98.9,35.5,199.1,134.4,223.8
+                c99,24.7,199.2-35.5,223.8-134.5h0C403.8,145.7,343.6,45.5,244.7,20.8z M281.4,173.7L281.4,173.7c-2.7,18-12.6,26.7-25.9,29.8
+                c18.2,9.5,27.4,24,18.6,49.1c-10.9,31.3-36.9,33.9-71.5,27.4l-8.4,33.6l-20.3-5.1l8.3-33.2c-5.3-1.3-10.6-2.7-16.1-4.2l-8.3,33.3
+                l-20.2-5.1l8.4-33.7c-4.7-1.2-9.5-2.5-14.4-3.7l-26.4-6.6l10.1-23.2c0,0,14.9,4,14.7,3.7c5.7,1.4,8.3-2.3,9.3-4.8l13.3-53.1
+                c0.7,0.2,1.5,0.4,2.1,0.5c-0.8-0.3-1.5-0.5-2.1-0.7l9.5-37.9c0.2-4.3-1.2-9.7-9.4-11.8c0.3-0.2-14.7-3.7-14.7-3.7l5.4-21.6l27.9,7
+                l0,0.1c4.2,1,8.5,2,12.9,3l8.3-33.3l20.3,5.1l-8.1,32.6c5.4,1.2,10.9,2.5,16.2,3.8l8.1-32.4l20.3,5.1l-8.3,33.3
+                C266.4,135.9,285.1,149.1,281.4,173.7z"/>
         </svg>
         <h2>Bitcoin Tracker</h2>
 	</a>

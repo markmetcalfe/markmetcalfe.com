@@ -1,0 +1,255 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,600");
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 3.5vmin;
+    line-height: 6.5vmin;
+    font-weight: 300;
+    background-color: #21252b;
+    color: rgba(255, 255, 255, 0.9);
+    overflow: hidden;
+    -moz-transition: all 0.4s;
+    -webkit-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+main > a, main > a:visited, header {
+    text-align: center;
+    box-sizing: border-box;
+    background-color: rgba(85, 81, 106, 0.5);
+    padding: 2vmin;
+    border-radius: 1vmin;
+    color: inherit;
+    text-decoration: none;
+    -moz-transition: all 0.4s;
+    -webkit-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+main > a, main > a:visited {
+    display: inline-block;
+    outline: 0;
+}
+
+main > a * {
+    -moz-transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+main > a:hover, header:hover {
+    color: #31333f;
+}
+
+main > a:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    -moz-transform: scale(1.15);
+    -webkit-transform: scale(1.15);
+    transform: scale(1.15);
+}
+
+.hide {
+    opacity: 0.5;
+}
+
+header {
+    display: block;
+    position: relative;
+    text-align: center;
+    height: 14.9vmin;
+    z-index: 10;
+    overflow: hidden;
+}
+
+header:hover {
+    background-color: #fdfdfd;
+    height: 84vmin;
+}
+
+header section {
+    padding: 1vmin;
+}
+
+header img {
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    height: 20vmin;
+}
+
+header div {
+    color: #21252b;
+    opacity: 0;    
+    margin: 1vmin;
+    -webkit-transition: opacity .2s;
+    -moz-transition: opacity .2s;
+    transition: opacity .2s;
+}
+
+header:hover div {
+    opacity: 1;
+    -webkit-transition: opacity .4s;
+    -moz-transition: opacity .4s;
+    transition: opacity .4s;
+}
+
+header > h1 {
+    display: block;    
+    font-size: 9vmin;
+    line-height: 11vmin;
+    margin: -2.2vmin;
+    padding: 2.2vmin;
+    margin-bottom: 0;
+    cursor: pointer;
+    position: relative;
+    z-index: 100;
+}
+
+main {
+    margin: 0;
+    position: absolute;    
+    top: 55%;
+    left: 50%;
+    width: 100%;
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+@media screen and (max-width: 872px){
+    header {
+        margin: 8vmin auto;
+        width: 75vmin;
+    }
+    main {
+        top: 58%;
+    }
+    main > a {
+        width: 33vmin;
+        margin: 4vmin;
+    }
+    a > h2 {
+        font-size: 4vmin;
+        margin: 0;
+    }
+}
+
+@media screen and (min-width: 872px){
+    header {
+        margin: 8vmin auto;
+        width: 75vmin;
+    }
+    main > a {
+        width: 25vmin;
+        margin: 2vmin;
+    }
+    a > h2 {
+        font-size: 3vmin;
+        margin: 0;
+    }
+}
+
+path {
+    fill: rgba(255, 255, 255, 0.9);
+    -moz-transition: all 0.4s;
+    -webkit-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+body.light { background-color: #CE14E5 }
+a#light:hover { color: #CE14E5 }
+a#light path:not(.st0) { fill:rgba(0,0,0,0) }
+a#light:hover path.st0{fill:#FFFFFF}
+a#light:hover path.st1{fill:#E63536}
+a#light:hover path.st2{fill:#E6AD42}
+a#light:hover path.st3{fill:#4278E6}
+a#light:hover path.st4{fill:#CE14E5}
+a#light:hover path.st5{fill:#12E537}
+a#light:hover path.st6{fill:#E6E442}
+a#light:hover path.st7{fill:#000000}
+
+body.beep { background-color: #5e150d }
+a#beep:hover { color: #5e150d }
+a#beep:hover path { fill: #5e150d }
+
+body.trademe { background-color: #148fe2 }
+a#trademe:hover { color: #148fe2 }
+a#trademe:hover path.st0 {fill:#148fe2}
+
+body.bitcoin { background-color: #F7931A }
+a#bitcoin:hover { color:#F7931A }
+a#bitcoin:hover path.st0{fill:#F7931A}
+
+header > section, #about {
+    margin-top:0;
+}
+
+#about p {
+    font-size: 2.5vmin;
+    line-height: 3.5vmin;
+    margin: 0;    
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+#about h3 {
+    margin: 0 0 2vmin;
+    font-size: 4vmin;
+    line-height: 4vmin;
+    font-weight: 500;
+}
+
+#links {
+    position: absolute;
+    bottom: 0;
+    margin: 3vmin auto;
+    padding-right: 3vmin;
+}
+
+#links a.github, #links a.pdf { margin-bottom: 1.5vmin; }
+#links a.github, #links a.email { margin-right: 0.5vmin; }
+
+#links a {
+    display: inline-block;
+    width: 30.5vmin;
+    height: 6vmin;
+    padding: 1.5vmin;
+    border-radius: 1vmin;
+    margin: 0;
+    margin-bottom: 0.5vmin;
+    text-align: left;
+    line-height: 6vmin;
+    background: rgba(85,81,106,.15);
+    -moz-transition: all 0.25s;
+    -webkit-transition: all 0.25s;
+    transition: all 0.25s;
+    color: #31333f;
+    text-decoration: none;
+}
+#links a:hover {
+    border: none;
+    color: #fff;
+}
+#links a path { fill:#31333f }
+#links a:hover path { fill:#fff }
+#links a svg {
+    height: 6vmin;
+    width: 6vmin;
+    float: left;
+    margin-right: 1.5vmin;
+}
+#links a.pdf:hover { background: #f6b011 }
+#links a.github:hover { background: #191717 }
+#links a.email:hover { background: #fb4c2f }
+#links a.linkedin:hover { background: #0077b5 }
+
+::selection {
+    background: #21252b;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+::-moz-selection {
+    background: #21252b;
+    color: rgba(255, 255, 255, 0.9);
+}
