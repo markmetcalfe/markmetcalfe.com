@@ -24,6 +24,13 @@ main > a, main > a:visited, header {
     -moz-transition: all 0.4s;
     -webkit-transition: all 0.4s;
     transition: all 0.4s;
+    -webkit-backface-visibility: hidden;
+    -moz-font-smoothing: antialiased !important;
+    -webkit-font-smoothing: antialiased !important;
+    font-smoothing: antialiased !important;
+    -moz-transform: translateZ(0) scale(1.0, 1.0);
+    -webkit-transform: translateZ(0) scale(1.0, 1.0);
+    transform: translateZ(0);
 }
 
 main > a, main > a:visited {
@@ -79,18 +86,7 @@ header img {
 
 header div {
     color: #21252b;
-    opacity: 0;    
     margin: 1vmin;
-    -webkit-transition: opacity .2s;
-    -moz-transition: opacity .2s;
-    transition: opacity .2s;
-}
-
-header:hover div {
-    opacity: 1;
-    -webkit-transition: opacity .4s;
-    -moz-transition: opacity .4s;
-    transition: opacity .4s;
 }
 
 header > h1 {
@@ -115,6 +111,9 @@ main {
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     text-align: center;
+    -webkit-transition: opacity .4s;
+    -moz-transition: opacity .4s;
+    transition: opacity .4s;
 }
 
 @media screen and (max-width: 872px){
@@ -201,10 +200,7 @@ header > section, #about {
 }
 
 #links {
-    position: absolute;
-    bottom: 0;
     margin: 3vmin auto;
-    padding-right: 3vmin;
 }
 
 #links a.github, #links a.pdf { margin-bottom: 1.5vmin; }
