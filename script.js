@@ -10,7 +10,7 @@ function setup(){
     document.getElementById("beep").onmouseout = function() { body.classList.remove("beep"); }
     document.getElementById("trademe").onmouseover = function() { body.classList.add("trademe"); }
     document.getElementById("trademe").onmouseout = function() { body.classList.remove("trademe"); }
-    document.getElementById("bitcoin").onmouseover = function() { body.classList.add("bitcoin"); }
-    document.getElementById("bitcoin").onmouseout = function() { body.classList.remove("bitcoin"); }
+    // document.getElementById("bitcoin").onmouseover = function() { body.classList.add("bitcoin"); }
+    // document.getElementById("bitcoin").onmouseout = function() { body.classList.remove("bitcoin"); }
 }
 window.onload = setup;

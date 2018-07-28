@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,600");
 
 body {
+    width: 100%;
+    height: 100%;
     font-family: 'Roboto', sans-serif;
     font-size: 3.5vmin;
     line-height: 6.5vmin;
@@ -8,9 +10,9 @@ body {
     background-color: #21252b;
     color: rgba(255, 255, 255, 0.9);
     overflow: hidden;
-    -moz-transition: all 0.4s;
-    -webkit-transition: all 0.4s;
-    transition: all 0.4s;
+    -moz-transition: background 0.4s;
+    -webkit-transition: background 0.4s;
+    transition: background 0.4s;
 }
 
 main > a, main > a:visited, header {
@@ -21,9 +23,6 @@ main > a, main > a:visited, header {
     border-radius: 1vmin;
     color: inherit;
     text-decoration: none;
-    -moz-transition: all 0.4s;
-    -webkit-transition: all 0.4s;
-    transition: all 0.4s;
     -webkit-backface-visibility: hidden;
     -moz-font-smoothing: antialiased !important;
     -webkit-font-smoothing: antialiased !important;
@@ -44,8 +43,25 @@ main > a * {
     transform: translateZ(0);
 }
 
+main > a, header, header > h1 {
+    -moz-transition: color 0.4s;
+    -webkit-transition: color 0.4s;
+    transition: color 0.4s;
+}
+
 main > a:hover, header:hover {
     color: #31333f;
+}
+
+main > a {
+    -moz-transition: color 0.4s, background-color 0.4s, -moz-transform 0.4s;
+    -webkit-transition: color 0.4s, background-color 0.4s, -webkit-transform 0.4s;
+    transition: color 0.4s, background-color 0.4s, transform 0.4s;
+}
+
+main > a > svg {
+    height: 21vmin;
+    width: 21vmin;
 }
 
 main > a:hover {
@@ -59,6 +75,22 @@ main > a:hover {
     opacity: 0.5;
 }
 
+@-moz-keyframes header-onload {
+    0% { height: 84vmin; color: #31333f; background-color: #fdfdfd }
+    85% { height: 14.9vmin; color: #31333f; background-color: #fdfdfd }
+    100% { color: #fdfdfd; background-color: none }
+}
+@-webkit-keyframes header-onload {
+    0% { height: 84vmin; color: #31333f; background-color: #fdfdfd }
+    85% { height: 14.9vmin; color: #31333f; background-color: #fdfdfd }
+    100% { color: #fdfdfd; background-color: none }
+}
+@keyframes header-onload {
+    0% { height: 84vmin; color: #31333f; background-color: #fdfdfd }
+    85% { height: 14.9vmin; color: #31333f; background-color: #fdfdfd }
+    100% { color: #fdfdfd; background-color: none }
+}
+
 header {
     display: block;
     position: relative;
@@ -66,6 +98,12 @@ header {
     height: 14.9vmin;
     z-index: 10;
     overflow: hidden;
+    -moz-transition: height 0.4s, background-color 0.4s;
+    -webkit-transition: height 0.4s, background-color 0.4s;
+    transition: height 0.4s, background-color 0.4s;
+    -moz-animation: header-onload 1s 2s backwards;
+    -webkit-animation: header-onload 1s 2s backwards;
+    animation: header-onload 1s 2s backwards;
 }
 
 header:hover {
@@ -151,10 +189,29 @@ main {
 
 path {
     fill: rgba(255, 255, 255, 0.9);
-    -moz-transition: all 0.4s;
-    -webkit-transition: all 0.4s;
-    transition: all 0.4s;
+    -moz-transition: fill 0.4s;
+    -webkit-transition: fill 0.4s;
+    transition: fill 0.4s;
 }
+
+#bg-img { 
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: -10;
+    background-image: url('bg.jpg');
+    background-size: cover;
+    background-position: center center;
+    opacity: 0;
+    -moz-transition: opacity 0.4s;
+    -webkit-transition: opacity 0.4s;
+    transition: opacity 0.4s;
+}
+body.header #bg-img { opacity: 1 }
 
 body.light { background-color: #CE14E5 }
 a#light:hover { color: #CE14E5 }
@@ -217,9 +274,9 @@ header > section, #about {
     text-align: left;
     line-height: 6vmin;
     background: rgba(85,81,106,.15);
-    -moz-transition: all 0.25s;
-    -webkit-transition: all 0.25s;
-    transition: all 0.25s;
+    -moz-transition: border 0.4s, color 0.4s, background-color 0.4s;
+    -webkit-transition: border 0.4s, color 0.4s, background-color 0.4s;
+    transition: border 0.4s, color 0.4s, background-color 0.4s;
     color: #31333f;
     text-decoration: none;
 }
