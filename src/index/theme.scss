@@ -1,0 +1,289 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,600");
+
+$gray: #21252b;
+$black: #31333f;
+$white: #fdfdfd;
+$transparent: rgba(0,0,0,0);
+
+body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+  font-size: 3.5vmin;
+  line-height: 6.5vmin;
+  font-weight: 300;
+  background-color: $gray;
+  color: rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  transition: background 0.4s;
+}
+
+#bg-img { 
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: -10;
+  background-image: url('bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+body.header #bg-img { opacity: 1 }
+
+%content-box {
+  text-align: center;
+  box-sizing: border-box;
+  background-color: rgba(85, 81, 106, 0.5);
+  padding: 2vmin;
+  border-radius: 1vmin;
+  color: inherit;
+  text-decoration: none;
+  transform: translateZ(0);
+}
+
+%color-transition {
+  transition: color 0.4s;
+}
+
+header {
+  @extend %content-box;
+  @extend %color-transition;
+  display: block;
+  position: relative;
+  text-align: center;
+  height: 14.9vmin;
+  z-index: 10;
+  overflow: hidden;
+  transition: height 0.4s, background-color 0.4s;
+  animation: header-onload 1s 2s backwards;
+  margin: 8vmin auto;
+  width: 75vmin;
+
+  &:hover {
+    background-color: $white;
+    height: 84vmin;
+    color: $black;
+  }
+
+  section {
+    padding: 1vmin;
+  }
+
+  img {
+    border-radius: 50%;
+    height: 20vmin;
+  }
+
+  div {
+    color: $gray;
+    margin: 1vmin;
+  }
+
+  > h1 {
+    display: block;    
+    font-size: 9vmin;
+    line-height: 11vmin;
+    margin: -2.2vmin;
+    padding: 2.2vmin;
+    margin-bottom: 0;
+    cursor: pointer;
+    position: relative;
+    z-index: 100;
+  }
+
+  #about {
+    h3 {
+      margin: 0 0 2vmin;
+      font-size: 4vmin;
+      line-height: 4vmin;
+      font-weight: 500;
+    }
+    p {
+      font-size: 2.5vmin;
+      line-height: 3.5vmin;
+      margin: 0;    
+      text-align: justify;
+      text-justify: inter-word;
+    }
+  }
+  
+  #links {
+    margin: 3vmin auto;
+    a {
+      display: inline-block;
+      width: 30.5vmin;
+      height: 6vmin;
+      padding: 1.5vmin;
+      border-radius: 1vmin;
+      margin: 0;
+      margin-bottom: 0.5vmin;
+      text-align: left;
+      line-height: 6vmin;
+      background: rgba(85,81,106,.15);
+      transition: border 0.4s, color 0.4s, background-color 0.4s;
+      color: $black;
+      text-decoration: none;
+      &:hover {
+        border: none;
+        color: #fff;
+        path { fill:#fff }
+      }
+      path { fill: $black }
+      svg {
+        height: 6vmin;
+        width: 6vmin;
+        float: left;
+        margin-right: 1.5vmin;
+      }
+      &:hover {
+        &.pdf      { background: #f6b011; }
+        &.github   { background: #191717; }
+        &.email    { background: #fb4c2f; }
+        &.linkedin { background: #0077b5; }
+      }
+    }
+    a.github, a.pdf {
+      margin-bottom: 1.5vmin;
+    }
+    a.github, a.email {
+      margin-right: 0.5vmin;
+    }
+  }
+}
+
+@keyframes header-onload {
+  0% { 
+    height: 84vmin; 
+    color: $black; 
+    background-color: $white
+  }
+  85% { 
+    height: 14.9vmin; 
+    color: $black;
+    background-color: $white
+  }
+  100% { 
+    color: $black; 
+    background-color: none 
+  }
+}
+
+$small: "screen and (max-width: 872px)";
+$large: "screen and (min-width: 872px)";
+
+main {
+  margin: 0;
+  position: absolute;    
+  top: 55%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  transition: opacity .4s;
+  > a {
+    @extend %content-box;
+    @media #{$small} {
+      width: 33vmin;
+      margin: 4vmin;
+    }
+    @media #{$large} {
+      width: 25vmin;
+      margin: 2vmin;
+    }
+  }
+  a {
+    transition: color 0.4s, background-color 0.4s, transform 0.4s;
+    display: inline-block;
+    outline: 0;
+    * {
+      transform: translateZ(0);
+    }
+    svg {
+      height: 21vmin;
+      width: 21vmin;
+    }
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.9);
+      transform: scale(1.15);
+      color: $black;
+    }
+  }
+}
+
+a {
+  > h2 {
+    margin: 0;
+    @media #{$small} {
+      font-size: 4vmin;
+    }
+    @media #{$large} {
+      font-size: 3vmin;
+    }
+  }
+}
+
+path {
+  fill: rgba(255, 255, 255, 0.9);
+  transition: fill 0.4s;
+}
+
+body { 
+  $primary: #CE14E5;
+  &.light {
+    background-color: $primary;
+  }
+  a#light {
+    path:not(.st0) {
+      fill: $transparent;
+    }
+    &:hover {
+      color: $primary;
+      path {
+        &.st0{fill:#FFFFFF}
+        &.st1{fill:#E63536}
+        &.st2{fill:#E6AD42}
+        &.st3{fill:#4278E6}
+        &.st4{fill: $primary}
+        &.st5{fill:#12E537}
+        &.st6{fill:#E6E442}
+        &.st7{fill:#000000}
+      }
+    }
+  }
+}
+
+body.roomfinder { 
+  $primary: #148fe2;
+  background-color: $primary;
+  a#roomfinder:hover {
+    color: $primary;
+    path { fill: $primary }
+  }
+}
+
+body.beep { 
+  $primary: #5e150d;
+  background-color: $primary;
+  a#beep:hover {
+    color: $primary;
+    path { fill: $primary }
+  }
+}
+
+header > section, #about {
+    margin-top:0;
+}
+
+::selection {
+    background: $gray;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.hide {
+  opacity: 0.5;
+}

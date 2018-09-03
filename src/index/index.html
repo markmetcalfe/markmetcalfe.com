@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+  <title>{{info.name}}</title>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta class="metaColor" name="theme-color" content="#3b3b4a">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#3b3b4a">
+  <link rel="icon" href="favicon.ico?v=1" type="image/x-icon" />
+
+  <script type="text/javascript" src="bundle.js"></script>
+  <link rel="stylesheet" type="text/css" href="theme.css">
+  
+  <!-- Page Info Begin -->
+  <meta name="google-site-verification" content="eMxMLGu1gDgRo6p-X_QlbUIsQet6nRE-Jt3sy0AdA-A" />
+  <meta property="og:title" content="{{info.name}}"/>
+  <meta name="twitter:title" content="{{info.name}}"/>
+  <meta name="description" content="{{info.intro}}. {{info.description}}"/>
+  <meta property="og:description" content="{{info.intro}}. {{info.description}}"/>
+  <meta name="twitter:description" content="{{info.intro}}. {{info.description}}"/>
+  <meta property="og:image" content="{{info.image}}"/>
+  <meta name="twitter:image" content="{{info.image}}"/>
+  <meta name="twitter:site" content="{{info.twitter}}"/>
+  <meta name="twitter:creator" content="{{info.twitter}}"/>
+  <meta property="og:locale" content="en_NZ"/>
+  <meta property="og:type" content="website"/>
+  <meta property="fb:admins" content="100001080580012"/>
+  <!-- Page Info End -->
+  
+</head>
+<body>
+  <div id="bg-img"></div>
+  <header>
+    <h1>markmetcalfe.io</h1>
+    <section>
+      <img src="me.jpg" alt="Photo of {{info.name}}">
+    <div id="about">
+      <h3>{{info.intro}}</h3>
+      <p>{{info.description}}</p>
+    </div>
+    <div id="links">
+      <a href="https://github.com/markmetcalfe" class="icon github" target="_blank" rel="noopener">
+        <img src="icons/github.svg">GitHub
+      </a>
+      <a href="Mark-Metcalfe-CV.pdf" class="icon pdf" target="_blank" rel="noopener">
+        <img src="icons/pdf.svg">CV
+      </a>
+      <a href="mailto:mark@markmetcalfe.com" class="icon email" target="_blank" rel="noopener">
+        <img src="icons/email.svg">Email
+      </a>
+      <a href="https://www.linkedin.com/in/mark-metcalfe/" class="icon linkedin" target="_blank" rel="noopener">
+        <img src="icons/linkedin.svg">LinkedIn
+      </a>
+    </div>
+    </section>
+  </header>
+    
+  <main>  
+    <a id="roomfinder" href="//roomfinder.markmetcalfe.io">
+      <img src="icons/roomfinder.svg"><h2>Room Finder</h2>
+    </a>
+    <a id="light" href="/light">
+      <img src="icons/lightcontrol.svg"><h2>Light Control</h2>
+    </a>
+    <a id="beep" href="https://play.google.com/store/apps/details?id=xyz.markmetcalfe.beep">
+      <img src="icons/beep.svg"><h2>Beep!</h2>
+    </a> 
+  </main>
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120055298-1"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  
+  gtag('config', 'UA-120055298-1');
+  </script>
+</body>
+</html>
