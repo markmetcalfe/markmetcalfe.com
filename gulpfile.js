@@ -74,7 +74,6 @@ gulp.task('pages', function() {
   .pipe(injectSvg({
     base: '/assets/'
   }))
-  .pipe(htmlclean())
   .pipe(gulp.dest(buildFolder))
 	.pipe(reload({ stream:true }));
 });
