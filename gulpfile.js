@@ -13,7 +13,7 @@ var through2 = require('through2');
 var replace = require('gulp-token-replace');
 var config = require('./variables.json');
 
-var assetFolder = 'assets/';
+var assetFolder = 'src/assets/';
 var devFolder = 'src/';
 var buildFolder = 'build/';
 
@@ -53,7 +53,7 @@ gulp.task('pages', function() {
     .pipe(buffer())
     .pipe(replace({global:config}))
     .pipe(injectSvg({
-      base: '/assets/'
+      base: assetFolder
     }))
     .pipe(gulp.dest(buildFolder))
     .pipe(reload({ stream:true }));
