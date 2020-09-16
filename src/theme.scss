@@ -89,15 +89,34 @@ main {
       line-height: 4vmin;
       font-weight: 500;
     }
+  }
+
+  #about p,
+  section.message {
+    font-size: 2.5vmin;
+    line-height: 3.5vmin;
+    margin: 0;    
+    text-align: justify;
+    text-justify: inter-word;
+  }
+  section.message {
+    text-align: center;
+
+    a, a:visited {
+      color: #d24545;
+      text-decoration: none;
+      transition: all 250ms;
+    }
+
+    a:hover, a:focus {
+      color: inherit;
+    }
+    
     p {
-      font-size: 2.5vmin;
-      line-height: 3.5vmin;
-      margin: 0;    
-      text-align: justify;
-      text-justify: inter-word;
+      margin: 0;
     }
   }
-  
+
   #links {
     margin: auto;
     margin-top: 3vmin;
@@ -137,14 +156,13 @@ main {
         &.email    { background: #fb4c2f; }
         &.linkedin { background: #0077b5; }
       }
-    }
 
-    a.github, a.pdf {
-      margin-bottom: 1.5vmin;
-    }
-
-    a.github, a.email {
-      margin-right: 0.5vmin;
+      &:nth-child(1), &:nth-child(2) {
+        margin-bottom: 1.5vmin;
+      }
+      &:nth-child(1), &:nth-child(3) {
+        margin-right: 0.5vmin;
+      }
     }
   }
 }
