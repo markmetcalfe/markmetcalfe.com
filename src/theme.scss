@@ -24,6 +24,16 @@ body {
   transition: background 0.4s;
 }
 
+a, a:visited {
+  color: #d24545;
+  text-decoration: none;
+  transition: all 250ms;
+}
+
+a:hover, a:focus {
+  color: inherit;
+}
+
 %content-box {
   text-align: center;
   box-sizing: border-box;
@@ -95,22 +105,16 @@ main {
   section.message {
     font-size: 2.5vmin;
     line-height: 3.5vmin;
-    margin: 0;    
-    text-align: justify;
-    text-justify: inter-word;
+    margin: 0;
+    text-align: left;
   }
+
+  #about p:not(:first-child) {
+    margin-top: 1vmin;
+  }
+
   section.message {
     text-align: center;
-
-    a, a:visited {
-      color: #d24545;
-      text-decoration: none;
-      transition: all 250ms;
-    }
-
-    a:hover, a:focus {
-      color: inherit;
-    }
     
     p {
       margin: 0;
