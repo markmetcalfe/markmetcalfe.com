@@ -159,6 +159,9 @@ main {
         &.github   { background: #191717; }
         &.email    { background: #fb4c2f; }
         &.linkedin { background: #0077b5; }
+        &.messenger { background: #0078ff; }
+        &.whatsapp { background: #25D366; }
+        &.mobile { background: $black; }
       }
 
       &:nth-child(1), &:nth-child(2) {
