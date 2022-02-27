@@ -24,4 +24,24 @@ export default [
     component: () =>
       import(/* webpackChunkName: "resume" */ './pages/ResumePage.vue'),
   },
+  {
+    path: '/privacy-policy',
+    name: 'PrivacyPolicyPage',
+    meta: {
+      title: 'Privacy Policy',
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "privacypolicy" */ './pages/PrivacyPolicyPage.vue'
+      ),
+  },
+  {
+    path: '/terms-of-service',
+    name: 'TermsOfServicePage',
+    meta: {
+      title: 'Terms of Service',
+    },
+    component: () =>
+      import(/* webpackChunkName: "terms" */ './pages/TermsOfServicePage.vue'),
+  },
 ]
