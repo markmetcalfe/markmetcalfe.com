@@ -2,7 +2,7 @@
   <PageCard>
     <section class="home-header">
       <h1>Mark Metcalfe</h1>
-      <img src="../assets/me.jpg" alt="Photo of Mark Metcalfe" />
+      <img src="/me.jpg" alt="Photo of Mark Metcalfe" />
       <div class="home-header-about">
         <h3>Kia ora, I’m Mark 👋</h3>
         <p>
