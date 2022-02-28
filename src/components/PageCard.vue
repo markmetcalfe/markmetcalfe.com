@@ -44,13 +44,14 @@ export default defineComponent({
 .pageCard {
   display: flex;
   justify-content: center;
+  width: 100vw;
+  position: absolute;
 
   &-inner {
     box-sizing: border-box;
     padding: 3vmin;
     border-radius: 1vmin;
     text-decoration: none;
-    transform: translateZ(0);
     transition: color 0.4s;
     display: block;
     position: relative;

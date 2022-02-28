@@ -1,6 +1,6 @@
 <template>
   <router-view v-slot="{ Component, route }">
-    <Transition name="slide">
+    <Transition :name="route.meta.transition">
       <component :is="Component" :key="route.path" />
     </Transition>
   </router-view>
@@ -8,17 +8,6 @@
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,600');
-
-.slide-enter-from {
-  transform: translateX(-100vw);
-}
-.slide-leave-to {
-  transform: translateX(100vw);
-}
-.slide-enter-active,
-.slide-leave-active {
-  transition: transform 0.25s ease;
-}
 
 :root {
   --color-dark: #21252b;
@@ -57,5 +46,21 @@ a:focus {
 ::selection {
   background: var(--color-dark);
   color: var(--color-light);
+}
+
+/* Transition Animations */
+.slide-left-enter-from,
+.slide-right-leave-to {
+  transform: translateX(-100vw);
+}
+.slide-left-leave-to,
+.slide-right-enter-from {
+  transform: translateX(100vw);
+}
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.5s ease;
 }
 </style>
