@@ -1,22 +1,22 @@
 <template>
   <div
-    class="pageCard"
-    :class="{ 'pageCard-longform': longform, 'pageCard-simple': !longform }"
+    class="pagecard"
+    :class="{ 'pagecard-longform': longform, 'pagecard-simple': !longform }"
   >
-    <div class="pageCard-inner">
-      <header v-if="$slots.title" class="pageCard-header">
+    <div class="pagecard-inner">
+      <header v-if="$slots.title" class="pagecard-header">
         <router-link
           v-if="backButtonPage"
           :to="backButtonPage"
-          class="pageCard-back"
+          class="pagecard-back"
         >
           <i class="fa-solid fa-chevron-left" />
         </router-link>
-        <h2 class="pageCard-title">
+        <h2 class="pagecard-title">
           <slot name="title" />
         </h2>
       </header>
-      <main class="pageCard-main">
+      <main class="pagecard-main">
         <slot />
       </main>
     </div>
@@ -41,7 +41,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.pageCard {
+.pagecard {
   display: flex;
   justify-content: center;
   width: 100vw;
@@ -68,12 +68,19 @@ export default defineComponent({
     align-items: center;
   }
 
+  &-main {
+    text-align: center;
+    font-size: 2.5vmin;
+    line-height: 3.5vmin;
+    margin: 0;
+  }
+
   &-longform {
-    & .pageCard-inner {
+    & .pagecard-inner {
       margin: 8vmin 0;
     }
 
-    & .pageCard-main {
+    & .pagecard-main {
       font-size: 1.8vmin;
       line-height: 2vmin;
       text-align: left;
@@ -94,13 +101,6 @@ export default defineComponent({
     font-size: 4vmin;
     line-height: 4vmin;
     font-weight: 600;
-  }
-
-  &-main {
-    text-align: center;
-    font-size: 2.5vmin;
-    line-height: 3.5vmin;
-    margin: 0;
   }
 }
 </style>

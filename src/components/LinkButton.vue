@@ -1,5 +1,5 @@
 <template>
-  <span class="linkButton">
+  <span class="linkbutton">
     <a
       v-if="external"
       :href="href"
@@ -10,7 +10,7 @@
       target="_blank"
       rel="noopener noreferer"
     >
-      <span class="linkButton-icon"><i :class="icon" /></span>
+      <span class="linkbutton-icon"><i :class="icon" /></span>
       <span>{{ text }}</span>
     </a>
     <router-link
@@ -20,7 +20,7 @@
         '--color-hover': color,
       }"
     >
-      <span class="linkButton-icon"><i :class="icon" /></span>
+      <span class="linkbutton-icon"><i :class="icon" /></span>
       <span>{{ text }}</span>
     </router-link>
   </span>
@@ -57,14 +57,14 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.linkButton {
+.linkbutton {
   a {
     display: block;
     padding: 1.5vmin;
     border-radius: 1vmin;
     text-align: left;
     line-height: 6vmin;
-    background: rgba(85, 81, 106, 0.15);
+    background: rgb(85 81 106 / 15%);
     transition: border 0.4s, color 0.4s, background-color 0.4s;
     color: var(--color-dark);
     text-decoration: none;

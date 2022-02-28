@@ -45,7 +45,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.homeHeader {
+.homeheader {
   margin-bottom: 3vmin;
 
   h1 {

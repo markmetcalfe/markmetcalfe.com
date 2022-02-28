@@ -53,10 +53,12 @@ a:focus {
 .slide-right-leave-to {
   transform: translateX(-100vw);
 }
+
 .slide-left-leave-to,
 .slide-right-enter-from {
   transform: translateX(100vw);
 }
+
 .slide-left-enter-active,
 .slide-left-leave-active,
 .slide-right-enter-active,

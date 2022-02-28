@@ -1,11 +1,11 @@
 <template>
-  <section class="buttonSection">
+  <section class="buttonsection">
     <slot />
   </section>
 </template>
 
 <style lang="scss">
-.buttonSection {
+.buttonsection {
   width: 100%;
   height: auto;
   margin: 0;
