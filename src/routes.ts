@@ -44,4 +44,24 @@ export default [
     component: () =>
       import(/* webpackChunkName: "terms" */ './pages/TermsOfServicePage.vue'),
   },
+  {
+    path: '/5xx',
+    name: 'ServerErrorPage',
+    meta: {
+      title: 'Server Error',
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "servererror" */ './pages/ServerErrorPage.vue'
+      ),
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFoundPage',
+    meta: {
+      title: 'Not Found',
+    },
+    component: () =>
+      import(/* webpackChunkName: "notfound" */ './pages/NotFoundPage.vue'),
+  },
 ]
