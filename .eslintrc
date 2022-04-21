@@ -1,9 +1,19 @@
 {
-  "root": true,
   "env": {
     "node": true
   },
-  "extends": ["eslint:recommended", "plugin:vue/vue3-recommended", "prettier"],
+  "root": true,
+  "globals": {
+    "defineProps": "readonly",
+    "defineEmits": "readonly",
+    "withDefaults": "readonly"
+  },
+  "extends": [
+    "@vue/typescript/recommended",
+    "eslint:recommended",
+    "plugin:vue/vue3-recommended",
+    "prettier"
+  ],
   "rules": {
     "vue/no-unused-vars": "error"
   }
