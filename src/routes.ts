@@ -54,7 +54,7 @@ export default [
       import(/* webpackChunkName: "minecraft" */ './pages/MinecraftPage.vue'),
   },
   {
-    path: '/minecraft/map/:server',
+    path: '/minecraft/maps/:server',
     name: 'MinecraftMapPage',
     meta: {
       title: 'Minecraft Map',

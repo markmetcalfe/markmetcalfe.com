@@ -13,12 +13,12 @@
     <ButtonSection>
       <LinkButton
         text="Creative Map"
-        href="/minecraft/map/creative"
+        href="/minecraft/maps/creative"
         icon="fa-solid fa-map-marked-alt"
       />
       <LinkButton
         text="Survival Map"
-        href="/minecraft/map/survival"
+        href="/minecraft/maps/survival"
         icon="fa-solid fa-map-marked-alt"
       />
     </ButtonSection>

@@ -1,22 +1,21 @@
 <template>
   <div class="headerbanner">
-    <div class="headerbanner-inner">
-      <header v-if="$slots.title" class="headerbanner-header">
-        <router-link
-          v-if="backButtonPage"
-          :to="backButtonPage"
-          class="headerbanner-back"
-        >
-          <i class="fa-solid fa-chevron-left" />
-        </router-link>
-        <h2 class="headerbanner-title">
-          <slot name="title" />
-        </h2>
-      </header>
-      <main class="headerbanner-main">
-        <slot />
-      </main>
-    </div>
+    <header v-if="$slots.title" class="headerbanner-header">
+      <router-link
+        v-if="backButtonPage"
+        :to="backButtonPage"
+        class="headerbanner-back"
+      >
+        <i class="fa-solid fa-chevron-left" />
+      </router-link>
+      <h2 class="headerbanner-title">
+        <slot name="title" />
+      </h2>
+    </header>
+
+    <main class="headerbanner-main">
+      <slot />
+    </main>
   </div>
 </template>
 
@@ -37,10 +36,11 @@ export default defineComponent({
 .headerbanner {
   display: flex;
   justify-content: center;
-  width: 100vw;
+  width: 100%;
+  height: 100%;
   position: absolute;
 
-  &-inner {
+  &-header {
     box-sizing: border-box;
     padding: 2vmin;
     text-decoration: none;
@@ -50,21 +50,9 @@ export default defineComponent({
     text-align: center;
     z-index: 10;
     width: 100%;
-    height: 10vh;
+    height: 10vmin;
     background-color: var(--color-light);
     color: var(--color-dark);
-  }
-
-  &-main {
-    width: 100%;
-    height: 90vh;
-    position: absolute;
-    top: 10vh;
-    left: 0;
-    text-align: center;
-    font-size: 2.5vmin;
-    line-height: 3.5vmin;
-    margin: 0;
   }
 
   &-back {
@@ -76,11 +64,23 @@ export default defineComponent({
 
   &-title {
     display: inline-block;
-    margin-top: 1vmin;
-    margin-bottom: 3vmin;
+    margin: 0;
     font-size: 4vmin;
     line-height: 4vmin;
     font-weight: 600;
+  }
+
+  &-main {
+    width: 100%;
+    height: calc(100% - 10vmin);
+    position: absolute;
+    top: 10vmin;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 2.5vmin;
+    line-height: 3.5vmin;
+    margin: 0;
   }
 }
 </style>
