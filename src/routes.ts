@@ -45,6 +45,26 @@ export default [
       import(/* webpackChunkName: "terms" */ './pages/TermsOfServicePage.vue'),
   },
   {
+    path: '/minecraft',
+    name: 'MinecraftPage',
+    meta: {
+      title: 'Minecraft',
+    },
+    component: () =>
+      import(/* webpackChunkName: "minecraft" */ './pages/MinecraftPage.vue'),
+  },
+  {
+    path: '/minecraft/map/:server',
+    name: 'MinecraftMapPage',
+    meta: {
+      title: 'Minecraft Map',
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "minecraftmap" */ './pages/MinecraftMapPage.vue'
+      ),
+  },
+  {
     path: '/5xx',
     name: 'ServerErrorPage',
     meta: {
