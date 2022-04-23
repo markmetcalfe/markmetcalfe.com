@@ -3,6 +3,5 @@
     "stylelint-config-standard-scss",
     "stylelint-config-recommended-vue/scss",
     "stylelint-config-prettier"
-  ],
-  "ignoreFiles": ["src/**/*.{js,json,ts}"]
+  ]
 }

@@ -14,8 +14,8 @@
 }
 
 body {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   margin: 0;
   font-family: Roboto, OpenSans, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -25,7 +25,6 @@ body {
   font-weight: 300;
   background-color: var(--color-dark);
   color: var(--color-light);
-  transition: background 0.4s;
   overflow-x: hidden;
 }
 

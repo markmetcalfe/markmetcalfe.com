@@ -5,6 +5,7 @@
         v-if="backButtonPage"
         :to="backButtonPage"
         class="headerbanner-back"
+        aria-label="Back"
       >
         <i class="fa-solid fa-chevron-left" />
       </router-link>
