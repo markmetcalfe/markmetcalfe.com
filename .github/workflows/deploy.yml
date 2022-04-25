@@ -33,4 +33,4 @@ jobs:
         role-session-name: githubactions3deploy
         aws-region: ${{ env.AWS_REGION }}
     - name: Upload built project to S3 bucket
-      run: aws s3 cp ./dist s3://${{ env.BUCKET_NAME }} --recursive
+      run: aws s3 sync ./dist s3://${{ env.BUCKET_NAME }} --delete
