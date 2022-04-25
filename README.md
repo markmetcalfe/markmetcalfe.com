@@ -27,4 +27,4 @@ Before running `yarn run test`
 
 ## Deployment
 
-The master branch is automatically deployed to the markmetcalfe.io AWS S3 bucket.
+The main branch is automatically deployed to the markmetcalfe.io AWS S3 bucket.
