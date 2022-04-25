@@ -1,0 +1,36 @@
+name: Deploy to S3 Bucket
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  BUCKET_NAME : "markmetcalfe.io"
+  AWS_REGION : "ap-southeast-2"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  s3upload:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        cache: 'yarn'
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+    - name: Build project
+      run: yarn run build
+    - name: Set AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::613175990085:role/GitHub_Actions
+        role-session-name: githubactions3deploy
+        aws-region: ${{ env.AWS_REGION }}
+    - name: Upload built project to S3 bucket
+      run: aws s3 cp ./dist s3://${{ env.BUCKET_NAME }} --recursive
