@@ -7,8 +7,6 @@
 </template>
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,600');
-
 :root {
   --color-dark: #21252b;
   --color-light: #fdfdfd;
@@ -29,6 +27,16 @@ body {
   color: var(--color-light);
   transition: background 0.4s;
   overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+strong,
+b {
+  font-weight: 400;
 }
 
 a,

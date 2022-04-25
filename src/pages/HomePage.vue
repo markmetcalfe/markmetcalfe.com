@@ -60,7 +60,7 @@ export default defineComponent({
 
     h1 {
       display: block;
-      font-size: 9vmin;
+      font-size: 9.5vmin;
       line-height: 11vmin;
       margin: -2.2vmin;
       padding: 2.2vmin;
@@ -68,6 +68,8 @@ export default defineComponent({
       position: relative;
       z-index: 100;
       text-transform: lowercase;
+      font-weight: 400;
+      letter-spacing: -3px;
     }
 
     img {
@@ -82,7 +84,7 @@ export default defineComponent({
         margin: 0 0 2vmin;
         font-size: 4vmin;
         line-height: 4vmin;
-        font-weight: 500;
+        font-weight: 300;
       }
 
       p {

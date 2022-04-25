@@ -100,7 +100,7 @@ export default defineComponent({
     margin-bottom: 3vmin;
     font-size: 4vmin;
     line-height: 4vmin;
-    font-weight: 600;
+    font-weight: 400;
   }
 }
 </style>
