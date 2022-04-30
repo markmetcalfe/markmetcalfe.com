@@ -8,7 +8,7 @@ Written in Vue 3 and Typescript, using the Vite vue framework.
 
 ## Tests
 
-Playwright is used for automated acceptance testing.
+Playwright is used for automated end-to-end testing.
 If you haven't installed playwright before, you will need to run
 ```
 npx playwright install --with-deps chromium firefox webkit

@@ -1,4 +1,4 @@
-name: Playwright Acceptance Tests
+name: Playwright E2E Tests
 
 on:
   push:
