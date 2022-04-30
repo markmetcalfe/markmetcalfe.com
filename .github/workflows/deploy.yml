@@ -9,26 +9,48 @@ permissions:
   contents: read
 
 jobs:
-  s3upload:
+  deploy:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Check for code changes
+      id: changed-files-specific
+      uses: tj-actions/changed-files@v19
+      with:
+        files: |
+          src/**
+          public/**
+          index.html
+          package.json
+          yarn.lock
+          tsconfig.json
+          tsconfig.node.json
+          .github/workflows/deploy.yml
+    - name: Run step if no code has changed
+      if: steps.changed-files-specific.outputs.any_changed == 'false'
+      run: |
+        echo "No code changes detected - skipping deployment"
     - uses: actions/setup-node@v3
+      if: steps.changed-files-specific.outputs.any_changed == 'true'
       with:
         node-version: '16'
         cache: 'yarn'
     - name: Install dependencies
+      if: steps.changed-files-specific.outputs.any_changed == 'true'
       run: yarn install --frozen-lockfile
     - name: Build project
+      if: steps.changed-files-specific.outputs.any_changed == 'true'
       run: yarn run build
     - name: Set AWS credentials
+      if: steps.changed-files-specific.outputs.any_changed == 'true'
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
         role-session-name: ${{ secrets.AWS_ROLE_SESSION }}
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Upload built project to S3 bucket
+      if: steps.changed-files-specific.outputs.any_changed == 'true'
       run: |
         aws s3 cp ./dist ${{ secrets.AWS_BUCKET_PATH }} --recursive && \
         aws s3 cp ./dist/index.html ${{ secrets.AWS_BUCKET_PATH }}/index.html --cache-control max-age=0,no-cache,no-store,must-revalidate
