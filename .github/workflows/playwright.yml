@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Check for code changes
       id: changed-files-specific
-      uses: tj-actions/changed-files@v19
+      uses: tj-actions/changed-files@v22
       with:
         files: |
           src/**
