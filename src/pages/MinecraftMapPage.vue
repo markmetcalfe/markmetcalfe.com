@@ -2,7 +2,7 @@
   <HeaderBanner back-button-page="/minecraft">
     <template #title>Minecraft {{ serverName }} Server Map</template>
     <iframe
-      :src="`https://minecraft.markmetcalfe.io/maps/${server}`"
+      :src="`https://minecraft-maps.markmetcalfe.io/${server}`"
       :title="`Map of the ${serverName} Minecraft Server`"
       class="mapframe"
     ></iframe>
