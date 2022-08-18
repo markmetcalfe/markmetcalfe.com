@@ -3,6 +3,7 @@
   "packageRules": [
     {
       "matchPackagePatterns": ["*"],
+      "excludePackageNames": ["@playwright/test"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch",
@@ -10,9 +11,16 @@
     },
     {
       "matchPackagePatterns": ["*"],
+      "excludePackageNames": ["@playwright/test"],
       "matchUpdateTypes": ["major"],
       "groupName": "all major dependencies",
       "groupSlug": "all-major"
+    },
+    {
+      "matchPackageNames": ["@playwright/test"],
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "groupName": "automated testing",
+      "groupSlug": "automated-testing"
     }
   ],
   "lockFileMaintenance": {
