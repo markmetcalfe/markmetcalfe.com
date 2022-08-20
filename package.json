@@ -8,6 +8,13 @@
     "test": "npx playwright test",
     "preview": "vite preview",
     "precommit": "lint-staged",
+    "check-prettier": "prettier . --check && eslint . --max-warnings=0 --ext .js,.ts,.jsx,.tsx --ignore-path=.prettierignore",
+    "check-eslint": "eslint . --max-warnings=0 --ext .js,.ts,.jsx,.tsx --ignore-path=.prettierignore",
+    "check-typescript": "vue-tsc --noEmit",
+    "fix-prettier": "prettier . --write",
+    "fix-eslint": "eslint . --max-warnings=0 --ext .js,.ts,.jsx,.tsx --ignore-path=.prettierignore --fix",
+    "check": "npm-run-all check-prettier check-eslint check-typescript",
+    "fix": "npm-run-all fix-prettier fix-eslint",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -27,6 +34,7 @@
     "eslint-plugin-vue": "9.1.1",
     "husky": "8.0.1",
     "lint-staged": "13.0.3",
+    "npm-run-all": "4.1.5",
     "postcss": "8.4.14",
     "postcss-html": "1.4.1",
     "prettier": "2.7.1",
