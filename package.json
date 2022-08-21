@@ -21,6 +21,7 @@
     "vue": "3.2.37"
   },
   "devDependencies": {
+    "@babel/types": "7.18.10",
     "@fontsource/roboto": "4.5.8",
     "@fortawesome/fontawesome-free": "6.1.2",
     "@playwright/test": "1.25.0",

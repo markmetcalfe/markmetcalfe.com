@@ -7,8 +7,8 @@ export default defineConfig({
   plugins: [
     vue(),
     eslintPlugin({
-      throwOnError: true,
-      throwOnWarning: false,
+      failOnError: true,
+      failOnWarning: false,
     }),
   ],
 })
