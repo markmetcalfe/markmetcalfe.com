@@ -1,10 +1,30 @@
 <template>
   <router-view v-slot="{ Component, route }">
-    <Transition :name="route.meta.transition">
+    <Transition :name="getTransition(route)">
       <component :is="Component" :key="route.path" />
     </Transition>
   </router-view>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import { RouteLocationNormalized } from 'vue-router'
+
+type RouteWithTransition = RouteLocationNormalized & {
+  meta: {
+    transition?: string
+  }
+}
+
+export default defineComponent({
+  name: 'App',
+  methods: {
+    getTransition(route: RouteWithTransition): string | undefined {
+      return route.meta?.transition ?? undefined
+    },
+  },
+})
+</script>
 
 <style lang="scss">
 :root {
