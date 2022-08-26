@@ -1,37 +1,49 @@
 <template>
-  <PageCard>
-    <template #title>minecraft.markmetcalfe.io</template>
-    <div>
-      <p><strong>A Private Minecraft Server</strong></p>
-      <p>Compatible with both Bedrock and Java editions</p>
-      <p>
-        Please <router-link to="/contact">contact me</router-link> to be
-        whitelisted
-      </p>
-      <p>Server IP: <strong>minecraft.markmetcalfe.io</strong></p>
+  <div class="page-wrapper">
+    <iframe
+      src="https://minecraft.markmetcalfe.io/map"
+      title="Map of the Minecraft Server"
+      class="mapframe"
+    ></iframe>
+    <div class="banner-overlay">
+      <span class="graytext">Server IP: </span
+      ><span>minecraft.markmetcalfe.io</span>
     </div>
-    <ButtonSection>
-      <LinkButton
-        text="Creative Map"
-        href="/minecraft/maps/creative"
-        icon="fa-solid fa-map-marked-alt"
-      />
-      <LinkButton
-        text="Survival Map"
-        href="/minecraft/maps/survival"
-        icon="fa-solid fa-map-marked-alt"
-      />
-    </ButtonSection>
-  </PageCard>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import PageCard from '../components/PageCard.vue'
-import ButtonSection from '../components/ButtonSection.vue'
-import LinkButton from '../components/LinkButton.vue'
 export default defineComponent({
   name: 'MinecraftPage',
-  components: { PageCard, ButtonSection, LinkButton },
 })
 </script>
+
+<style lang="scss">
+.graytext {
+  color: gray;
+}
+
+.page-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.banner-overlay {
+  position: absolute;
+  bottom: 5vmin;
+  border-radius: 1vmin;
+  background-color: var(--color-light);
+  color: var(--color-dark);
+  padding: 2vmin 3vmin;
+  line-height: normal;
+  font-size: 4vmin;
+  z-index: 10;
+}
+
+.mapframe {
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+}
+</style>
