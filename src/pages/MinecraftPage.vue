@@ -1,13 +1,12 @@
 <template>
   <div class="page-wrapper">
     <iframe
-      src="https://minecraft.markmetcalfe.io/map"
+      src="https://home.markmetcalfe.io/minecraft/map"
       title="Map of the Minecraft Server"
       class="mapframe"
     ></iframe>
     <div class="banner-overlay">
-      <span class="graytext">Server IP: </span
-      ><span>minecraft.markmetcalfe.io</span>
+      <span class="graytext">Server IP: </span><span>markmetcalfe.io</span>
     </div>
   </div>
 </template>
