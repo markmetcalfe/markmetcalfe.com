@@ -8,6 +8,17 @@ const routes: Array<RouteRecordRaw> = [
     component: HomePage,
   },
   {
+    path: '/card',
+    name: 'BusinessCardPage',
+    meta: {
+      title: 'Business Card',
+    },
+    component: () =>
+      import(
+        /* webpackChunkName: "businesscard" */ './pages/BusinessCardPage.vue'
+      ),
+  },
+  {
     path: '/contact',
     name: 'ContactPage',
     meta: {
