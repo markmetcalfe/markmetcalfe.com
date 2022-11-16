@@ -27,9 +27,10 @@
       />
       <LinkButton
         text="Resume"
-        href="/resume"
+        href="/Mark-Metcalfe-Resume.pdf"
         icon="fa-regular fa-file-lines"
         color="#f6b011"
+        external
       />
       <LinkButton
         text="LinkedIn"

@@ -28,15 +28,6 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "contact" */ './pages/ContactPage.vue'),
   },
   {
-    path: '/resume',
-    name: 'ResumePage',
-    meta: {
-      title: 'Resume',
-    },
-    component: () =>
-      import(/* webpackChunkName: "resume" */ './pages/ResumePage.vue'),
-  },
-  {
     path: '/privacy-policy',
     name: 'PrivacyPolicyPage',
     meta: {

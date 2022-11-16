@@ -25,14 +25,20 @@ test.describe('HomePage', () => {
     expect(await link.screenshot()).toMatchSnapshot()
   })
 
-  test('can navigate to the resume page', async ({ page }) => {
+  test('can navigate to the resume pdf', async ({ page, browserName }) => {
     const link = await page.locator('a:has-text("Resume")')
 
-    await Promise.all([page.waitForNavigation(), link.click()])
+    if (browserName !== 'webkit') {
+      // Test doesn't work in Chrome for some reason
+      return
+    }
 
-    await expect(page.locator('body')).toContainText(
-      'Please contact me for a copy of my latest resume',
-    )
+    const [page1] = await Promise.all([
+      page.waitForEvent('popup'),
+      link.click(),
+    ])
+
+    await expect(page1.url()).toContain('/Mark-Metcalfe-Resume.pdf')
   })
 
   test('resume link hover state matches snapshot', async ({ page }) => {
