@@ -6,9 +6,6 @@ import {
   RouteLocationNormalized,
 } from 'vue-router'
 import routes from './routes'
-import '@fontsource/roboto/300.css'
-import '@fontsource/roboto/400.css'
-import '@fortawesome/fontawesome-free/css/all.css'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
