@@ -4,7 +4,7 @@
     :to="backButtonPage"
     class="floating-back-button"
   >
-    <i class="fa-solid fa-chevron-left" />
+    <font-awesome-icon icon="fa-solid fa-chevron-left" />
   </router-link>
 </template>
 

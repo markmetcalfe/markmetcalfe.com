@@ -7,7 +7,7 @@
         class="headerbanner-back"
         aria-label="Back"
       >
-        <i class="fa-solid fa-chevron-left" />
+        <font-awesome-icon icon="fa-solid fa-chevron-left" />
       </router-link>
       <h2 class="headerbanner-title">
         <slot name="title" />

@@ -10,7 +10,7 @@
       target="_blank"
       rel="noopener noreferer"
     >
-      <span class="linkbutton-icon"><i :class="icon" /></span>
+      <span class="linkbutton-icon"><font-awesome-icon :icon="icon" /></span>
       <span>{{ text }}</span>
     </a>
     <router-link
@@ -20,7 +20,7 @@
         '--color-hover': color,
       }"
     >
-      <span class="linkbutton-icon"><i :class="icon" /></span>
+      <span class="linkbutton-icon"><font-awesome-icon :icon="icon" /></span>
       <span>{{ text }}</span>
     </router-link>
   </span>
