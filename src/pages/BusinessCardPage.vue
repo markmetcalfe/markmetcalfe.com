@@ -50,8 +50,6 @@ export default defineComponent({
   }
 
   &-column {
-    line-height: 0;
-
     &:not(:first-child) {
       padding-left: 40px;
     }
@@ -70,7 +68,6 @@ export default defineComponent({
     h2 {
       margin: 0;
       white-space: nowrap;
-      line-height: 100%;
     }
 
     h1 {

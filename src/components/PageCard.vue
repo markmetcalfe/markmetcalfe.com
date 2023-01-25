@@ -42,6 +42,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import '../variables';
+
 .pagecard {
   display: flex;
   justify-content: center;
@@ -50,17 +52,27 @@ export default defineComponent({
 
   &-inner {
     box-sizing: border-box;
-    padding: 3vmin;
-    border-radius: 1vmin;
     text-decoration: none;
     transition: color 0.4s;
     display: block;
     position: relative;
     text-align: center;
     z-index: 10;
-    width: 75vmin;
     background-color: var(--color-light);
     color: var(--color-dark);
+
+    @include desktop-only {
+      width: 650px;
+      padding: 1.5rem;
+      margin: 1.5rem;
+      border-radius: 0.75rem;
+    }
+    @include mobile-only {
+      width: 100%;
+      padding: 1rem;
+      margin: 1rem;
+      border-radius: 0.5rem;
+    }
   }
 
   &-simple {
@@ -71,37 +83,59 @@ export default defineComponent({
 
   &-main {
     text-align: center;
-    font-size: 2.5vmin;
-    line-height: 3.5vmin;
     margin: 0;
+
+    @include desktop-only {
+      font-size: 1.25rem;
+    }
+    @include mobile-only {
+      font-size: 1rem;
+    }
   }
 
   &-longform {
     & .pagecard-inner {
-      margin: 8vmin 0;
+      @include desktop-only {
+        margin: 2rem 0;
+      }
+      @include mobile-only {
+        margin: 1rem;
+      }
     }
 
     & .pagecard-main {
-      font-size: 1.8vmin;
-      line-height: 2vmin;
+      font-size: 1rem;
       text-align: left;
     }
   }
 
   &-back {
     position: absolute;
-    left: 3vmin;
     display: inline-block;
     color: var(--color-link);
+
+    @include desktop-only {
+      font-size: 2.25rem;
+      left: 1.5rem;
+    }
+    @include mobile-only {
+      font-size: 1.75rem;
+      left: 1rem;
+    }
   }
 
   &-title {
-    display: inline-block;
-    margin-top: 1vmin;
-    margin-bottom: 3vmin;
-    font-size: 4vmin;
-    line-height: 4vmin;
     font-weight: 400;
+    margin-top: 0.5rem;
+
+    @include desktop-only {
+      font-size: 2.25rem;
+      margin-bottom: 2rem;
+    }
+    @include mobile-only {
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
   }
 }
 </style>

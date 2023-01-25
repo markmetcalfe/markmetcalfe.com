@@ -27,6 +27,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import './variables';
+
 :root {
   --color-dark: #21252b;
   --color-light: #fdfdfd;
@@ -40,12 +42,11 @@ body {
   font-family: Roboto, OpenSans, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 3.5vmin;
-  line-height: 6.5vmin;
   font-weight: 300;
   background-color: var(--color-dark);
   color: var(--color-light);
   overflow-x: hidden;
+  font-size: 6rem;
 }
 
 h1,

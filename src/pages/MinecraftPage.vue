@@ -19,6 +19,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import '../variables';
+
 .graytext {
   color: gray;
 }
@@ -30,14 +32,22 @@ export default defineComponent({
 
 .banner-overlay {
   position: absolute;
-  bottom: 5vmin;
-  border-radius: 1vmin;
   background-color: var(--color-light);
   color: var(--color-dark);
-  padding: 2vmin 3vmin;
-  line-height: normal;
-  font-size: 4vmin;
   z-index: 10;
+
+  @include desktop-only {
+    bottom: 3rem;
+    border-radius: 0.5rem;
+    padding: 1rem 2rem;
+    font-size: 2rem;
+  }
+  @include mobile-only {
+    bottom: 2rem;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 1.25rem;
+  }
 }
 
 .mapframe {

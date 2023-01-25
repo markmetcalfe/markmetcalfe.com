@@ -57,32 +57,53 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import '../variables';
+
 .linkbutton {
   a {
-    display: block;
-    padding: 1.5vmin;
-    border-radius: 1vmin;
-    text-align: left;
-    line-height: 6vmin;
+    display: flex;
+    align-items: center;
     background: rgb(85 81 106 / 15%);
     transition: border 0.4s, color 0.4s, background-color 0.4s;
     color: var(--color-dark);
     text-decoration: none;
-    font-size: 3.5vmin;
 
     &:hover {
       color: var(--color-light);
       background: var(--color-hover);
     }
+
+    @include desktop-only {
+      height: 3.25rem;
+      border-radius: 0.5rem;
+      font-size: 2rem;
+      padding: 0.75rem;
+    }
+    @include mobile-only {
+      height: 2.5rem;
+      border-radius: 0.25rem;
+      font-size: 1.5rem;
+      padding: 0.5rem;
+    }
   }
 
   &-icon {
-    height: 6vmin;
-    width: 6vmin;
-    float: left;
-    margin-right: 1.5vmin;
-    text-align: center;
-    font-size: 6vmin;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @include desktop-only {
+      height: 3.25rem;
+      width: 3.25rem;
+      margin-right: 0.75rem;
+      font-size: 3.25rem;
+    }
+    @include mobile-only {
+      height: 2.5rem;
+      width: 2.5rem;
+      margin-right: 0.5rem;
+      font-size: 2.5rem;
+    }
   }
 }
 </style>

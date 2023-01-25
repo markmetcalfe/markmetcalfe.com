@@ -55,44 +55,77 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import '../variables';
+
 .home {
   &-header {
-    margin-bottom: 3vmin;
+    @include desktop-only {
+      margin-bottom: 1.5rem;
+    }
+    @include mobile-only {
+      margin-bottom: 1rem;
+    }
 
     h1 {
       display: block;
-      font-size: 9.5vmin;
-      line-height: 11vmin;
-      margin: -2.2vmin;
-      padding: 2.2vmin;
-      margin-bottom: 0;
       position: relative;
       z-index: 100;
       text-transform: lowercase;
       font-weight: 400;
       letter-spacing: -3px;
+      margin: 0;
+      padding-bottom: 1rem;
+
+      @include desktop-only {
+        font-size: 5rem;
+      }
+      @include mobile-only {
+        font-size: 3.25rem;
+      }
     }
 
     img {
       border-radius: 50%;
-      height: 20vmin;
+
+      @include desktop-only {
+        height: 10.5rem;
+      }
+      @include mobile-only {
+        height: 7.5rem;
+      }
     }
 
     &-about {
-      margin: 1vmin;
+      @include desktop-only {
+        margin: 0.75rem 0.5rem;
+      }
+      @include mobile-only {
+        margin: 0.5rem 0;
+      }
 
       h3 {
-        margin: 0 0 2vmin;
-        font-size: 4vmin;
-        line-height: 4vmin;
         font-weight: 300;
+
+        @include desktop-only {
+          margin: 0 0 1rem;
+          font-size: 2rem;
+        }
+        @include mobile-only {
+          margin: 0 0 0.75rem;
+          font-size: 1.5rem;
+        }
       }
 
       p {
-        font-size: 2.5vmin;
-        line-height: 3.5vmin;
         margin: 0;
         text-align: left;
+
+        @include desktop-only {
+          font-size: 1.35rem;
+        }
+        @include mobile-only {
+          font-size: 0.9rem;
+        }
       }
     }
   }
