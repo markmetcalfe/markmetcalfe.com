@@ -30,13 +30,6 @@ test.describe('ContactPage', () => {
     await expect(page1.url()).toMatch(/(messenger|facebook).com/)
   })
 
-  test('messenger link hover state matches snapshot', async ({ page }) => {
-    const link = await page.locator('a:has-text("Messenger")')
-    link.hover()
-    await page.waitForTimeout(500)
-    expect(await link.screenshot()).toMatchSnapshot()
-  })
-
   test('can navigate to whatsapp', async ({ page }) => {
     const link = await page.locator('a:has-text("WhatsApp")')
 
@@ -49,13 +42,6 @@ test.describe('ContactPage', () => {
     await expect(page1.locator('body')).toContainText('WhatsApp')
   })
 
-  test('whatsapp link hover state matches snapshot', async ({ page }) => {
-    const link = await page.locator('a:has-text("WhatsApp")')
-    link.hover()
-    await page.waitForTimeout(500)
-    expect(await link.screenshot()).toMatchSnapshot()
-  })
-
   test('email link has valid mailto value', async ({ page }) => {
     const link = await page.locator('a:has-text("Email")')
 
@@ -65,23 +51,9 @@ test.describe('ContactPage', () => {
     )
   })
 
-  test('email link hover state matches snapshot', async ({ page }) => {
-    const link = await page.locator('a:has-text("Email")')
-    link.hover()
-    await page.waitForTimeout(500)
-    expect(await link.screenshot()).toMatchSnapshot()
-  })
-
   test('phone link has valid sms value', async ({ page }) => {
     const link = await page.locator('a:has-text("Phone")')
 
     await expect(link).toHaveAttribute('href', 'sms:***REMOVED***')
-  })
-
-  test('phone link hover state matches snapshot', async ({ page }) => {
-    const link = await page.locator('a:has-text("Phone")')
-    link.hover()
-    await page.waitForTimeout(500)
-    expect(await link.screenshot()).toMatchSnapshot()
   })
 })

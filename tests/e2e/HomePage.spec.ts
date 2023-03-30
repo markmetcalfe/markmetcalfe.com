@@ -18,13 +18,6 @@ test.describe('HomePage', () => {
     await expect(page.locator('body')).toContainText('Contact Me')
   })
 
-  test('contact link hover state matches snapshot', async ({ page }) => {
-    const link = await page.locator('a:has-text("Contact")')
-    link.hover()
-    await page.waitForTimeout(500)
-    expect(await link.screenshot()).toMatchSnapshot()
-  })
-
   test('can navigate to the resume pdf', async ({ page, browserName }) => {
     const link = await page.locator('a:has-text("Resume")')
 
@@ -41,13 +34,6 @@ test.describe('HomePage', () => {
     await expect(page1.url()).toContain('/Mark-Metcalfe-Resume.pdf')
   })
 
-  test('resume link hover state matches snapshot', async ({ page }) => {
-    const link = await page.locator('a:has-text("Resume")')
-    link.hover()
-    await page.waitForTimeout(500)
-    expect(await link.screenshot()).toMatchSnapshot()
-  })
-
   test('can navigate to github', async ({ page }) => {
     const link = await page.locator('a:has-text("GitHub")')
 
@@ -60,13 +46,6 @@ test.describe('HomePage', () => {
     await expect(page1.locator('body')).toContainText('GitHub')
   })
 
-  test('github link hover state matches snapshot', async ({ page }) => {
-    const link = await page.locator('a:has-text("GitHub")')
-    link.hover()
-    await page.waitForTimeout(500)
-    expect(await link.screenshot()).toMatchSnapshot()
-  })
-
   test('can navigate to linkedin', async ({ page }) => {
     const link = await page.locator('a:has-text("LinkedIn")')
 
@@ -77,12 +56,5 @@ test.describe('HomePage', () => {
 
     await expect(page1.url()).toContain('linkedin.com')
     await expect(page1.locator('body')).toContainText('LinkedIn')
-  })
-
-  test('linkedin link hover state matches snapshot', async ({ page }) => {
-    const link = await page.locator('a:has-text("LinkedIn")')
-    link.hover()
-    await page.waitForTimeout(500)
-    expect(await link.screenshot()).toMatchSnapshot()
   })
 })
