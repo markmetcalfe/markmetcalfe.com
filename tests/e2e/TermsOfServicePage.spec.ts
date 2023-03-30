@@ -11,7 +11,7 @@ test.describe('TermsOfServicePage', () => {
   })
 
   test('can navigate back home', async ({ page }) => {
-    const link = await page.locator('[aria-label="Back"]')
+    const link = page.locator('[aria-label="Back"]')
 
     await Promise.all([page.waitForNavigation(), link.click()])
 

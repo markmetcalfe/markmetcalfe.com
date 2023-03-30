@@ -11,7 +11,7 @@ test.describe('NotFoundPage', () => {
   })
 
   test('can navigate back home', async ({ page }) => {
-    const link = await page.locator('[aria-label="Back"]')
+    const link = page.locator('[aria-label="Back"]')
 
     await Promise.all([page.waitForNavigation(), link.click()])
 
@@ -20,7 +20,7 @@ test.describe('NotFoundPage', () => {
   })
 
   test('can navigate to the contact page', async ({ page }) => {
-    const link = await page.locator('a:has-text("contact me")')
+    const link = page.locator('a:has-text("contact me")')
 
     await Promise.all([page.waitForNavigation(), link.click()])
 

@@ -11,7 +11,7 @@ test.describe('ContactPage', () => {
   })
 
   test('can navigate back home', async ({ page }) => {
-    const link = await page.locator('[aria-label="Back"]')
+    const link = page.locator('[aria-label="Back"]')
 
     await Promise.all([page.waitForNavigation(), link.click()])
 
@@ -20,30 +20,30 @@ test.describe('ContactPage', () => {
   })
 
   test('can navigate to messenger', async ({ page }) => {
-    const link = await page.locator('a:has-text("Messenger")')
+    const link = page.locator('a:has-text("Messenger")')
 
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
       link.click(),
     ])
 
-    await expect(page1.url()).toMatch(/(messenger|facebook).com/)
+    expect(page1.url()).toMatch(/(messenger|facebook).com/)
   })
 
   test('can navigate to whatsapp', async ({ page }) => {
-    const link = await page.locator('a:has-text("WhatsApp")')
+    const link = page.locator('a:has-text("WhatsApp")')
 
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
       link.click(),
     ])
 
-    await expect(page1.url()).toContain('whatsapp.com')
+    expect(page1.url()).toContain('whatsapp.com')
     await expect(page1.locator('body')).toContainText('WhatsApp')
   })
 
   test('email link has valid mailto value', async ({ page }) => {
-    const link = await page.locator('a:has-text("Email")')
+    const link = page.locator('a:has-text("Email")')
 
     await expect(link).toHaveAttribute(
       'href',
@@ -52,7 +52,7 @@ test.describe('ContactPage', () => {
   })
 
   test('phone link has valid sms value', async ({ page }) => {
-    const link = await page.locator('a:has-text("Phone")')
+    const link = page.locator('a:has-text("Phone")')
 
     await expect(link).toHaveAttribute('href', 'sms:***REMOVED***')
   })
