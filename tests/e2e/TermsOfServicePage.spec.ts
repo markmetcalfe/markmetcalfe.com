@@ -13,7 +13,7 @@ test.describe('TermsOfServicePage', () => {
   test('can navigate back home', async ({ page }) => {
     const link = page.locator('[aria-label="Back"]')
 
-    await Promise.all([page.waitForNavigation(), link.click()])
+    await Promise.all([page.waitForURL('/'), link.click()])
 
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
     await expect(page.locator('body')).toContainText('Kia ora, I’m Mark')

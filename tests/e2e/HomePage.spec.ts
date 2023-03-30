@@ -13,7 +13,7 @@ test.describe('HomePage', () => {
   test('can navigate to the contact page', async ({ page }) => {
     const link = page.locator('a:has-text("Contact")')
 
-    await Promise.all([page.waitForNavigation(), link.click()])
+    await Promise.all([page.waitForURL('/contact'), link.click()])
 
     await expect(page.locator('body')).toContainText('Contact Me')
   })

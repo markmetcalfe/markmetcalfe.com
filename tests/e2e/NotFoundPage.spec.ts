@@ -13,7 +13,7 @@ test.describe('NotFoundPage', () => {
   test('can navigate back home', async ({ page }) => {
     const link = page.locator('[aria-label="Back"]')
 
-    await Promise.all([page.waitForNavigation(), link.click()])
+    await Promise.all([page.waitForURL('/'), link.click()])
 
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
     await expect(page.locator('body')).toContainText('Kia ora, I’m Mark')
@@ -22,7 +22,7 @@ test.describe('NotFoundPage', () => {
   test('can navigate to the contact page', async ({ page }) => {
     const link = page.locator('a:has-text("contact me")')
 
-    await Promise.all([page.waitForNavigation(), link.click()])
+    await Promise.all([page.waitForURL('/contact'), link.click()])
 
     await expect(page.locator('body')).toContainText('Contact Me')
     await expect(page.locator('body')).toContainText('Email')
