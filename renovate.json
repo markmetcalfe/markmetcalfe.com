@@ -13,6 +13,10 @@
       "matchUpdateTypes": ["major"],
       "groupName": "all major dependencies",
       "groupSlug": "all-major"
+    },
+    {
+      "packageNames": ["node"],
+      "enabled": false
     }
   ],
   "lockFileMaintenance": {
