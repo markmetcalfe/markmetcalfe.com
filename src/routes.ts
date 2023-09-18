@@ -57,6 +57,14 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "minecraft" */ './pages/MinecraftPage.vue'),
   },
   {
+    path: '/3d',
+    name: '3DPage',
+    meta: {
+      title: '3D Test',
+    },
+    component: () => import(/* webpackChunkName: "3d" */ './pages/3DPage.vue'),
+  },
+  {
     path: '/5xx',
     name: 'ServerErrorPage',
     meta: {
