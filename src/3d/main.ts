@@ -10,7 +10,7 @@ export function initRenderer(container: HTMLElement): void {
   const renderer = new THREE.WebGLRenderer()
   renderer.setSize(width, height)
 
-  const geometry = new THREE.BoxGeometry(1, 1, 1)
+  const geometry = new THREE.OctahedronGeometry(1)
   const geo = new THREE.EdgesGeometry(geometry)
   const mat = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 2 })
   const cube = new THREE.LineSegments(geo, mat)
@@ -24,8 +24,14 @@ export function initRenderer(container: HTMLElement): void {
   function animate() {
     requestAnimationFrame(animate)
     renderer.render(scene, camera)
-    cube.rotation.x += 0.015
-    cube.rotation.y += 0.015
+    if (cube.position.z > 1) {
+      cube.position.z = 0
+    } else {
+      cube.position.z += 0.2
+    }
+    cube.rotation.x += 0.05
+    cube.rotation.y += 0.05
+    console.log(cube.position)
   }
   animate()
 }
