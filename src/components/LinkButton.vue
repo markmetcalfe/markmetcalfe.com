@@ -64,7 +64,10 @@ export default defineComponent({
     display: flex;
     align-items: center;
     background: rgb(85 81 106 / 15%);
-    transition: border 0.4s, color 0.4s, background-color 0.4s;
+    transition:
+      border 0.4s,
+      color 0.4s,
+      background-color 0.4s;
     color: var(--color-dark);
     text-decoration: none;
 
@@ -79,6 +82,7 @@ export default defineComponent({
       font-size: 2rem;
       padding: 0.75rem;
     }
+
     @include mobile-only {
       height: 2.5rem;
       border-radius: 0.25rem;
@@ -98,6 +102,7 @@ export default defineComponent({
       margin-right: 0.75rem;
       font-size: 3.25rem;
     }
+
     @include mobile-only {
       height: 2.5rem;
       width: 2.5rem;
