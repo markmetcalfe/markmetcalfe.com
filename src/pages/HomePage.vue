@@ -2,7 +2,16 @@
   <PageCard>
     <section class="home-header">
       <h1>Mark Metcalfe</h1>
-      <img src="/me.jpg" alt="Photo of Mark Metcalfe" />
+      <div class="imagebutton">
+        <span class="imagebutton-image">
+          <img src="/me.jpg" alt="Photo of Mark Metcalfe" />
+        </span>
+        <span class="imagebutton-button">
+          <router-link to="/3d" aria-label="Play Animation">
+            <font-awesome-icon icon="fa-solid fa-play" beat />
+          </router-link>
+        </span>
+      </div>
       <div class="home-header-about">
         <h3>Kia ora, I’m Mark 👋</h3>
         <p>
@@ -84,14 +93,63 @@ export default defineComponent({
       }
     }
 
-    img {
-      border-radius: 50%;
+    .imagebutton {
+      display: inline-block;
+      transform: translateZ(0);
 
       @include desktop-only {
         height: 10.5rem;
+        width: 10.5rem;
+        font-size: 5.25rem;
       }
       @include mobile-only {
         height: 7.5rem;
+        width: 7.5rem;
+        font-size: 3.75rem;
+      }
+
+      &-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: inherit;
+        height: inherit;
+
+        img {
+          border-radius: 50%;
+          z-index: 200;
+          width: inherit;
+          height: inherit;
+        }
+      }
+
+      &-button {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 500ms ease-in-out;
+        border-radius: 50%;
+        width: inherit;
+        height: inherit;
+        background: var(--color-black);
+        color: var(--color-green);
+
+        a {
+          width: inherit;
+          height: inherit;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        svg {
+          margin-left: 0.5rem;
+        }
+
+        &:hover {
+          opacity: 1;
+        }
       }
     }
 

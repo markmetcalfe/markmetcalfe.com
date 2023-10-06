@@ -17,6 +17,7 @@ import {
 import {
   faMobileScreenButton,
   faChevronLeft,
+  faPlay,
 } from '@fortawesome/free-solid-svg-icons'
 import { faEnvelope, faFileLines } from '@fortawesome/free-regular-svg-icons'
 
@@ -54,6 +55,7 @@ library.add(
   faChevronLeft,
   faEnvelope,
   faFileLines,
+  faPlay,
 )
 
 createApp(App)
