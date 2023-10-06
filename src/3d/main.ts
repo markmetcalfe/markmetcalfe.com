@@ -12,6 +12,16 @@ export function initRenderer(container: HTMLElement): void {
   const renderer = new THREE.WebGLRenderer()
   renderer.setSize(width, height)
 
+  window.addEventListener(
+    'resize',
+    () => {
+      camera.aspect = window.innerWidth / window.innerHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(window.innerWidth, window.innerHeight)
+    },
+    false,
+  )
+
   const cubes: THREE.LineSegments[] = []
   const numOfCubes = 3
   for (let i = 0; i < numOfCubes; i++) {
