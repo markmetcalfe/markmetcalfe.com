@@ -23,4 +23,4 @@ If you haven't installed playwright before, you will need to run `yarn playwrigh
 
 ## Deployment
 
-The main branch is automatically deployed by Cloudflare to a Cloudflare web instance.
+The master branch is automatically deployed by Cloudflare to a Cloudflare web instance.
