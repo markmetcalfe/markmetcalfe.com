@@ -9,17 +9,17 @@ Written in Vue 3 and Typescript, using the Vite vue framework.
 ## Tests
 
 Playwright is used for automated end-to-end testing.
-If you haven't installed playwright before, you will need to run `yarn playwright install` before running `yarn run test`
+If you haven't installed playwright before, you will need to run `pnpm playwright install` before running `pnpm run test`
 
 ## Commands
 
-- Install: `yarn`
+- Install: `pnpm install`
 
-- Run development server: `yarn run dev`
+- Run development server: `pnpm run dev`
 
-- Production build: `yarn run build`
+- Production build: `pnpm run build`
 
-- Run tests: `yarn run test`
+- Run tests: `pnpm run test`
 
 ## Deployment
 

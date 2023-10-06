@@ -54,7 +54,7 @@ const config: PlaywrightTestConfig = {
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'yarn run build && yarn run preview --port 3001',
+    command: 'pnpm run build && pnpm run preview --port 3001',
     port: 3001,
   },
 }

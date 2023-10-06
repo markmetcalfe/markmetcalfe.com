@@ -24,7 +24,7 @@ jobs:
             tests/e2e/**
             index.html
             package.json
-            yarn.lock
+            pnpm-lock.yaml
             tsconfig.json
             tsconfig.node.json
             .github/workflows/playwright.yml
@@ -32,23 +32,20 @@ jobs:
         if: steps.changed-files-specific.outputs.any_changed == 'false'
         run: |
           echo "No code changes detected - skipping tests"
-      - uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
         if: steps.changed-files-specific.outputs.any_changed == 'true'
         with:
-          node-version: '16'
-          cache: 'yarn'
-      - name: Install dependencies
-        if: steps.changed-files-specific.outputs.any_changed == 'true'
-        run: yarn install --frozen-lockfile
+          run_install: true
       - name: Check code quality
         if: steps.changed-files-specific.outputs.any_changed == 'true'
-        run: yarn run check
+        run: pnpm run check
       - name: Install Playwright
         if: steps.changed-files-specific.outputs.any_changed == 'true'
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: npx playwright install
       - name: Run Playwright tests
         if: steps.changed-files-specific.outputs.any_changed == 'true'
-        run: CI=1 yarn run test
+        run: CI=1 pnpm run test
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
