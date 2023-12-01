@@ -4,7 +4,7 @@
       <h1>Mark Metcalfe</h1>
       <div class="imagebutton">
         <span class="imagebutton-image">
-          <img src="/me.jpg" alt="Photo of Mark Metcalfe" />
+          <img src="/me.png" alt="Photo of Mark Metcalfe" />
         </span>
         <span class="imagebutton-button">
           <router-link to="/3d" aria-label="Play Animation">
@@ -13,40 +13,23 @@
         </span>
       </div>
       <div class="home-header-about">
-        <h3>Kia ora, I’m Mark 👋</h3>
-        <p>
-          I'm an ambitious and driven full-stack developer with valuable
-          experience delivering high quality work in fast-paced contexts.
-        </p>
+        <h3>Developer • VJ • Digital Wizard</h3>
       </div>
     </section>
     <ButtonSection>
       <LinkButton
-        text="Contact"
+        text="My Work"
+        href="/portfolio"
+        icon="fa-solid fa-laptop-code"
+        color="#620f95"
+        extra-padding
+      />
+      <LinkButton
+        text="Contact Me"
         href="/contact"
-        icon="fa-regular fa-envelope"
-        color="#fb4c2f"
-      />
-      <LinkButton
-        text="GitHub"
-        href="https://github.com/markmetcalfe"
-        icon="fab fa-github"
-        color="#191717"
-        external
-      />
-      <LinkButton
-        text="Resume"
-        href="/Mark-Metcalfe-Resume.pdf"
-        icon="fa-regular fa-file-lines"
-        color="#f6b011"
-        external
-      />
-      <LinkButton
-        text="LinkedIn"
-        href="https://www.linkedin.com/in/mark-metcalfe/"
-        icon="fab fa-linkedin"
-        color="#0077b5"
-        external
+        icon="fa-regular fa-comments"
+        color="#b41cac"
+        extra-padding
       />
     </ButtonSection>
   </PageCard>
@@ -71,6 +54,7 @@ export default defineComponent({
     @include desktop-only {
       margin-bottom: 1.5rem;
     }
+
     @include mobile-only {
       margin-bottom: 1rem;
     }
@@ -88,6 +72,7 @@ export default defineComponent({
       @include desktop-only {
         font-size: 5rem;
       }
+
       @include mobile-only {
         font-size: 3.25rem;
       }
@@ -102,6 +87,7 @@ export default defineComponent({
         width: 10.5rem;
         font-size: 5.25rem;
       }
+
       @include mobile-only {
         height: 7.5rem;
         width: 7.5rem;
@@ -157,6 +143,7 @@ export default defineComponent({
       @include desktop-only {
         margin: 0.75rem 0.5rem;
       }
+
       @include mobile-only {
         margin: 0.5rem 0;
       }
@@ -168,6 +155,7 @@ export default defineComponent({
           margin: 0 0 1rem;
           font-size: 2rem;
         }
+
         @include mobile-only {
           margin: 0 0 0.75rem;
           font-size: 1.5rem;
@@ -181,6 +169,7 @@ export default defineComponent({
         @include desktop-only {
           font-size: 1.35rem;
         }
+
         @include mobile-only {
           font-size: 0.9rem;
         }

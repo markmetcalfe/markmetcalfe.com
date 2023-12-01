@@ -1,6 +1,8 @@
 <template>
   <section class="buttonsection">
-    <slot />
+    <div class="buttonsection-inner">
+      <slot />
+    </div>
   </section>
 </template>
 
@@ -10,14 +12,12 @@
 .buttonsection {
   width: 100%;
   height: auto;
-  margin: 0;
-  display: grid;
+  display: flex;
+  justify-content: center;
 
-  @include desktop-only {
-    grid-template-columns: auto auto;
-    gap: 0.75rem;
-  }
-  @include mobile-only {
+  &-inner {
+    margin: 0;
+    display: grid;
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }

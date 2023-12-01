@@ -1,21 +1,7 @@
 <template>
   <PageCard back-button-page="/">
-    <template #title>Contact Me</template>
+    <template #title>Contact</template>
     <ButtonSection>
-      <LinkButton
-        text="Messenger"
-        href="https://m.me/mark.ls.metcalfe"
-        icon="fab fa-facebook-messenger"
-        color="#0078ff"
-        external
-      />
-      <LinkButton
-        text="WhatsApp"
-        href="https://wa.me/64278746968"
-        icon="fab fa-whatsapp"
-        color="#25D366"
-        external
-      />
       <LinkButton
         text="Email"
         href="mailto:mark@markmetcalfe.com"
@@ -24,9 +10,17 @@
         external
       />
       <LinkButton
-        text="Phone"
-        href="sms:***REMOVED***"
-        icon="fa-solid fa-mobile-screen-button"
+        text="LinkedIn"
+        href="https://www.linkedin.com/in/mark-metcalfe/"
+        icon="fab fa-linkedin"
+        color="#0077b5"
+        external
+      />
+      <LinkButton
+        text="Instagram"
+        href="https://instagram.com/markus_ratboy"
+        icon="fab fa-instagram"
+        color="#e1306c"
         external
       />
     </ButtonSection>

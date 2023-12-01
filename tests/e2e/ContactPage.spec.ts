@@ -16,30 +16,6 @@ test.describe('ContactPage', () => {
     await Promise.all([page.waitForURL('/'), link.click()])
 
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
-    await expect(page.locator('body')).toContainText('Kia ora, I’m Mark')
-  })
-
-  test('can navigate to messenger', async ({ page }) => {
-    const link = page.locator('a:has-text("Messenger")')
-
-    const [page1] = await Promise.all([
-      page.waitForEvent('popup'),
-      link.click(),
-    ])
-
-    expect(page1.url()).toMatch(/(messenger|facebook).com/)
-  })
-
-  test('can navigate to whatsapp', async ({ page }) => {
-    const link = page.locator('a:has-text("WhatsApp")')
-
-    const [page1] = await Promise.all([
-      page.waitForEvent('popup'),
-      link.click(),
-    ])
-
-    expect(page1.url()).toContain('whatsapp.com')
-    await expect(page1.locator('body')).toContainText('WhatsApp')
   })
 
   test('email link has valid mailto value', async ({ page }) => {
@@ -51,9 +27,27 @@ test.describe('ContactPage', () => {
     )
   })
 
-  test('phone link has valid sms value', async ({ page }) => {
-    const link = page.locator('a:has-text("Phone")')
+  test('can navigate to linkedin', async ({ page }) => {
+    const link = page.locator('a:has-text("LinkedIn")')
 
-    await expect(link).toHaveAttribute('href', 'sms:***REMOVED***')
+    const [page1] = await Promise.all([
+      page.waitForEvent('popup'),
+      link.click(),
+    ])
+
+    expect(page1.url()).toContain('linkedin.com')
+    await expect(page1.locator('body')).toContainText('LinkedIn')
+  })
+
+  test('can navigate to instagram', async ({ page }) => {
+    const link = page.locator('a:has-text("Instagram")')
+
+    const [page1] = await Promise.all([
+      page.waitForEvent('popup'),
+      link.click(),
+    ])
+
+    expect(page1.url()).toContain('instagram.com')
+    await expect(page1.locator('body')).toContainText('Instagram')
   })
 })

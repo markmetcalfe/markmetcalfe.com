@@ -11,15 +11,19 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
   faGithub,
   faLinkedin,
-  faFacebookMessenger,
-  faWhatsapp,
+  faInstagram,
 } from '@fortawesome/free-brands-svg-icons'
 import {
   faMobileScreenButton,
   faChevronLeft,
   faPlay,
+  faLaptopCode,
 } from '@fortawesome/free-solid-svg-icons'
-import { faEnvelope, faFileLines } from '@fortawesome/free-regular-svg-icons'
+import {
+  faComments,
+  faEnvelope,
+  faFileLines,
+} from '@fortawesome/free-regular-svg-icons'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,13 +53,14 @@ router.afterEach(
 library.add(
   faGithub,
   faLinkedin,
-  faFacebookMessenger,
-  faWhatsapp,
+  faInstagram,
   faMobileScreenButton,
   faChevronLeft,
   faEnvelope,
   faFileLines,
   faPlay,
+  faLaptopCode,
+  faComments,
 )
 
 createApp(App)

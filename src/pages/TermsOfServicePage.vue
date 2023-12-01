@@ -261,7 +261,7 @@
       to the new terms, in whole or in part, please stop using the website and
       the Service.
     </p>
-    <h3>Contact Us</h3>
+    <h3>Contact Me</h3>
     <p>
       If you have any questions about these Terms of Service,
       <router-link to="/contact">You can contact us here</router-link>.

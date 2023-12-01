@@ -1,14 +1,18 @@
 <template>
-  <router-view v-slot="{ Component, route }">
-    <Transition :name="getTransition(route)">
-      <component :is="Component" :key="route.path" />
-    </Transition>
-  </router-view>
+  <div>
+    <router-view v-slot="{ Component, route }">
+      <Transition :name="getTransition(route)">
+        <component :is="Component" :key="route.path" />
+      </Transition>
+    </router-view>
+    <DynamicBackground />
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { RouteLocationNormalized } from 'vue-router'
+import DynamicBackground from './components/DynamicBackground.vue'
 
 type RouteWithTransition = RouteLocationNormalized & {
   meta: {
@@ -18,6 +22,7 @@ type RouteWithTransition = RouteLocationNormalized & {
 
 export default defineComponent({
   name: 'App',
+  components: { DynamicBackground },
   methods: {
     getTransition(route: RouteWithTransition): string | undefined {
       return route.meta?.transition ?? undefined
@@ -31,8 +36,9 @@ export default defineComponent({
 
 :root {
   --color-dark: #21252b;
+  --color-dark-translucent: rgb(33 37 43 / 50%);
   --color-light: #fdfdfd;
-  --color-link: #d24545;
+  --color-link: #b927b4;
   --color-green: #0f0;
   --color-white: #fff;
   --color-black: #000;
@@ -46,7 +52,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 300;
-  background-color: var(--color-dark);
   color: var(--color-light);
   overflow-x: hidden;
   font-size: 6rem;

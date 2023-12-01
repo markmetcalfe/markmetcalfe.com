@@ -435,7 +435,7 @@
       changes. Changes to this Privacy Policy are effective when they are posted
       on this page.
     </p>
-    <h3>Contact Us</h3>
+    <h3>Contact Me</h3>
     <p>
       If you have any questions about this Privacy Policy,
       <router-link to="/contact">You can contact us here</router-link>.

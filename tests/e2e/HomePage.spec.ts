@@ -10,47 +10,20 @@ test.describe('HomePage', () => {
     expect(await page.screenshot()).toMatchSnapshot()
   })
 
+  test('can navigate to the portfolio page', async ({ page }) => {
+    const link = page.locator('a:has-text("My Work")')
+
+    await Promise.all([page.waitForURL('/portfolio'), link.click()])
+
+    await expect(page.locator('body')).toContainText('My Work')
+  })
+
   test('can navigate to the contact page', async ({ page }) => {
-    const link = page.locator('a:has-text("Contact")')
+    const link = page.locator('a:has-text("Contact Me")')
 
     await Promise.all([page.waitForURL('/contact'), link.click()])
 
-    await expect(page.locator('body')).toContainText('Contact Me')
-  })
-
-  // TODO: Fix this failing test
-  test.skip('can navigate to the resume pdf', async ({ page }) => {
-    const link = page.locator('a:has-text("Resume")')
-
-    const [page1] = await Promise.all([
-      page.waitForEvent('popup'),
-      link.click(),
-    ])
-
-    expect(page1.url()).toContain('/Mark-Metcalfe-Resume.pdf')
-  })
-
-  test('can navigate to github', async ({ page }) => {
-    const link = page.locator('a:has-text("GitHub")')
-
-    const [page1] = await Promise.all([
-      page.waitForEvent('popup'),
-      link.click(),
-    ])
-
-    expect(page1.url()).toContain('github.com')
-    await expect(page1.locator('body')).toContainText('GitHub')
-  })
-
-  test('can navigate to linkedin', async ({ page }) => {
-    const link = page.locator('a:has-text("LinkedIn")')
-
-    const [page1] = await Promise.all([
-      page.waitForEvent('popup'),
-      link.click(),
-    ])
-
-    expect(page1.url()).toContain('linkedin.com')
-    await expect(page1.locator('body')).toContainText('LinkedIn')
+    await expect(page.locator('body')).toContainText('Contact')
+    await expect(page.locator('body')).toContainText('Email')
   })
 })

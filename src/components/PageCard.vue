@@ -58,19 +58,16 @@ export default defineComponent({
     position: relative;
     text-align: center;
     z-index: 10;
-    background-color: var(--color-light);
-    color: var(--color-dark);
+    background-color: none;
+    color: var(--color-light);
 
     @include desktop-only {
-      width: 650px;
       padding: 1.5rem;
-      margin: 1.5rem;
       border-radius: 0.75rem;
     }
+
     @include mobile-only {
-      width: 100%;
       padding: 1rem;
-      margin: 1rem;
       border-radius: 0.5rem;
     }
   }
@@ -88,6 +85,7 @@ export default defineComponent({
     @include desktop-only {
       font-size: 1.25rem;
     }
+
     @include mobile-only {
       font-size: 1rem;
     }
@@ -96,8 +94,9 @@ export default defineComponent({
   &-longform {
     & .pagecard-inner {
       @include desktop-only {
-        margin: 2rem 0;
+        margin: 2rem;
       }
+
       @include mobile-only {
         margin: 1rem;
       }
@@ -118,6 +117,7 @@ export default defineComponent({
       font-size: 2.25rem;
       left: 1.5rem;
     }
+
     @include mobile-only {
       font-size: 1.75rem;
       left: 1rem;
@@ -132,6 +132,7 @@ export default defineComponent({
       font-size: 2.25rem;
       margin-bottom: 2rem;
     }
+
     @include mobile-only {
       font-size: 1.75rem;
       margin-bottom: 1.5rem;

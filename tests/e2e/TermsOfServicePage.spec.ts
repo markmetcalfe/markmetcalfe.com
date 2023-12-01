@@ -16,6 +16,5 @@ test.describe('TermsOfServicePage', () => {
     await Promise.all([page.waitForURL('/'), link.click()])
 
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
-    await expect(page.locator('body')).toContainText('Kia ora, I’m Mark')
   })
 })

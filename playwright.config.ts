@@ -31,6 +31,22 @@ const config: PlaywrightTestConfig = {
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /* Put playwright var in local storage so we can hide the background video */
+    storageState: {
+      cookies: [],
+      origins: [
+        {
+          origin: 'http://localhost:3001',
+          localStorage: [
+            {
+              name: 'is_playwright_test',
+              value: '1',
+            },
+          ],
+        },
+      ],
+    },
   },
 
   /* Configure projects for major browsers */

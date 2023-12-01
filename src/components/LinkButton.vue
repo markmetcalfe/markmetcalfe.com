@@ -10,7 +10,14 @@
       target="_blank"
       rel="noopener noreferer"
     >
-      <span class="linkbutton-icon"><font-awesome-icon :icon="icon" /></span>
+      <span
+        :class="
+          extraPadding
+            ? 'linkbutton-icon linkbutton-icon-extrapadding'
+            : 'linkbutton-icon'
+        "
+        ><font-awesome-icon :icon="icon"
+      /></span>
       <span>{{ text }}</span>
     </a>
     <router-link
@@ -20,7 +27,14 @@
         '--color-hover': color,
       }"
     >
-      <span class="linkbutton-icon"><font-awesome-icon :icon="icon" /></span>
+      <span
+        :class="
+          extraPadding
+            ? 'linkbutton-icon linkbutton-icon-extrapadding'
+            : 'linkbutton-icon'
+        "
+        ><font-awesome-icon :icon="icon"
+      /></span>
       <span>{{ text }}</span>
     </router-link>
   </span>
@@ -52,6 +66,11 @@ export default defineComponent({
       required: false,
       default: () => 'var(--color-dark)',
     },
+    extraPadding: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 })
 </script>
@@ -63,16 +82,15 @@ export default defineComponent({
   a {
     display: flex;
     align-items: center;
-    background: rgb(85 81 106 / 15%);
+    background: rgb(217 212 242 / 20%);
     transition:
       border 0.4s,
       color 0.4s,
       background-color 0.4s;
-    color: var(--color-dark);
+    color: var(--color-light);
     text-decoration: none;
 
     &:hover {
-      color: var(--color-light);
       background: var(--color-hover);
     }
 
@@ -108,6 +126,20 @@ export default defineComponent({
       width: 2.5rem;
       margin-right: 0.5rem;
       font-size: 2.5rem;
+    }
+
+    &-extrapadding {
+      @include desktop-only {
+        height: 3rem;
+        width: auto;
+        font-size: 3rem;
+      }
+
+      @include mobile-only {
+        height: 2rem;
+        width: auto;
+        font-size: 2rem;
+      }
     }
   }
 }

@@ -3,14 +3,14 @@
     <PageCard>
       <section class="businesscard">
         <div class="businesscard-column businesscard-photo-container">
-          <img src="/me.jpg" alt="Photo of Mark Metcalfe" />
+          <img src="/me.png" alt="Photo of Mark Metcalfe" />
         </div>
         <div class="businesscard-column businesscard-content">
           <div class="businesscard-row">
             <h1>mark metcalfe</h1>
           </div>
           <div class="businesscard-row">
-            <h2 class="light">Full Stack Developer</h2>
+            <h2 class="light">Developer • VJ • Digital Wizard</h2>
           </div>
           <div class="businesscard-row">
             <h2>markmetcalfe.io</h2>

@@ -16,15 +16,14 @@ test.describe('NotFoundPage', () => {
     await Promise.all([page.waitForURL('/'), link.click()])
 
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
-    await expect(page.locator('body')).toContainText('Kia ora, I’m Mark')
   })
 
   test('can navigate to the contact page', async ({ page }) => {
-    const link = page.locator('a:has-text("contact me")')
+    const link = page.locator('a:has-text("Contact Me")')
 
     await Promise.all([page.waitForURL('/contact'), link.click()])
 
-    await expect(page.locator('body')).toContainText('Contact Me')
+    await expect(page.locator('body')).toContainText('Contact')
     await expect(page.locator('body')).toContainText('Email')
   })
 })
