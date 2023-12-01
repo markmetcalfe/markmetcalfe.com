@@ -10,7 +10,9 @@
             <h1>mark metcalfe</h1>
           </div>
           <div class="businesscard-row">
-            <h2 class="light">Developer • VJ • Digital Wizard</h2>
+            <h2 class="light">
+              Developer <span>/</span> VJ <span>/</span> Digital Wizard
+            </h2>
           </div>
           <div class="businesscard-row">
             <h2>markmetcalfe.io</h2>
@@ -81,6 +83,10 @@ export default defineComponent({
 
     h2.light {
       font-weight: 300;
+
+      span {
+        opacity: 0.33;
+      }
     }
 
     p {

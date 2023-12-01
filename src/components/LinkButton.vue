@@ -87,10 +87,11 @@ export default defineComponent({
       border 0.4s,
       color 0.4s,
       background-color 0.4s;
-    color: var(--color-light);
+    color: rgb(255 255 255 / 75%);
     text-decoration: none;
 
     &:hover {
+      color: var(--color-light);
       background: var(--color-hover);
     }
 

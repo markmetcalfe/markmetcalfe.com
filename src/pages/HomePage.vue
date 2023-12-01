@@ -13,7 +13,7 @@
         </span>
       </div>
       <div class="home-header-about">
-        <h3>Developer • VJ • Digital Wizard</h3>
+        <h3>Developer <span>/</span> VJ <span>/</span> Digital Wizard</h3>
       </div>
     </section>
     <ButtonSection>
@@ -159,6 +159,10 @@ export default defineComponent({
         @include mobile-only {
           margin: 0 0 0.75rem;
           font-size: 1.5rem;
+        }
+
+        span {
+          opacity: 0.33;
         }
       }
 
