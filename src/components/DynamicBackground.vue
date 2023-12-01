@@ -2,12 +2,13 @@
   <div class="dynamicbackground">
     <video
       v-show="showVideo"
+      id="video"
       autoplay
       muted
       loop
       class="dynamicbackground dynamicbackground-video"
     >
-      <source :src="currentVideoSrc" type="video/mp4" />
+      <source src="" type="video/mp4" />
     </video>
     <div
       class="dynamicbackground dynamicbackground-placeholder"
@@ -50,16 +51,32 @@ export default defineComponent({
       return
     }
 
-    console.debug(`Playing video: ${this.currentVideo}`)
-    const secondsPerVideo = 20
-    setInterval(() => {
+    document.body.addEventListener('click', this.nextVideo, true)
+    this.playVideo()
+  },
+
+  unmounted() {
+    document.body.removeEventListener('click', this.nextVideo, true)
+  },
+
+  methods: {
+    playVideo() {
+      const videoElement: HTMLVideoElement = document.getElementById(
+        'video',
+      ) as HTMLVideoElement
+      videoElement.src = this.currentVideoSrc
+      console.debug(`Playing video: ${this.currentVideo}`)
+      videoElement.play()
+    },
+
+    nextVideo() {
       if (this.currentVideoNum + 1 >= this.videos.length) {
         this.currentVideoNum = 0
       } else {
         this.currentVideoNum++
       }
-      console.debug(`Playing video: ${this.currentVideo}`)
-    }, secondsPerVideo * 1000)
+      this.playVideo()
+    },
   },
 })
 </script>
