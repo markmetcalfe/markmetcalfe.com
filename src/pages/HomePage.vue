@@ -104,6 +104,7 @@ export default defineComponent({
         img {
           border-radius: 50%;
           z-index: 200;
+          opacity: 0.9;
           width: inherit;
           height: inherit;
         }
