@@ -11,9 +11,9 @@
     >
       <source src="" type="video/mp4" />
     </video>
-    <div
+    <img
       class="dynamicbackground dynamicbackground-placeholder"
-      :style="`background-image: url('${placeholderImage}')`"
+      :src="placeholderImage"
     />
     <div class="dynamicbackground dynamicbackground-overlay" />
   </div>
@@ -28,7 +28,7 @@ export default defineComponent({
 
   data() {
     return {
-      videos: ['bg1', 'bg2', 'bg3'],
+      videos: ['bg-1', 'bg-2', 'bg-3', 'bg-4'],
       currentVideoNum: 0,
       showVideo: true,
       placeholderImage,
@@ -54,6 +54,8 @@ export default defineComponent({
 
     document.body.addEventListener('click', this.nextVideo, true)
     this.playVideo()
+    // Switch to the next video every 4 seconds
+    setInterval(this.nextVideo, 4000)
   },
 
   unmounted() {
@@ -92,24 +94,22 @@ export default defineComponent({
   height: 100vh;
   z-index: -100;
 
+  & > * {
+    min-width: 100vw;
+    min-height: 100vh;
+  }
+
   &-placeholder {
-    background-image: url('/background/placeholder.jpg');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
+    object-fit: cover;
     z-index: -100;
   }
 
   &-video {
-    min-width: 100vw;
-    min-height: 100vh;
-    object-fit: fill;
+    object-fit: cover;
     z-index: -50;
   }
 
   &-overlay {
-    min-width: 100vw;
-    min-height: 100vh;
     background: rgb(0 0 0 / 20%);
     z-index: -10;
   }
