@@ -6,24 +6,7 @@ import {
   RouteLocationNormalized,
 } from 'vue-router'
 import routes from './routes'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import {
-  faGithub,
-  faLinkedin,
-  faInstagram,
-} from '@fortawesome/free-brands-svg-icons'
-import {
-  faMobileScreenButton,
-  faChevronLeft,
-  faPlay,
-  faLaptopCode,
-} from '@fortawesome/free-solid-svg-icons'
-import {
-  faComments,
-  faEnvelope,
-  faFileLines,
-} from '@fortawesome/free-regular-svg-icons'
+import addIcons from './icons'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,21 +32,4 @@ router.afterEach(
   },
 )
 
-// Add font awesome icons
-library.add(
-  faGithub,
-  faLinkedin,
-  faInstagram,
-  faMobileScreenButton,
-  faChevronLeft,
-  faEnvelope,
-  faFileLines,
-  faPlay,
-  faLaptopCode,
-  faComments,
-)
-
-createApp(App)
-  .component('font-awesome-icon', FontAwesomeIcon)
-  .use(router)
-  .mount('#app')
+createApp(App).use(addIcons).use(router).mount('#app')
