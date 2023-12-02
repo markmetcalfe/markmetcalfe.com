@@ -5,6 +5,7 @@
       id="video"
       autoplay
       muted
+      playsinline
       loop
       class="dynamicbackground dynamicbackground-video"
     >
@@ -66,7 +67,6 @@ export default defineComponent({
       ) as HTMLVideoElement
       videoElement.src = this.currentVideoSrc
       console.debug(`Playing video: ${this.currentVideo}`)
-      videoElement.play()
     },
 
     nextVideo() {
