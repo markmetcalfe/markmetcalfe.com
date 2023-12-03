@@ -6,6 +6,7 @@
       :style="{
         // @ts-ignore
         '--color-hover': color,
+        '--color-text': textColor,
       }"
       target="_blank"
       rel="noopener noreferer"
@@ -25,6 +26,7 @@
       :to="href"
       :style="{
         '--color-hover': color,
+        '--color-text': textColor,
       }"
     >
       <span
@@ -66,6 +68,11 @@ export default defineComponent({
       required: false,
       default: () => 'var(--color-dark)',
     },
+    textColor: {
+      type: String,
+      required: false,
+      default: () => 'var(--color-light)',
+    },
     extraPadding: {
       type: Boolean,
       required: false,
@@ -91,7 +98,7 @@ export default defineComponent({
     text-decoration: none;
 
     &:hover {
-      color: var(--color-light);
+      color: var(--color-text);
       background: var(--color-hover);
     }
 

@@ -14,14 +14,16 @@
         text="My Work"
         href="/portfolio"
         icon="fa-solid fa-laptop-code"
-        color="#620f95"
+        color="rgb(0 0 0 / 50%)"
+        text-color="#0f0"
         extra-padding
       />
       <LinkButton
         text="Contact Me"
         href="/contact"
         icon="fa-regular fa-comments"
-        color="#b41cac"
+        color="rgb(0 0 0 / 50%)"
+        text-color="#0f0"
         extra-padding
       />
     </ButtonSection>

@@ -38,7 +38,7 @@ export default defineComponent({
   --color-dark: #21252b;
   --color-dark-translucent: rgb(33 37 43 / 50%);
   --color-light: #fdfdfd;
-  --color-link: #b927b4;
+  --color-link: #0f0;
   --color-green: #0f0;
   --color-white: #fff;
   --color-black: #000;
