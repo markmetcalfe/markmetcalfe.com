@@ -2,7 +2,7 @@
   <PageCard>
     <section class="home-header">
       <h1>Mark Metcalfe</h1>
-      <div class="photo">
+      <div class="photo-of-me">
         <img src="/me.png" />
       </div>
       <div class="home-header-about">
@@ -71,7 +71,7 @@ export default defineComponent({
       }
     }
 
-    .photo {
+    .photo-of-me {
       display: inline-block;
       transform: translateZ(0);
 

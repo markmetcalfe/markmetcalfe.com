@@ -1,8 +1,8 @@
 <template>
   <div class="dynamicbackground">
-    <div v-show="render" class="dynamicbackground dynamicbackground-3d" />
+    <div v-show="renderer" class="dynamicbackground dynamicbackground-3d" />
     <video
-      v-show="render"
+      v-show="renderer"
       autoplay
       muted
       playsinline
@@ -21,33 +21,34 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { cleanUp, initRenderer } from '../3d/main'
+import { ThreeJSRenderer } from '../3d'
 
 export default defineComponent({
   name: 'DynamicBackground',
 
-  data() {
+  data(): { renderer: ThreeJSRenderer | undefined } {
     return {
-      render: true,
+      renderer: undefined,
     }
   },
 
   mounted() {
     if (localStorage.getItem('is_playwright_test')) {
-      this.render = false
       console.debug(
         'Playwright test is running, dont render video or 3d canvas',
       )
       return
     }
 
-    initRenderer(document.querySelector('.dynamicbackground-3d')!)
+    setTimeout(() => {
+      this.renderer = new ThreeJSRenderer(
+        document.querySelector('.dynamicbackground-3d')!,
+      )
+    }, 100)
   },
 
   unmounted() {
-    if (this.render) {
-      cleanUp()
-    }
+    this.renderer?.cleanUp()
   },
 })
 </script>
