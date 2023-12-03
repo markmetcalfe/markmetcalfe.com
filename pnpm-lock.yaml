@@ -20,6 +20,9 @@ dependencies:
   '@fortawesome/vue-fontawesome':
     specifier: 3.0.5
     version: 3.0.5(@fortawesome/fontawesome-svg-core@6.5.1)(vue@3.3.4)
+  is-mobile:
+    specifier: ^4.0.0
+    version: 4.0.0
   three:
     specifier: 0.157.0
     version: 0.157.0
@@ -2016,6 +2019,10 @@ packages:
     dependencies:
       is-extglob: 2.1.1
     dev: true
+
+  /is-mobile@4.0.0:
+    resolution: {integrity: sha512-mlcHZA84t1qLSuWkt2v0I2l61PYdyQDt4aG1mLIXF5FDMm4+haBCxCPYSr/uwqQNRk1MiTizn0ypEuRAOLRAew==}
+    dev: false
 
   /is-negative-zero@2.0.2:
     resolution: {integrity: sha512-dqJvarLawXsFbNDeJW7zAz8ItJ9cd28YufuuFzh0G8pNHjJMnY08Dv7sYX2uF5UpQOwieAeOExEYAWWfu7ZZUA==}

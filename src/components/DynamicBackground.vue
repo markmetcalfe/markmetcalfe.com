@@ -1,19 +1,19 @@
 <template>
   <div class="dynamicbackground">
+    <div v-show="render" class="dynamicbackground dynamicbackground-3d" />
     <video
-      v-show="showVideo"
-      id="video"
+      v-show="render"
       autoplay
       muted
       playsinline
       loop
       class="dynamicbackground dynamicbackground-video"
     >
-      <source src="" type="video/mp4" />
+      <source src="/background/video.mp4" type="video/mp4" />
     </video>
     <img
       class="dynamicbackground dynamicbackground-placeholder"
-      :src="placeholderImage"
+      src="/background/placeholder.jpg"
     />
     <div class="dynamicbackground dynamicbackground-overlay" />
   </div>
@@ -21,64 +21,33 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import placeholderImage from './placeholder-background'
+import { cleanUp, initRenderer } from '../3d/main'
 
 export default defineComponent({
   name: 'DynamicBackground',
 
   data() {
     return {
-      videos: ['bg-1', 'bg-2', 'bg-3', 'bg-4'],
-      currentVideoNum: 0,
-      showVideo: true,
-      placeholderImage,
+      render: true,
     }
-  },
-
-  computed: {
-    currentVideo(): string {
-      return this.videos[this.currentVideoNum]
-    },
-
-    currentVideoSrc(): string {
-      return `/background/${this.currentVideo}.mp4`
-    },
   },
 
   mounted() {
     if (localStorage.getItem('is_playwright_test')) {
-      this.showVideo = false
-      console.debug('Playwright test is running, dont show video')
+      this.render = false
+      console.debug(
+        'Playwright test is running, dont render video or 3d canvas',
+      )
       return
     }
 
-    document.body.addEventListener('click', this.nextVideo, true)
-    this.playVideo()
-    // Switch to the next video every 4 seconds
-    setInterval(this.nextVideo, 4000)
+    initRenderer(document.querySelector('.dynamicbackground-3d')!)
   },
 
   unmounted() {
-    document.body.removeEventListener('click', this.nextVideo, true)
-  },
-
-  methods: {
-    playVideo() {
-      const videoElement: HTMLVideoElement = document.getElementById(
-        'video',
-      ) as HTMLVideoElement
-      videoElement.src = this.currentVideoSrc
-      console.debug(`Playing video: ${this.currentVideo}`)
-    },
-
-    nextVideo() {
-      if (this.currentVideoNum + 1 >= this.videos.length) {
-        this.currentVideoNum = 0
-      } else {
-        this.currentVideoNum++
-      }
-      this.playVideo()
-    },
+    if (this.render) {
+      cleanUp()
+    }
   },
 })
 </script>
@@ -101,17 +70,21 @@ export default defineComponent({
 
   &-placeholder {
     object-fit: cover;
-    z-index: -100;
+    z-index: -4;
   }
 
   &-video {
     object-fit: cover;
-    z-index: -50;
+    z-index: -3;
   }
 
   &-overlay {
-    background: rgb(0 0 0 / 20%);
-    z-index: -10;
+    background: rgb(0 0 0 / 85%);
+    z-index: -2;
+  }
+
+  &-3d {
+    z-index: -1;
   }
 }
 </style>

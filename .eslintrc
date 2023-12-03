@@ -14,5 +14,7 @@
     "plugin:vue/vue3-recommended",
     "prettier"
   ],
-  "rules": {}
+  "rules": {
+    "@typescript-eslint/no-non-null-assertion": "off"
+  }
 }
