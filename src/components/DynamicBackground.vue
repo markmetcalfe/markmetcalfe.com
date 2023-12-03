@@ -15,7 +15,8 @@
       class="dynamicbackground dynamicbackground-placeholder"
       src="/background/placeholder.jpg"
     />
-    <div class="dynamicbackground dynamicbackground-overlay" />
+    <div class="dynamicbackground dynamicbackground-overlay-color" />
+    <div class="dynamicbackground dynamicbackground-overlay-black" />
   </div>
 </template>
 
@@ -71,17 +72,38 @@ export default defineComponent({
 
   &-placeholder {
     object-fit: cover;
-    z-index: -4;
+    z-index: -5;
   }
 
   &-video {
     object-fit: cover;
-    z-index: -3;
+    z-index: -4;
   }
 
   &-overlay {
-    background: rgb(0 0 0 / 85%);
-    z-index: -2;
+    &-color {
+      z-index: -3;
+      animation: color-change 15s linear infinite;
+
+      @keyframes color-change {
+        0% {
+          background: rgb(127 0 128 / 40%);
+        }
+
+        50% {
+          background: rgb(0 0 255 / 40%);
+        }
+
+        100% {
+          background: rgb(127 0 128 / 40%);
+        }
+      }
+    }
+
+    &-black {
+      background: rgb(0 0 0 / 80%);
+      z-index: -2;
+    }
   }
 
   &-3d {
