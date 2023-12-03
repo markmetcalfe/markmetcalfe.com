@@ -27,7 +27,7 @@ test.describe('PortfolioPage', () => {
     ])
 
     expect(page1.url()).toContain('instagram.com')
-    await expect(page1.locator('body')).toContainText('Instagram')
+    await expect(page1).toHaveTitle(/Instagram/)
   })
 
   test('can navigate to github', async ({ page }) => {
