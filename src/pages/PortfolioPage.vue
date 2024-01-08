@@ -4,7 +4,7 @@
     <ButtonSection>
       <LinkButton
         text="Instagram"
-        href="https://instagram.com/markus_ratboy"
+        href="https://instagram.com/markus_vizshun"
         icon="fab fa-instagram"
         color="#e1306c"
         external
