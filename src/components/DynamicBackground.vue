@@ -1,22 +1,7 @@
 <template>
   <div class="dynamicbackground">
     <div v-show="renderer" class="dynamicbackground dynamicbackground-3d" />
-    <video
-      v-show="renderer"
-      autoplay
-      muted
-      playsinline
-      loop
-      class="dynamicbackground dynamicbackground-video"
-    >
-      <source src="/background/video.mp4" type="video/mp4" />
-    </video>
-    <img
-      class="dynamicbackground dynamicbackground-placeholder"
-      src="/background/placeholder.jpg"
-    />
-    <div class="dynamicbackground dynamicbackground-overlay-color" />
-    <div class="dynamicbackground dynamicbackground-overlay-black" />
+    <div class="dynamicbackground dynamicbackground-black" />
   </div>
 </template>
 
@@ -70,43 +55,12 @@ export default defineComponent({
     min-height: 100vh;
   }
 
-  &-placeholder {
-    object-fit: cover;
-    z-index: -5;
-  }
-
-  &-video {
-    object-fit: cover;
-    z-index: -4;
-  }
-
-  &-overlay {
-    &-color {
-      z-index: -3;
-      animation: color-change 15s linear infinite;
-
-      @keyframes color-change {
-        0% {
-          background: rgb(127 0 128 / 40%);
-        }
-
-        50% {
-          background: rgb(0 0 255 / 40%);
-        }
-
-        100% {
-          background: rgb(127 0 128 / 40%);
-        }
-      }
-    }
-
-    &-black {
-      background: rgb(0 0 0 / 80%);
-      z-index: -2;
-    }
+  &-black {
+    background: rgb(0 0 0);
   }
 
   &-3d {
+    opacity: 0.66;
     z-index: -1;
   }
 }
