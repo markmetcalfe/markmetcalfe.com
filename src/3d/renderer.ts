@@ -102,19 +102,17 @@ export class ThreeJSRenderer {
     if (!this.settings.autoZoom) {
       return
     }
-    if (this.hasManuallyZoomed) {
-      return
+
+    if (this.settings.currentZoom >= this.settings.maxZoom) {
+      this.isAutoZoomingIn = false
+    } else if (this.settings.currentZoom <= this.settings.minZoom) {
+      this.isAutoZoomingIn = true
     }
+
     if (this.isAutoZoomingIn) {
-      this.camera.position.z += this.settings.autoZoomSpeed
-      if (this.camera.position.z >= this.settings.maxZoom - 1) {
-        this.isAutoZoomingIn = false
-      }
+      this.settings.currentZoom += this.settings.autoZoomSpeed
     } else {
-      this.camera.position.z -= this.settings.autoZoomSpeed
-      if (this.camera.position.z <= this.settings.minZoom - 1) {
-        this.isAutoZoomingIn = true
-      }
+      this.settings.currentZoom -= this.settings.autoZoomSpeed
     }
   }
 
@@ -125,7 +123,7 @@ export class ThreeJSRenderer {
 
     Object.values(this.geometry).forEach(object => {
       object.rotate().setSize(objectScale)
-      if (!this.isMobile && mousePosition) {
+      if (!this.isMobile && this.settings.followCursor && mousePosition) {
         object.moveTowardPosition(mousePosition)
       } else if (startingPosition) {
         object.setPosition(startingPosition)

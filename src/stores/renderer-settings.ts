@@ -9,6 +9,7 @@ export interface RendererSettings {
   geometryRadius: number
   geometryDetail: number
   randomisationPerMinute: number
+  followCursor: boolean
 }
 
 const settings: RendererSettings = {
@@ -19,7 +20,8 @@ const settings: RendererSettings = {
   autoZoomSpeed: 0.01,
   geometryRadius: 5,
   geometryDetail: 100,
-  randomisationPerMinute: 130,
+  randomisationPerMinute: 140 / 4, // 1 bar of 140s dub
+  followCursor: true,
 }
 
 export const useRendererSettingsStore = defineStore('renderer-settings', {

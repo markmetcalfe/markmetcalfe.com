@@ -3,11 +3,76 @@
     <template #title>3D Demo</template>
 
     <div class="demopage">
-      <p>The sphere will always follow the cursor</p>
       <p>Scroll to zoom in and out</p>
       <p>Click to randomise the state</p>
 
       <div class="demopage-settings">
+        <v-switch
+          v-model="settings.followCursor"
+          label="Follow Cursor"
+          color="#00ff00"
+          inset
+          hide-details
+        ></v-switch>
+
+        <v-switch
+          v-model="settings.autoZoom"
+          label="Auto Zoom"
+          color="#00ff00"
+          inset
+          hide-details
+        ></v-switch>
+
+        <v-slider
+          v-show="autoZoomEnabled"
+          v-model="settings.minZoom"
+          color="#00ff00"
+          class="align-center"
+          :min="-10"
+          :max="20"
+          hide-details
+        >
+          <template #prepend>
+            <label for="settings-min-zoom">Min Zoom</label>
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-min-zoom"
+              v-model="settings.minZoom"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+            ></v-text-field>
+          </template>
+        </v-slider>
+
+        <v-slider
+          v-show="autoZoomEnabled"
+          v-model="settings.maxZoom"
+          color="#00ff00"
+          class="align-center"
+          :min="-10"
+          :max="20"
+          hide-details
+        >
+          <template #prepend>
+            <label for="settings-min-zoom">Max Zoom</label>
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-max-zoom"
+              v-model="settings.maxZoom"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+            ></v-text-field>
+          </template>
+        </v-slider>
+
         <v-slider
           v-model="settings.currentZoom"
           color="#00ff00"
@@ -83,6 +148,13 @@ export default defineComponent({
       showSettings: true,
       settings,
     }
+  },
+
+  computed: {
+    autoZoomEnabled() {
+      const { settings } = useRendererSettingsStore()
+      return settings.autoZoom
+    },
   },
 
   mounted() {
