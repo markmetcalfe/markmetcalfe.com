@@ -1,5 +1,5 @@
 <template>
-  <PageCard v-show="showSettings" back-button-page="/">
+  <PageCard v-show="!isFullscreen" back-button-page="/">
     <template #title>3D Demo</template>
 
     <div class="demopage">
@@ -122,7 +122,13 @@
         </v-slider>
       </div>
 
-      <p>Press <code>Esc</code> to show and hide these settings</p>
+      <v-btn
+        color="#00ff00"
+        variant="flat"
+        size="large"
+        @click="requestFullscreen"
+        >Fullscreen</v-btn
+      >
     </div>
   </PageCard>
 </template>
@@ -141,11 +147,11 @@ export default defineComponent({
   name: 'DemoPage',
   components: { PageCard },
 
-  data(): { showSettings: boolean; settings: Ref<RendererSettings> } {
+  data(): { isFullscreen: boolean; settings: Ref<RendererSettings> } {
     const { settings } = storeToRefs(useRendererSettingsStore())
 
     return {
-      showSettings: true,
+      isFullscreen: false,
       settings,
     }
   },
@@ -158,19 +164,28 @@ export default defineComponent({
   },
 
   mounted() {
-    document.addEventListener('keyup', e => this.toggleSettingsOnKey(e))
+    document.addEventListener('fullscreenchange', () => this.fullscreenEvent())
   },
 
   unmounted() {
-    document.removeEventListener('keyup', e => this.toggleSettingsOnKey(e))
+    document.removeEventListener('fullscreenchange', () =>
+      this.fullscreenEvent(),
+    )
     document.body.style.cursor = 'auto'
   },
 
   methods: {
-    toggleSettingsOnKey(event: KeyboardEvent) {
-      if (event.code === 'Escape') {
-        this.showSettings = !this.showSettings
-        document.body.style.cursor = this.showSettings ? 'auto' : 'none'
+    requestFullscreen() {
+      document.body.requestFullscreen()
+    },
+
+    fullscreenEvent() {
+      if (this.isFullscreen) {
+        this.isFullscreen = false
+        document.body.style.cursor = 'auto'
+      } else {
+        this.isFullscreen = true
+        document.body.style.cursor = 'none'
       }
     },
   },
