@@ -1,8 +1,13 @@
 import * as THREE from 'three'
 import { Geometry, Polyhedron } from './geometry'
 import isMobile from 'is-mobile'
+import {
+  RendererSettings,
+  useRendererSettingsStore,
+} from '../stores/renderer-settings'
 
 export class ThreeJSRenderer {
+  private settings: RendererSettings
   private isMobile = false
   private mousePosX = 0
   private mousePosY = 0
@@ -11,14 +16,16 @@ export class ThreeJSRenderer {
   private camera: THREE.PerspectiveCamera
   private renderer: THREE.WebGLRenderer
 
-  private maxZoom = 7
-  private minZoom = -2
+  private lastRandomisationTime = new Date()
   private isAutoZoomingIn = false
   private hasManuallyZoomed = false
 
   private geometry: Geometry[]
 
   constructor(container: HTMLElement) {
+    const { settings } = useRendererSettingsStore()
+    this.settings = settings
+
     this.isMobile = isMobile()
 
     this.scene = new THREE.Scene()
@@ -27,9 +34,7 @@ export class ThreeJSRenderer {
       window.innerWidth / window.innerHeight,
     )
 
-    this.camera.position.z = this.maxZoom
-
-    this.renderer = new THREE.WebGLRenderer({ alpha: true })
+    this.renderer = new THREE.WebGLRenderer()
     this.renderer.setSize(window.innerWidth, window.innerHeight)
 
     window.addEventListener('resize', () => this.handleWindowResize(), false)
@@ -38,7 +43,7 @@ export class ThreeJSRenderer {
       event => this.updateMousePos(event),
       false,
     )
-    document.addEventListener(
+    container.addEventListener(
       'mouseup',
       () => this.randomiseGeometryPositions(),
       false,
@@ -54,9 +59,9 @@ export class ThreeJSRenderer {
 
   private generateGeometry() {
     const geometry = [
-      new Polyhedron('green', 5, 80),
-      new Polyhedron('blue', 5, 90),
-      new Polyhedron('red', 5, 100),
+      new Polyhedron('green', this.settings.geometryRadius, 80),
+      new Polyhedron('blue', this.settings.geometryRadius, 90),
+      new Polyhedron('red', this.settings.geometryRadius, 100),
     ]
 
     const startingPosition = this.getStartingPosition()
@@ -81,30 +86,33 @@ export class ThreeJSRenderer {
         .setRotation(randomRotationPosition)
         .setRotationSpeed(randomRotationSpeed)
     })
+    this.lastRandomisationTime = new Date()
   }
 
   private manualZoom(event: WheelEvent) {
     this.hasManuallyZoomed = true
     if (event.deltaY > 0) {
-      this.camera.position.z -= 0.1
+      this.settings.currentZoom -= 0.1
     } else if (event.deltaY < 0) {
-      this.camera.position.z += 0.1
+      this.settings.currentZoom += 0.1
     }
   }
 
   private autoZoom() {
+    if (!this.settings.autoZoom) {
+      return
+    }
     if (this.hasManuallyZoomed) {
       return
     }
-    const zoomSpeed = 0.01
     if (this.isAutoZoomingIn) {
-      this.camera.position.z += zoomSpeed
-      if (this.camera.position.z >= this.maxZoom - 1) {
+      this.camera.position.z += this.settings.autoZoomSpeed
+      if (this.camera.position.z >= this.settings.maxZoom - 1) {
         this.isAutoZoomingIn = false
       }
     } else {
-      this.camera.position.z -= zoomSpeed
-      if (this.camera.position.z <= this.minZoom - 1) {
+      this.camera.position.z -= this.settings.autoZoomSpeed
+      if (this.camera.position.z <= this.settings.minZoom - 1) {
         this.isAutoZoomingIn = true
       }
     }
@@ -124,6 +132,19 @@ export class ThreeJSRenderer {
       }
     })
     this.autoZoom()
+
+    if (this.settings.randomisationPerMinute) {
+      const randomIntervalMs =
+        (60 / this.settings.randomisationPerMinute) * 1000
+      if (
+        new Date().getTime() >
+        this.lastRandomisationTime.getTime() + randomIntervalMs
+      ) {
+        this.randomiseGeometryPositions()
+      }
+    }
+
+    this.camera.position.z = this.settings.currentZoom
 
     this.render()
   }

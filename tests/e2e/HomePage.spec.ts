@@ -26,4 +26,17 @@ test.describe('HomePage', () => {
     await expect(page.locator('body')).toContainText('Contact')
     await expect(page.locator('body')).toContainText('Email')
   })
+
+  test('can navigate to the demo settings page on desktop', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(browserName.toLowerCase() !== 'firefox', 'Test only on desktop')
+
+    const link = page.locator('a[title="Demo Settings"]')
+
+    await Promise.all([page.waitForURL('/demo'), link.click()])
+
+    await expect(page.locator('body')).toContainText('3D Demo')
+  })
 })

@@ -27,6 +27,11 @@
         extra-padding
       />
     </ButtonSection>
+    <div class="home-demobutton">
+      <router-link to="/demo" title="Demo Settings">
+        <font-awesome-icon icon="fa-solid fa-gear" />
+      </router-link>
+    </div>
   </PageCard>
 </template>
 
@@ -62,7 +67,6 @@ export default defineComponent({
       font-weight: 400;
       letter-spacing: -3px;
       margin: 0;
-      padding-bottom: 1rem;
 
       @include desktop-only {
         font-size: 5rem;
@@ -136,6 +140,22 @@ export default defineComponent({
           font-size: 0.9rem;
         }
       }
+    }
+  }
+
+  &-demobutton {
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin-right: 1rem;
+    margin-top: 1rem;
+
+    @include desktop-only {
+      font-size: 2rem;
+    }
+
+    @include mobile-only {
+      display: none;
     }
   }
 }

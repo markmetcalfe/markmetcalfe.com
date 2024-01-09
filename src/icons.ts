@@ -8,6 +8,7 @@ import {
 import {
   faMobileScreenButton,
   faChevronLeft,
+  faGear,
   faPlay,
   faLaptopCode,
 } from '@fortawesome/free-solid-svg-icons'
@@ -23,6 +24,7 @@ const icons = [
   faComments,
   faEnvelope,
   faFileLines,
+  faGear,
   faGithub,
   faInstagram,
   faLaptopCode,

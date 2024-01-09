@@ -7,6 +7,18 @@ import {
 } from 'vue-router'
 import routes from './routes'
 import addIcons from './icons'
+import { createPinia } from 'pinia'
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+
+const pinia = createPinia()
+
+const vuetify = createVuetify({
+  components,
+  directives,
+})
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,4 +44,4 @@ router.afterEach(
   },
 )
 
-createApp(App).use(addIcons).use(router).mount('#app')
+createApp(App).use(pinia).use(vuetify).use(addIcons).use(router).mount('#app')

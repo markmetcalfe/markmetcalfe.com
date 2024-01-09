@@ -103,14 +103,12 @@ export default defineComponent({
     }
 
     @include desktop-only {
-      height: 3.25rem;
       border-radius: 0.5rem;
       font-size: 2rem;
       padding: 0.75rem;
     }
 
     @include mobile-only {
-      height: 2.5rem;
       border-radius: 0.25rem;
       font-size: 1.5rem;
       padding: 0.5rem;

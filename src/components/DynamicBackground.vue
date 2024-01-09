@@ -1,7 +1,13 @@
 <template>
-  <div class="dynamicbackground">
-    <div v-show="renderer" class="dynamicbackground dynamicbackground-3d" />
-    <div class="dynamicbackground dynamicbackground-black" />
+  <div>
+    <div
+      v-show="!isPlaywrightTest && renderer"
+      class="dynamicbackground-3d"
+      :style="{
+        opacity: dimBackground ? 0.66 : 1,
+      }"
+    />
+    <div class="dynamicbackground-black" />
   </div>
 </template>
 
@@ -18,14 +24,23 @@ export default defineComponent({
     }
   },
 
-  mounted() {
-    if (localStorage.getItem('is_playwright_test')) {
-      console.debug(
-        'Playwright test is running, dont render video or 3d canvas',
-      )
-      return
-    }
+  computed: {
+    dimBackground(): boolean {
+      return this.$route.fullPath !== '/demo'
+    },
 
+    isPlaywrightTest(): boolean {
+      if (localStorage.getItem('is_playwright_test')) {
+        console.debug(
+          'Playwright test is running, dont render video or 3d canvas',
+        )
+        return true
+      }
+      return false
+    },
+  },
+
+  mounted() {
     setTimeout(() => {
       this.renderer = new ThreeJSRenderer(
         document.querySelector('.dynamicbackground-3d')!,
@@ -43,25 +58,26 @@ export default defineComponent({
 @import '../variables';
 
 .dynamicbackground {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -100;
-
-  & > * {
+  &-3d {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     min-width: 100vw;
     min-height: 100vh;
+    z-index: -1;
+    transition: opacity 0.4s;
   }
 
   &-black {
-    background: rgb(0 0 0);
-  }
-
-  &-3d {
-    opacity: 0.66;
-    z-index: -1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 100vw;
+    min-height: 100vh;
+    background-color: black;
+    z-index: -2;
   }
 }
 </style>

@@ -24,8 +24,10 @@
     "@fortawesome/free-solid-svg-icons": "6.5.1",
     "@fortawesome/vue-fontawesome": "3.0.5",
     "is-mobile": "^4.0.0",
+    "pinia": "^2.1.7",
     "three": "0.157.0",
-    "vue": "3.3.4"
+    "vue": "3.3.4",
+    "vuetify": "^3.4.9"
   },
   "devDependencies": {
     "@babel/types": "7.23.0",
