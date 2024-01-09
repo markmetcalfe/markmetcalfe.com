@@ -9,3 +9,15 @@
     @content;
   }
 }
+
+.desktop-only {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.mobile-only {
+  @media (min-width: 768px) {
+    display: none;
+  }
+}

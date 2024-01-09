@@ -3,12 +3,14 @@
     <template #title>3D Demo</template>
 
     <div class="demopage">
-      <p>Scroll to zoom in and out</p>
-      <p>Click to randomise the state</p>
+      <p class="desktop-only">Scroll to zoom in and out</p>
+      <p class="desktop-only">Click to randomise the state</p>
+      <p class="mobile-only">View this on desktop for more options</p>
 
       <div class="demopage-settings">
         <v-switch
           v-model="settings.followCursor"
+          class="desktop-only"
           label="Follow Cursor"
           color="#00ff00"
           inset
@@ -123,6 +125,7 @@
       </div>
 
       <v-btn
+        class="desktop-only"
         color="#00ff00"
         variant="flat"
         size="large"
@@ -206,6 +209,14 @@ export default defineComponent({
 
   & :first-child {
     padding-top: 0;
+  }
+
+  @include desktop-only {
+    min-width: 500px;
+  }
+
+  @include mobile-only {
+    min-width: calc(95vw - 1rem);
   }
 }
 </style>

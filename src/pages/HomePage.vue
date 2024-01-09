@@ -155,7 +155,7 @@ export default defineComponent({
     }
 
     @include mobile-only {
-      display: none;
+      font-size: 1.5rem;
     }
   }
 }
