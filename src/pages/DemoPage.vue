@@ -3,8 +3,6 @@
     <template #title>3D Demo</template>
 
     <div class="demopage">
-      <p class="desktop-only">Scroll to zoom in and out</p>
-      <p class="desktop-only">Click to randomise the state</p>
       <p class="mobile-only">View this on desktop for more options</p>
 
       <div class="demopage-settings">
@@ -26,7 +24,7 @@
         ></v-switch>
 
         <v-slider
-          v-show="autoZoomEnabled"
+          v-show="store.autoZoom.enabled"
           v-model="settings.zoom.min"
           color="#00ff00"
           class="align-center"
@@ -51,7 +49,7 @@
         </v-slider>
 
         <v-slider
-          v-show="autoZoomEnabled"
+          v-show="store.autoZoom.enabled"
           v-model="settings.zoom.max"
           color="#00ff00"
           class="align-center"
@@ -111,6 +109,14 @@
             <label for="settings-randomisation-bpm">BPM</label>
           </template>
           <template #append>
+            <v-btn
+              color="#00ff00"
+              variant="outlined"
+              size="small"
+              style="margin-right: 0.5rem"
+              @click="store.tap"
+              >Tap</v-btn
+            >
             <v-text-field
               id="settings-randomisation-bpm"
               v-model="settings.randomisation.bpm"
@@ -124,14 +130,21 @@
         </v-slider>
       </div>
 
-      <v-btn
-        class="desktop-only"
-        color="#00ff00"
-        variant="flat"
-        size="large"
-        @click="requestFullscreen"
-        >Fullscreen</v-btn
-      >
+      <p class="desktop-only">Scroll to zoom in and out</p>
+      <p class="desktop-only">
+        When fullscreen, click to beatmatch the randomisation
+      </p>
+
+      <p>
+        <v-btn
+          class="desktop-only"
+          color="#00ff00"
+          variant="flat"
+          size="large"
+          @click="requestFullscreen"
+          >Fullscreen</v-btn
+        >
+      </p>
     </div>
   </PageCard>
 </template>
@@ -156,9 +169,8 @@ export default defineComponent({
   },
 
   computed: {
-    autoZoomEnabled(): boolean {
-      const store = useRendererSettingsStore()
-      return store.autoZoom.enabled
+    store() {
+      return useRendererSettingsStore()
     },
   },
 
@@ -195,16 +207,20 @@ export default defineComponent({
 @import '../variables';
 
 .demopage {
-  &-settings {
-    padding: 2rem 0;
+  & > * {
+    padding: 0.5rem 0;
   }
 
-  & p {
-    padding: 0.25rem 0;
-  }
-
-  & :first-child {
+  & > *:first-child {
     padding-top: 0;
+  }
+
+  & > *:last-child {
+    padding-bottom: 0;
+  }
+
+  &-settings {
+    padding-bottom: 1.5rem;
   }
 
   @include desktop-only {

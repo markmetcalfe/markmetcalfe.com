@@ -35,11 +35,7 @@ export class ThreeJSRenderer {
       event => this.updateMousePos(event),
       false,
     )
-    container.addEventListener(
-      'mouseup',
-      () => this.randomiseGeometryPositions(),
-      false,
-    )
+    container.addEventListener('mousedown', () => this.store.tap(), false)
     document.addEventListener('wheel', event => this.handleScroll(event), false)
 
     container.appendChild(this.renderer.domElement)
@@ -143,11 +139,7 @@ export class ThreeJSRenderer {
   public cleanUp() {
     window.removeEventListener('resize', this.handleWindowResize, false)
     document.removeEventListener('mousemove', this.updateMousePos, false)
-    document.removeEventListener(
-      'mouseup',
-      this.randomiseGeometryPositions,
-      false,
-    )
+    document.removeEventListener('mousedown', () => this.store.tap(), false)
     document.removeEventListener('wheel', this.handleScroll, false)
   }
 
