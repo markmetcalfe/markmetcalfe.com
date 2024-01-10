@@ -9,6 +9,7 @@ import isMobile from 'is-mobile'
 import { Vector3 } from 'three'
 
 export interface RendererSettings {
+  initialiseRenderer: (() => void) | undefined
   geometry: {
     config: GeometryAttributes[]
     active: Geometry[]
@@ -54,6 +55,7 @@ const defaultGeometry: GeometryAttributes[] = [
 ]
 
 const defaultSettings: RendererSettings = {
+  initialiseRenderer: undefined,
   geometry: {
     config: defaultGeometry,
     active: [],
@@ -80,19 +82,12 @@ const defaultSettings: RendererSettings = {
 export const useRendererSettingsStore = defineStore('renderer-settings', {
   state: () => defaultSettings,
   actions: {
-    generateGeometry(
-      callback: (geometry: Geometry[]) => void,
-      startingPosition: Vector3 | undefined,
-    ) {
+    generateGeometry(callback: (geometry: Geometry[]) => void) {
       const geometry = this.geometry.config.map(geometry =>
         geometryFactory(geometry),
       )
 
       callback(geometry)
-
-      if (startingPosition) {
-        this.setAllPosition(startingPosition)
-      }
 
       this.geometry.active = geometry
     },
@@ -110,11 +105,6 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       this.randomiseTick()
     },
 
-    setAllPosition(targetPosition: Vector3) {
-      this.geometry.active.forEach(geometry =>
-        geometry.setPosition(targetPosition.x, targetPosition.y),
-      )
-    },
     movementTick(targetPosition: Vector3 | undefined) {
       const objectScale = this.isMobile ? 0.9 : 1
       this.geometry.active.forEach(object => {
