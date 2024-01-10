@@ -2,10 +2,12 @@ import * as THREE from 'three'
 
 export abstract class Geometry {
   private object: THREE.Object3D
+  private attributes: GeometryAttributes
   private rotationSpeed = 0.01
 
-  constructor(object: THREE.Object3D) {
+  constructor(object: THREE.Object3D, attributes: GeometryAttributes) {
     this.object = object
+    this.attributes = attributes
   }
 
   public setPosition(x: THREE.Vector3 | number, y?: number, z?: number) {
@@ -61,10 +63,14 @@ export abstract class Geometry {
   public getObject() {
     return this.object
   }
+
+  public getAttributes() {
+    return this.attributes
+  }
 }
 
-export class Polyhedron extends Geometry {
-  constructor(color: string, radius: number, detail: number) {
+export class PartialSphere extends Geometry {
+  constructor(attributes: GeometryAttributes) {
     const polyhedron = new THREE.PolyhedronGeometry(
       [
         -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, -1, 1, 1, 1,
@@ -74,12 +80,31 @@ export class Polyhedron extends Geometry {
         2, 1, 0, 0, 3, 2, 0, 4, 7, 7, 3, 0, 0, 1, 5, 5, 4, 0, 1, 2, 6, 6, 5, 1,
         2, 3, 7, 7, 6, 2, 4, 5, 6, 6, 7, 4,
       ],
-      radius,
-      detail,
+      attributes.radius,
+      attributes.detail,
     )
     const geometry = new THREE.EdgesGeometry(polyhedron)
-    const material = new THREE.LineBasicMaterial({ color })
+    const material = new THREE.LineBasicMaterial({ color: attributes.color })
     const object = new THREE.LineSegments(geometry, material)
-    super(object)
+    super(object, attributes)
+  }
+}
+
+export enum GeometryType {
+  PartialSphere,
+}
+
+export interface GeometryAttributes {
+  type: GeometryType
+  color: string
+  radius: number
+  detail: number
+}
+
+export function geometryFactory(attributes: GeometryAttributes): Geometry {
+  switch (attributes.type) {
+    case GeometryType.PartialSphere:
+    default:
+      return new PartialSphere(attributes)
   }
 }

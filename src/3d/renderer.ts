@@ -1,11 +1,9 @@
 import * as THREE from 'three'
-import { Geometry, Polyhedron } from './geometry'
-import isMobile from 'is-mobile'
 import { useRendererSettingsStore } from '../stores/renderer-settings'
 
 export class ThreeJSRenderer {
   private store: ReturnType<typeof useRendererSettingsStore>
-  private isMobile = false
+
   private mousePosX = 0
   private mousePosY = 0
 
@@ -13,12 +11,8 @@ export class ThreeJSRenderer {
   private camera: THREE.PerspectiveCamera
   private renderer: THREE.WebGLRenderer
 
-  private geometry: Geometry[]
-
   constructor(container: HTMLElement) {
     this.store = useRendererSettingsStore()
-
-    this.isMobile = isMobile()
 
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(
@@ -40,40 +34,13 @@ export class ThreeJSRenderer {
 
     container.appendChild(this.renderer.domElement)
 
-    this.geometry = this.generateGeometry()
-    this.randomiseGeometryPositions()
-    this.animate()
-  }
-
-  private generateGeometry() {
-    const geometry = [
-      new Polyhedron('green', this.store.geometry.radius, 80),
-      new Polyhedron('blue', this.store.geometry.radius, 90),
-      new Polyhedron('red', this.store.geometry.radius, 100),
-    ]
-
     const startingPosition = this.getStartingPosition()
-    if (startingPosition) {
-      geometry.forEach(object =>
-        object.setPosition(startingPosition.x, startingPosition.y),
-      )
-    }
+    this.store.generateGeometry(geometry => {
+      this.scene.clear()
+      geometry.forEach(object => this.scene.add(object.getObject()))
+    }, startingPosition)
 
-    Object.values(geometry).forEach(object =>
-      this.scene.add(object.getObject()),
-    )
-
-    return geometry
-  }
-
-  private randomiseGeometryPositions() {
-    this.geometry.forEach(geometry => {
-      const randomRotationPosition = Math.floor(Math.random() * 100)
-      const randomRotationSpeed = Math.random() * 0.002
-      geometry
-        .setRotation(randomRotationPosition)
-        .setRotationSpeed(randomRotationSpeed)
-    })
+    this.animate()
   }
 
   private handleScroll(event: WheelEvent) {
@@ -85,21 +52,8 @@ export class ThreeJSRenderer {
   }
 
   private animate() {
-    const mousePosition = this.getMousePosition()
-    const startingPosition = this.getStartingPosition()
-    const objectScale = window.innerWidth > 768 ? 1 : 0.9
-
-    Object.values(this.geometry).forEach(object => {
-      object.rotate().setSize(objectScale)
-      if (!this.isMobile && this.store.followCursor && mousePosition) {
-        object.moveTowardPosition(mousePosition)
-      } else if (startingPosition) {
-        object.setPosition(startingPosition)
-      }
-    })
-
-    this.store.autoZoomTick()
-    this.store.randomiseTick(() => this.randomiseGeometryPositions())
+    const targetPosition = this.getMousePosition() ?? this.getStartingPosition()
+    this.store.tick({ targetPosition })
 
     this.camera.position.z = this.store.zoom.current
 

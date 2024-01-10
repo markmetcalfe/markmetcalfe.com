@@ -1,6 +1,18 @@
 import { defineStore } from 'pinia'
+import {
+  Geometry,
+  GeometryAttributes,
+  GeometryType,
+  geometryFactory,
+} from '../3d/geometry'
+import isMobile from 'is-mobile'
+import { Vector3 } from 'three'
 
 export interface RendererSettings {
+  geometry: {
+    config: GeometryAttributes[]
+    active: Geometry[]
+  }
   followCursor: boolean
   zoom: {
     min: number
@@ -12,18 +24,40 @@ export interface RendererSettings {
     speed: number
     direction: 'in' | 'out'
   }
-  geometry: {
-    radius: number
-    detail: number
-  }
   randomisation: {
     bpm: number
     lastTime: Date
     taps: Date[]
   }
+  isMobile: boolean
 }
 
+const defaultGeometry: GeometryAttributes[] = [
+  {
+    type: GeometryType.PartialSphere,
+    color: 'green',
+    radius: 5,
+    detail: 80,
+  },
+  {
+    type: GeometryType.PartialSphere,
+    color: 'blue',
+    radius: 5,
+    detail: 90,
+  },
+  {
+    type: GeometryType.PartialSphere,
+    color: 'red',
+    radius: 5,
+    detail: 100,
+  },
+]
+
 const defaultSettings: RendererSettings = {
+  geometry: {
+    config: defaultGeometry,
+    active: [],
+  },
   followCursor: true,
   zoom: {
     min: -2,
@@ -35,26 +69,62 @@ const defaultSettings: RendererSettings = {
     speed: 0.01,
     direction: 'out',
   },
-  geometry: {
-    radius: 5,
-    detail: 100,
-  },
   randomisation: {
     bpm: 140 / 4, // 1 bar of 140s dub
-    lastTime: new Date(),
+    lastTime: new Date(0),
     taps: [],
   },
+  isMobile: isMobile(),
 }
 
 export const useRendererSettingsStore = defineStore('renderer-settings', {
   state: () => defaultSettings,
   actions: {
+    generateGeometry(
+      callback: (geometry: Geometry[]) => void,
+      startingPosition: Vector3 | undefined,
+    ) {
+      const geometry = this.geometry.config.map(geometry =>
+        geometryFactory(geometry),
+      )
+
+      callback(geometry)
+
+      if (startingPosition) {
+        this.setAllPosition(startingPosition)
+      }
+
+      this.geometry.active = geometry
+    },
+
     zoomIn() {
       this.zoom.current += 0.1
     },
     zoomOut() {
       this.zoom.current -= 0.1
     },
+
+    tick(data: { targetPosition: Vector3 | undefined }) {
+      this.movementTick(data.targetPosition)
+      this.autoZoomTick()
+      this.randomiseTick()
+    },
+
+    setAllPosition(targetPosition: Vector3) {
+      this.geometry.active.forEach(geometry =>
+        geometry.setPosition(targetPosition.x, targetPosition.y),
+      )
+    },
+    movementTick(targetPosition: Vector3 | undefined) {
+      const objectScale = this.isMobile ? 0.9 : 1
+      this.geometry.active.forEach(object => {
+        object.rotate().setSize(objectScale)
+        if (!this.isMobile && this.followCursor && targetPosition) {
+          object.moveTowardPosition(targetPosition)
+        }
+      })
+    },
+
     autoZoomTick() {
       if (!this.autoZoom.enabled) {
         return
@@ -73,13 +143,19 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       }
     },
 
-    randomiseTick(callback: () => void) {
+    randomiseTick() {
       const intervalMs = (60 / this.randomisation.bpm) * 1000
       if (
         new Date().getTime() >
         this.randomisation.lastTime.getTime() + intervalMs
       ) {
-        callback()
+        this.geometry.active.forEach(geometry => {
+          const randomRotationPosition = Math.floor(Math.random() * 100)
+          const randomRotationSpeed = Math.random() * 0.002
+          geometry
+            .setRotation(randomRotationPosition)
+            .setRotationSpeed(randomRotationSpeed)
+        })
         this.randomisation.lastTime = new Date()
       }
     },
