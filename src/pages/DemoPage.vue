@@ -18,7 +18,7 @@
         ></v-switch>
 
         <v-switch
-          v-model="settings.autoZoom"
+          v-model="settings.autoZoom.enabled"
           label="Auto Zoom"
           color="#00ff00"
           inset
@@ -27,7 +27,7 @@
 
         <v-slider
           v-show="autoZoomEnabled"
-          v-model="settings.minZoom"
+          v-model="settings.zoom.min"
           color="#00ff00"
           class="align-center"
           :min="-10"
@@ -35,12 +35,12 @@
           hide-details
         >
           <template #prepend>
-            <label for="settings-min-zoom">Min Zoom</label>
+            <label for="settings-zoom-min">Min Zoom</label>
           </template>
           <template #append>
             <v-text-field
-              id="settings-min-zoom"
-              v-model="settings.minZoom"
+              id="settings-zoom-min"
+              v-model="settings.zoom.min"
               hide-details
               single-line
               density="compact"
@@ -52,7 +52,7 @@
 
         <v-slider
           v-show="autoZoomEnabled"
-          v-model="settings.maxZoom"
+          v-model="settings.zoom.max"
           color="#00ff00"
           class="align-center"
           :min="-10"
@@ -60,12 +60,12 @@
           hide-details
         >
           <template #prepend>
-            <label for="settings-min-zoom">Max Zoom</label>
+            <label for="settings-zoom-max">Max Zoom</label>
           </template>
           <template #append>
             <v-text-field
-              id="settings-max-zoom"
-              v-model="settings.maxZoom"
+              id="settings-zoom-max"
+              v-model="settings.zoom.max"
               hide-details
               single-line
               density="compact"
@@ -76,7 +76,7 @@
         </v-slider>
 
         <v-slider
-          v-model="settings.currentZoom"
+          v-model="settings.zoom.current"
           color="#00ff00"
           class="align-center"
           :min="-10"
@@ -84,12 +84,12 @@
           hide-details
         >
           <template #prepend>
-            <label for="settings-current-zoom">Current Zoom</label>
+            <label for="settings-zoom-current">Current Zoom</label>
           </template>
           <template #append>
             <v-text-field
-              id="settings-current-zoom"
-              v-model="settings.currentZoom"
+              id="settings-zoom-current"
+              v-model="settings.zoom.current"
               hide-details
               single-line
               density="compact"
@@ -100,7 +100,7 @@
         </v-slider>
 
         <v-slider
-          v-model="settings.randomisationPerMinute"
+          v-model="settings.randomisation.bpm"
           color="#00ff00"
           class="align-center"
           :min="0"
@@ -108,12 +108,12 @@
           hide-details
         >
           <template #prepend>
-            <label for="settings-bpm">BPM</label>
+            <label for="settings-randomisation-bpm">BPM</label>
           </template>
           <template #append>
             <v-text-field
-              id="settings-bpm"
-              v-model="settings.randomisationPerMinute"
+              id="settings-randomisation-bpm"
+              v-model="settings.randomisation.bpm"
               hide-details
               single-line
               density="compact"
@@ -140,29 +140,25 @@
 import { defineComponent } from 'vue'
 import PageCard from '../components/PageCard.vue'
 import { storeToRefs } from 'pinia'
-import {
-  RendererSettings,
-  useRendererSettingsStore,
-} from '../stores/renderer-settings'
-import { Ref } from 'vue'
+import { useRendererSettingsStore } from '../stores/renderer-settings'
 
 export default defineComponent({
   name: 'DemoPage',
   components: { PageCard },
 
-  data(): { isFullscreen: boolean; settings: Ref<RendererSettings> } {
-    const { settings } = storeToRefs(useRendererSettingsStore())
+  data() {
+    const store = storeToRefs(useRendererSettingsStore())
 
     return {
       isFullscreen: false,
-      settings,
+      settings: store,
     }
   },
 
   computed: {
-    autoZoomEnabled() {
-      const { settings } = useRendererSettingsStore()
-      return settings.autoZoom
+    autoZoomEnabled(): boolean {
+      const store = useRendererSettingsStore()
+      return store.autoZoom.enabled
     },
   },
 

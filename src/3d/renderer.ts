@@ -1,13 +1,10 @@
 import * as THREE from 'three'
 import { Geometry, Polyhedron } from './geometry'
 import isMobile from 'is-mobile'
-import {
-  RendererSettings,
-  useRendererSettingsStore,
-} from '../stores/renderer-settings'
+import { useRendererSettingsStore } from '../stores/renderer-settings'
 
 export class ThreeJSRenderer {
-  private settings: RendererSettings
+  private store: ReturnType<typeof useRendererSettingsStore>
   private isMobile = false
   private mousePosX = 0
   private mousePosY = 0
@@ -16,15 +13,10 @@ export class ThreeJSRenderer {
   private camera: THREE.PerspectiveCamera
   private renderer: THREE.WebGLRenderer
 
-  private lastRandomisationTime = new Date()
-  private isAutoZoomingIn = false
-  private hasManuallyZoomed = false
-
   private geometry: Geometry[]
 
   constructor(container: HTMLElement) {
-    const { settings } = useRendererSettingsStore()
-    this.settings = settings
+    this.store = useRendererSettingsStore()
 
     this.isMobile = isMobile()
 
@@ -48,7 +40,7 @@ export class ThreeJSRenderer {
       () => this.randomiseGeometryPositions(),
       false,
     )
-    document.addEventListener('wheel', event => this.manualZoom(event), false)
+    document.addEventListener('wheel', event => this.handleScroll(event), false)
 
     container.appendChild(this.renderer.domElement)
 
@@ -59,9 +51,9 @@ export class ThreeJSRenderer {
 
   private generateGeometry() {
     const geometry = [
-      new Polyhedron('green', this.settings.geometryRadius, 80),
-      new Polyhedron('blue', this.settings.geometryRadius, 90),
-      new Polyhedron('red', this.settings.geometryRadius, 100),
+      new Polyhedron('green', this.store.geometry.radius, 80),
+      new Polyhedron('blue', this.store.geometry.radius, 90),
+      new Polyhedron('red', this.store.geometry.radius, 100),
     ]
 
     const startingPosition = this.getStartingPosition()
@@ -86,33 +78,13 @@ export class ThreeJSRenderer {
         .setRotation(randomRotationPosition)
         .setRotationSpeed(randomRotationSpeed)
     })
-    this.lastRandomisationTime = new Date()
   }
 
-  private manualZoom(event: WheelEvent) {
-    this.hasManuallyZoomed = true
+  private handleScroll(event: WheelEvent) {
     if (event.deltaY > 0) {
-      this.settings.currentZoom -= 0.1
+      this.store.zoomOut()
     } else if (event.deltaY < 0) {
-      this.settings.currentZoom += 0.1
-    }
-  }
-
-  private autoZoom() {
-    if (!this.settings.autoZoom) {
-      return
-    }
-
-    if (this.settings.currentZoom >= this.settings.maxZoom) {
-      this.isAutoZoomingIn = false
-    } else if (this.settings.currentZoom <= this.settings.minZoom) {
-      this.isAutoZoomingIn = true
-    }
-
-    if (this.isAutoZoomingIn) {
-      this.settings.currentZoom += this.settings.autoZoomSpeed
-    } else {
-      this.settings.currentZoom -= this.settings.autoZoomSpeed
+      this.store.zoomIn()
     }
   }
 
@@ -123,26 +95,17 @@ export class ThreeJSRenderer {
 
     Object.values(this.geometry).forEach(object => {
       object.rotate().setSize(objectScale)
-      if (!this.isMobile && this.settings.followCursor && mousePosition) {
+      if (!this.isMobile && this.store.followCursor && mousePosition) {
         object.moveTowardPosition(mousePosition)
       } else if (startingPosition) {
         object.setPosition(startingPosition)
       }
     })
-    this.autoZoom()
 
-    if (this.settings.randomisationPerMinute) {
-      const randomIntervalMs =
-        (60 / this.settings.randomisationPerMinute) * 1000
-      if (
-        new Date().getTime() >
-        this.lastRandomisationTime.getTime() + randomIntervalMs
-      ) {
-        this.randomiseGeometryPositions()
-      }
-    }
+    this.store.autoZoomTick()
+    this.store.randomiseTick(() => this.randomiseGeometryPositions())
 
-    this.camera.position.z = this.settings.currentZoom
+    this.camera.position.z = this.store.zoom.current
 
     this.render()
   }
@@ -185,7 +148,7 @@ export class ThreeJSRenderer {
       this.randomiseGeometryPositions,
       false,
     )
-    document.removeEventListener('wheel', this.manualZoom, false)
+    document.removeEventListener('wheel', this.handleScroll, false)
   }
 
   private handleWindowResize() {
