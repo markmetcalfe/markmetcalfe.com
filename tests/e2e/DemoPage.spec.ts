@@ -17,4 +17,17 @@ test.describe('DemoPage', () => {
 
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
+
+  test('can open geometry definitions dialog and it matches snapshot', async ({
+    page,
+  }) => {
+    const button = page.locator('[aria-label="Configure Geometry Definitions"]')
+
+    await button.click()
+
+    await expect(page.locator('body')).toContainText('Save')
+
+    await page.waitForTimeout(1000)
+    expect(await page.screenshot()).toMatchSnapshot()
+  })
 })

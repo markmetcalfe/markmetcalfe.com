@@ -2,14 +2,15 @@ import { defineStore } from 'pinia'
 import {
   Geometry,
   GeometryAttributes,
-  GeometryType,
   geometryFactory,
+  geometryTypes,
 } from '../3d/geometry'
 import isMobile from 'is-mobile'
 import { Vector3 } from 'three'
 
 export interface RendererSettings {
-  initialiseRenderer: (() => void) | undefined
+  initialiseRenderer: (() => Promise<void>) | undefined
+  destroyRenderer: (() => void) | undefined
   geometry: {
     config: GeometryAttributes[]
     active: Geometry[]
@@ -36,19 +37,19 @@ export interface RendererSettings {
 
 const defaultGeometry: GeometryAttributes[] = [
   {
-    type: GeometryType.PartialSphere,
+    type: geometryTypes.PartialSphere,
     color: 'green',
     radius: 5,
     detail: 80,
   },
   {
-    type: GeometryType.PartialSphere,
+    type: geometryTypes.PartialSphere,
     color: 'blue',
     radius: 5,
     detail: 90,
   },
   {
-    type: GeometryType.PartialSphere,
+    type: geometryTypes.PartialSphere,
     color: 'red',
     radius: 5,
     detail: 100,
@@ -57,6 +58,7 @@ const defaultGeometry: GeometryAttributes[] = [
 
 const defaultSettings: RendererSettings = {
   initialiseRenderer: undefined,
+  destroyRenderer: undefined,
   geometry: {
     config: defaultGeometry,
     active: [],

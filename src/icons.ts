@@ -11,6 +11,7 @@ import {
   faGear,
   faPlay,
   faLaptopCode,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons'
 import {
   faComments,
@@ -31,6 +32,7 @@ const icons = [
   faLinkedin,
   faMobileScreenButton,
   faPlay,
+  faXmark,
 ]
 
 const addIcons: Plugin = (app: App) => {

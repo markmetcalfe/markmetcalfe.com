@@ -90,12 +90,10 @@ export class PartialSphere extends Geometry {
   }
 }
 
-export enum GeometryType {
-  PartialSphere,
-}
+export const geometryTypes = { PartialSphere: 'Partial Sphere' }
 
 export interface GeometryAttributes {
-  type: GeometryType
+  type: (typeof geometryTypes)[keyof typeof geometryTypes]
   color: string
   radius: number
   detail: number
@@ -103,7 +101,7 @@ export interface GeometryAttributes {
 
 export function geometryFactory(attributes: GeometryAttributes): Geometry {
   switch (attributes.type) {
-    case GeometryType.PartialSphere:
+    case geometryTypes.PartialSphere:
     default:
       return new PartialSphere(attributes)
   }

@@ -15,9 +15,24 @@ import * as directives from 'vuetify/directives'
 
 const pinia = createPinia()
 
+const matrixDarkTheme = {
+  dark: true,
+  colors: {
+    background: '#000000',
+    surface: '#000000',
+    primary: '#00ff00',
+  },
+}
+
 const vuetify = createVuetify({
   components,
   directives,
+  theme: {
+    defaultTheme: 'matrixDarkTheme',
+    themes: {
+      matrixDarkTheme,
+    },
+  },
 })
 
 const router = createRouter({

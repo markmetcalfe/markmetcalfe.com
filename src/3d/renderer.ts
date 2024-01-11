@@ -17,17 +17,11 @@ export class ThreeJSRenderer {
     this.store = useRendererSettingsStore()
     this.container = container
     this.initialise()
-    this.store.initialiseRenderer = () => {
-      this.cleanUp()
-      this.initialise()
-    }
+    this.store.initialiseRenderer = async () => this.initialise()
+    this.store.destroyRenderer = () => this.cleanUp()
   }
 
-  private initialise() {
-    while (this.container.firstChild) {
-      this.container.firstChild.remove()
-    }
-
+  private async initialise() {
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(
       100,
@@ -71,6 +65,10 @@ export class ThreeJSRenderer {
   }
 
   private animate() {
+    if (!this.renderer) {
+      return
+    }
+
     const targetPosition = this.getMousePosition() ?? this.getStartingPosition()
     this.store.tick({ targetPosition })
 
@@ -81,7 +79,7 @@ export class ThreeJSRenderer {
 
   private render() {
     requestAnimationFrame(() => this.animate())
-    this.renderer!.render(this.scene!, this.camera!)
+    this.renderer?.render(this.scene!, this.camera!)
   }
 
   private getStartingPosition() {
@@ -110,6 +108,11 @@ export class ThreeJSRenderer {
   }
 
   public cleanUp() {
+    this.container.removeChild(this.container.firstChild!)
+    this.scene = undefined
+    this.camera = undefined
+    this.renderer = undefined
+
     window.removeEventListener('resize', this.handleWindowResize, false)
     document.removeEventListener('mousemove', this.updateMousePos, false)
     this.container.removeEventListener(

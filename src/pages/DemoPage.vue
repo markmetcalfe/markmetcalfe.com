@@ -6,11 +6,13 @@
       <p v-if="store.isMobile">View this on desktop for more options</p>
 
       <div class="demopage-settings">
+        <GeometryConfig />
+
         <v-switch
           v-if="store.isDesktop"
           v-model="settings.followCursor"
           label="Follow Cursor"
-          color="#00ff00"
+          color="primary"
           inset
           hide-details
         ></v-switch>
@@ -18,7 +20,7 @@
         <v-switch
           v-model="settings.autoZoom.enabled"
           label="Auto Zoom"
-          color="#00ff00"
+          color="primary"
           inset
           hide-details
         ></v-switch>
@@ -26,7 +28,7 @@
         <v-slider
           v-show="store.autoZoom.enabled"
           v-model="settings.zoom.min"
-          color="#00ff00"
+          color="primary"
           class="align-center"
           :min="-10"
           :max="20"
@@ -51,7 +53,7 @@
         <v-slider
           v-show="store.autoZoom.enabled"
           v-model="settings.zoom.max"
-          color="#00ff00"
+          color="primary"
           class="align-center"
           :min="-10"
           :max="20"
@@ -75,7 +77,7 @@
 
         <v-slider
           v-model="settings.zoom.current"
-          color="#00ff00"
+          color="primary"
           class="align-center"
           :min="-10"
           :max="20"
@@ -99,7 +101,7 @@
 
         <v-slider
           v-model="settings.randomisation.bpm"
-          color="#00ff00"
+          color="primary"
           class="align-center"
           :min="0"
           :max="200"
@@ -110,10 +112,10 @@
           </template>
           <template #append>
             <v-btn
-              color="#00ff00"
+              color="primary"
               variant="outlined"
               size="small"
-              style="margin-right: 0.5rem"
+              style="margin-right: 1rem"
               @click="store.tap"
               >Tap</v-btn
             >
@@ -138,10 +140,12 @@
       <p>
         <v-btn
           v-if="store.isDesktop"
-          color="#00ff00"
+          color="primary"
           variant="flat"
           size="large"
           @click="requestFullscreen"
+          ><template #prepend>
+            <v-icon><font-awesome-icon icon="fas fa-play" /></v-icon> </template
           >Fullscreen</v-btn
         >
       </p>
@@ -151,13 +155,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import GeometryConfig from '../components/GeometryConfig.vue'
 import PageCard from '../components/PageCard.vue'
 import { storeToRefs } from 'pinia'
 import { useRendererSettingsStore } from '../stores/renderer-settings'
 
 export default defineComponent({
   name: 'DemoPage',
-  components: { PageCard },
+  components: { GeometryConfig, PageCard },
 
   data() {
     const store = storeToRefs(useRendererSettingsStore())
