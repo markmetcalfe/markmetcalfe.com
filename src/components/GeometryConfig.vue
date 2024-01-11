@@ -76,6 +76,14 @@
                 </template></v-text-field
               >
 
+              <v-switch
+                v-model="config[index].solid"
+                label="Solid"
+                color="primary"
+                inset
+                hide-details
+              ></v-switch>
+
               <v-text-field
                 v-model="config[index].radius"
                 single-line

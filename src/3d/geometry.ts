@@ -5,8 +5,14 @@ export abstract class Geometry {
   private attributes: GeometryAttributes
   private rotationSpeed = 0.01
 
-  constructor(object: THREE.Object3D, attributes: GeometryAttributes) {
-    this.object = object
+  constructor(geometry: THREE.BufferGeometry, attributes: GeometryAttributes) {
+    if (attributes.solid) {
+      const material = new THREE.MeshBasicMaterial({ color: attributes.color })
+      this.object = new THREE.Mesh(geometry, material)
+    } else {
+      const material = new THREE.LineBasicMaterial({ color: attributes.color })
+      this.object = new THREE.LineSegments(geometry, material)
+    }
     this.attributes = attributes
   }
 
@@ -84,9 +90,7 @@ export class PartialSphere extends Geometry {
       attributes.detail,
     )
     const geometry = new THREE.EdgesGeometry(polyhedron)
-    const material = new THREE.LineBasicMaterial({ color: attributes.color })
-    const object = new THREE.LineSegments(geometry, material)
-    super(object, attributes)
+    super(geometry, attributes)
   }
 }
 
@@ -95,6 +99,7 @@ export const geometryTypes = { PartialSphere: 'Partial Sphere' }
 export interface GeometryAttributes {
   type: (typeof geometryTypes)[keyof typeof geometryTypes]
   color: string
+  solid: boolean
   radius: number
   detail: number
 }

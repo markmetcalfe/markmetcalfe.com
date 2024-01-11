@@ -24,7 +24,7 @@ export class ThreeJSRenderer {
   private async initialise() {
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(
-      100,
+      50,
       window.innerWidth / window.innerHeight,
     )
 
@@ -37,7 +37,11 @@ export class ThreeJSRenderer {
       event => this.updateMousePos(event),
       false,
     )
-    this.container.addEventListener('mousedown', () => this.store.tap(), false)
+    this.renderer.domElement.addEventListener(
+      'mousedown',
+      () => this.store.tap(),
+      false,
+    )
     document.addEventListener('wheel', event => this.handleScroll(event), false)
 
     this.container.appendChild(this.renderer.domElement)
@@ -115,11 +119,6 @@ export class ThreeJSRenderer {
 
     window.removeEventListener('resize', this.handleWindowResize, false)
     document.removeEventListener('mousemove', this.updateMousePos, false)
-    this.container.removeEventListener(
-      'mousedown',
-      () => this.store.tap(),
-      false,
-    )
     document.removeEventListener('wheel', this.handleScroll, false)
   }
 

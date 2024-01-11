@@ -39,18 +39,21 @@ const defaultGeometry: GeometryAttributes[] = [
   {
     type: geometryTypes.PartialSphere,
     color: 'green',
+    solid: false,
     radius: 5,
     detail: 80,
   },
   {
     type: geometryTypes.PartialSphere,
     color: 'blue',
+    solid: false,
     radius: 5,
     detail: 90,
   },
   {
     type: geometryTypes.PartialSphere,
     color: 'red',
+    solid: false,
     radius: 5,
     detail: 100,
   },
