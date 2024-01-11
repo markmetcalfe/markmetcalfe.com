@@ -3,12 +3,12 @@
     <template #title>3D Demo</template>
 
     <div class="demopage">
-      <p class="mobile-only">View this on desktop for more options</p>
+      <p v-if="store.isMobile">View this on desktop for more options</p>
 
       <div class="demopage-settings">
         <v-switch
+          v-if="store.isDesktop"
           v-model="settings.followCursor"
-          class="desktop-only"
           label="Follow Cursor"
           color="#00ff00"
           inset
@@ -130,14 +130,14 @@
         </v-slider>
       </div>
 
-      <p class="desktop-only">Scroll to zoom in and out</p>
-      <p class="desktop-only">
+      <p v-if="store.isDesktop">Scroll to zoom in and out</p>
+      <p v-if="store.isDesktop">
         When fullscreen, click to beatmatch the randomisation
       </p>
 
       <p>
         <v-btn
-          class="desktop-only"
+          v-if="store.isDesktop"
           color="#00ff00"
           variant="flat"
           size="large"

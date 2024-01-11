@@ -31,6 +31,7 @@ export interface RendererSettings {
     taps: Date[]
   }
   isMobile: boolean
+  isDesktop: boolean
 }
 
 const defaultGeometry: GeometryAttributes[] = [
@@ -77,6 +78,7 @@ const defaultSettings: RendererSettings = {
     taps: [],
   },
   isMobile: isMobile(),
+  isDesktop: !isMobile(),
 }
 
 export const useRendererSettingsStore = defineStore('renderer-settings', {
