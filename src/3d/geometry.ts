@@ -75,6 +75,31 @@ export abstract class Geometry {
   }
 }
 
+export class Cube extends Geometry {
+  constructor(attributes: GeometryAttributes) {
+    const sphere = new THREE.BoxGeometry(
+      attributes.radius,
+      attributes.radius,
+      attributes.radius,
+      attributes.detail,
+      attributes.detail,
+      attributes.detail,
+    )
+    super(sphere, attributes)
+  }
+}
+
+export class Sphere extends Geometry {
+  constructor(attributes: GeometryAttributes) {
+    const sphere = new THREE.SphereGeometry(
+      attributes.radius,
+      attributes.detail,
+      attributes.detail,
+    )
+    super(sphere, attributes)
+  }
+}
+
 export class PartialSphere extends Geometry {
   constructor(attributes: GeometryAttributes) {
     const polyhedron = new THREE.PolyhedronGeometry(
@@ -94,7 +119,11 @@ export class PartialSphere extends Geometry {
   }
 }
 
-export const geometryTypes = { PartialSphere: 'Partial Sphere' }
+export const geometryTypes = {
+  Cube: 'Cube',
+  Sphere: 'Sphere',
+  PartialSphere: 'Partial Sphere',
+}
 
 export interface GeometryAttributes {
   type: (typeof geometryTypes)[keyof typeof geometryTypes]
@@ -106,6 +135,10 @@ export interface GeometryAttributes {
 
 export function geometryFactory(attributes: GeometryAttributes): Geometry {
   switch (attributes.type) {
+    case geometryTypes.Cube:
+      return new Cube(attributes)
+    case geometryTypes.Sphere:
+      return new Sphere(attributes)
     case geometryTypes.PartialSphere:
     default:
       return new PartialSphere(attributes)
