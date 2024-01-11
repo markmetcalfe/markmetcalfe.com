@@ -35,7 +35,7 @@ test.describe('ContactPage', () => {
       link.click(),
     ])
 
-    expect(page1.url()).toContain('linkedin.com')
+    expect(page1.url()).toContain('linkedin.com/in/mark-metcalfe')
     await expect(page1.locator('body')).toContainText('LinkedIn')
   })
 
@@ -48,6 +48,7 @@ test.describe('ContactPage', () => {
     ])
 
     expect(page1.url()).toContain('instagram.com')
-    await expect(page1.locator('body')).toContainText('Instagram')
+    expect(page1.url()).toContain('markus_vizshun')
+    await expect(page1).toHaveTitle(/Instagram/)
   })
 })

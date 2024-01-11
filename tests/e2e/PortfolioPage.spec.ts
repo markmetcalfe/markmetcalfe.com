@@ -27,6 +27,7 @@ test.describe('PortfolioPage', () => {
     ])
 
     expect(page1.url()).toContain('instagram.com')
+    expect(page1.url()).toContain('markus_vizshun')
     await expect(page1).toHaveTitle(/Instagram/)
   })
 
@@ -38,7 +39,7 @@ test.describe('PortfolioPage', () => {
       link.click(),
     ])
 
-    expect(page1.url()).toContain('github.com')
+    expect(page1.url()).toContain('github.com/markmetcalfe')
     await expect(page1.locator('body')).toContainText('GitHub')
   })
 
