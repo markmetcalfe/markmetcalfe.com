@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 10
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Check for code changes
         id: changed-files-specific
         uses: tj-actions/changed-files@v37
@@ -46,7 +46,7 @@ jobs:
       - name: Run Playwright tests
         if: steps.changed-files-specific.outputs.any_changed == 'true'
         run: CI=1 pnpm run test
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: playwright-report
