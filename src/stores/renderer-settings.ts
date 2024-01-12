@@ -104,6 +104,18 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
 
       this.geometry.active = geometry
     },
+    addNewGeometryConfig() {
+      this.geometry.config.push({
+        type: GeometryType.CUBE,
+        color: 'green',
+        solid: false,
+        radius: 5,
+        detail: 30,
+      })
+    },
+    deleteGeometryConfig(index: number) {
+      this.geometry.config.splice(index, 1)
+    },
 
     zoomIn() {
       this.zoom.current += 0.1

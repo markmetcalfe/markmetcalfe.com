@@ -2,7 +2,7 @@
   <div>
     <v-dialog
       v-model="dialogOpen"
-      width="500"
+      width="550"
       transition="dialog-bottom-transition"
       :scrim="false"
     >
@@ -18,9 +18,7 @@
       <v-card>
         <v-toolbar color="background">
           <v-btn icon @click="dialogOpen = false">
-            <v-icon color="primary"
-              ><font-awesome-icon icon="fas fa-xmark"
-            /></v-icon>
+            <v-icon color="primary">fas fa-xmark</v-icon>
           </v-btn>
           <v-toolbar-title color="primary"
             >Geometry Definitions</v-toolbar-title
@@ -36,21 +34,36 @@
           </v-toolbar-items>
 
           <template #extension>
-            <v-tabs v-model="tab">
+            <v-tabs
+              v-model="activeTab"
+              center-active
+              show-arrows
+              prev-icon="fas fa-caret-left"
+              next-icon="fas fa-caret-right"
+            >
               <v-tab
-                v-for="(_, index) in store.geometry.config"
+                v-for="(geometry, index) in config"
                 :key="index"
                 :value="index"
               >
-                Object {{ index + 1 }}
+                {{ geometry.color }} {{ geometry.type }}
               </v-tab>
+
+              <v-btn
+                variant="plain"
+                color="primary"
+                icon="fas fa-plus"
+                size="small"
+                class="align-self-center"
+                @click="addNewGeometryConfig"
+              />
             </v-tabs>
           </template>
         </v-toolbar>
 
-        <v-window v-model="tab">
+        <v-window v-model="activeTab">
           <v-window-item
-            v-for="(geometry, index) in store.geometry.config"
+            v-for="(_, index) in store.geometry.config"
             :key="index"
             :value="index"
           >
@@ -105,6 +118,20 @@
                   <label>Detail</label>
                 </template></v-text-field
               >
+
+              <div
+                v-if="store.geometry.config.length > 1"
+                class="geometryconfig-settings-deletebtn"
+              >
+                <v-btn
+                  color="#ff0000"
+                  variant="outlined"
+                  @click="deleteGeometryConfig(index)"
+                  ><template #prepend
+                    ><v-icon size="small">fas fa-trash</v-icon></template
+                  >Delete</v-btn
+                >
+              </div>
             </div>
           </v-window-item>
         </v-window>
@@ -128,7 +155,7 @@ export default defineComponent({
     return {
       dialogOpen: false,
       loading: false,
-      tab: '0',
+      activeTab: '0',
       config: store.geometry.value.config,
     }
   },
@@ -144,6 +171,20 @@ export default defineComponent({
   },
 
   methods: {
+    addNewGeometryConfig() {
+      this.store.addNewGeometryConfig()
+      setTimeout(() => {
+        this.activeTab = (this.store.geometry.config.length - 1).toString()
+      }, 50)
+    },
+
+    deleteGeometryConfig(index: number) {
+      this.activeTab = (index - 1).toString()
+      setTimeout(() => {
+        this.store.deleteGeometryConfig(index)
+      }, 50)
+    },
+
     updateGeometryConfig() {
       this.loading = true
       this.store.destroyRenderer?.()
@@ -170,6 +211,18 @@ export default defineComponent({
 .geometryconfig {
   &-settings {
     padding: 1rem 1.5rem;
+
+    &-deletebtn {
+      padding-top: 0.5rem;
+      display: flex;
+      justify-content: center;
+    }
   }
+}
+
+/* stylelint-disable selector-class-pattern */
+.v-slide-group__next,
+.v-slide-group__prev {
+  font-size: 12px;
 }
 </style>

@@ -12,6 +12,8 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import { aliases, fa } from 'vuetify/iconsets/fa'
+import '@fortawesome/fontawesome-free/css/all.css'
 
 const pinia = createPinia()
 
@@ -31,6 +33,13 @@ const vuetify = createVuetify({
     defaultTheme: 'matrixDarkTheme',
     themes: {
       matrixDarkTheme,
+    },
+  },
+  icons: {
+    defaultSet: 'fa',
+    aliases,
+    sets: {
+      fa,
     },
   },
 })
