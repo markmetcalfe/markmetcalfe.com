@@ -117,7 +117,7 @@
 import { defineComponent } from 'vue'
 import { useRendererSettingsStore } from '../stores/renderer-settings'
 import { storeToRefs } from 'pinia'
-import { geometryTypes } from '../3d/geometry'
+import { GeometryType } from '../3d/geometry'
 
 export default defineComponent({
   name: 'GeometryConfig',
@@ -130,13 +130,16 @@ export default defineComponent({
       loading: false,
       tab: '0',
       config: store.geometry.value.config,
-      geometryTypes,
     }
   },
 
   computed: {
     store() {
       return useRendererSettingsStore()
+    },
+
+    geometryTypes() {
+      return Object.values(GeometryType)
     },
   },
 

@@ -2,11 +2,17 @@ import { defineStore } from 'pinia'
 import {
   Geometry,
   GeometryAttributes,
+  GeometryType,
   geometryFactory,
-  geometryTypes,
 } from '../3d/geometry'
 import isMobile from 'is-mobile'
 import { Vector3 } from 'three'
+
+export enum AutoZoomMode {
+  DISABLED = 'Disabled',
+  SMOOTH = 'Smooth',
+  RANDOM = 'Random',
+}
 
 export interface RendererSettings {
   initialiseRenderer: (() => Promise<void>) | undefined
@@ -22,7 +28,7 @@ export interface RendererSettings {
     current: number
   }
   autoZoom: {
-    enabled: boolean
+    mode: AutoZoomMode
     speed: number
     direction: 'in' | 'out'
   }
@@ -37,21 +43,21 @@ export interface RendererSettings {
 
 const defaultGeometry: GeometryAttributes[] = [
   {
-    type: geometryTypes.PartialSphere,
+    type: GeometryType.PARTIAL_SPHERE,
     color: 'green',
     solid: false,
     radius: 5,
     detail: 80,
   },
   {
-    type: geometryTypes.PartialSphere,
+    type: GeometryType.PARTIAL_SPHERE,
     color: 'blue',
     solid: false,
     radius: 5,
     detail: 90,
   },
   {
-    type: geometryTypes.PartialSphere,
+    type: GeometryType.PARTIAL_SPHERE,
     color: 'red',
     solid: false,
     radius: 5,
@@ -73,7 +79,7 @@ const defaultSettings: RendererSettings = {
     current: 10,
   },
   autoZoom: {
-    enabled: true,
+    mode: AutoZoomMode.SMOOTH,
     speed: 0.01,
     direction: 'out',
   },
@@ -134,7 +140,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     },
 
     autoZoomTick() {
-      if (!this.autoZoom.enabled) {
+      if (this.autoZoom.mode !== AutoZoomMode.SMOOTH) {
         return
       }
 
@@ -154,18 +160,26 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     randomiseTick() {
       const intervalMs = (60 / this.randomisation.bpm) * 1000
       if (
-        new Date().getTime() >
+        new Date().getTime() <=
         this.randomisation.lastTime.getTime() + intervalMs
       ) {
-        this.geometry.active.forEach(geometry => {
-          const randomRotationPosition = Math.floor(Math.random() * 100)
-          const randomRotationSpeed = Math.random() * 0.002
-          geometry
-            .setRotation(randomRotationPosition)
-            .setRotationSpeed(randomRotationSpeed)
-        })
-        this.randomisation.lastTime = new Date()
+        return
       }
+
+      this.geometry.active.forEach(geometry => {
+        const randomRotationPosition = Math.floor(Math.random() * 100)
+        const randomRotationSpeed = Math.random() * 0.002
+        geometry
+          .setRotation(randomRotationPosition)
+          .setRotationSpeed(randomRotationSpeed)
+      })
+
+      if (this.autoZoom.mode === AutoZoomMode.RANDOM) {
+        this.zoom.current =
+          Math.random() * (this.zoom.max - this.zoom.min) + this.zoom.min
+      }
+
+      this.randomisation.lastTime = new Date()
     },
     tap() {
       const now = new Date()

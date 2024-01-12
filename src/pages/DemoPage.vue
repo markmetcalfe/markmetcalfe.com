@@ -17,16 +17,18 @@
           hide-details
         ></v-switch>
 
-        <v-switch
-          v-model="settings.autoZoom.enabled"
-          label="Auto Zoom"
-          color="primary"
-          inset
-          hide-details
-        ></v-switch>
+        <v-select
+          v-model="settings.autoZoom.mode"
+          label="Select"
+          :items="autoZoomOptions"
+        >
+          <template #prepend>
+            <label>Auto Zoom Mode</label>
+          </template></v-select
+        >
 
         <v-slider
-          v-show="store.autoZoom.enabled"
+          v-show="!autoZoomDisabled"
           v-model="settings.zoom.min"
           color="primary"
           class="align-center"
@@ -51,7 +53,7 @@
         </v-slider>
 
         <v-slider
-          v-show="store.autoZoom.enabled"
+          v-show="!autoZoomDisabled"
           v-model="settings.zoom.max"
           color="primary"
           class="align-center"
@@ -158,7 +160,10 @@ import { defineComponent } from 'vue'
 import GeometryConfig from '../components/GeometryConfig.vue'
 import PageCard from '../components/PageCard.vue'
 import { storeToRefs } from 'pinia'
-import { useRendererSettingsStore } from '../stores/renderer-settings'
+import {
+  AutoZoomMode,
+  useRendererSettingsStore,
+} from '../stores/renderer-settings'
 
 export default defineComponent({
   name: 'DemoPage',
@@ -176,6 +181,13 @@ export default defineComponent({
   computed: {
     store() {
       return useRendererSettingsStore()
+    },
+
+    autoZoomOptions() {
+      return Object.values(AutoZoomMode)
+    },
+    autoZoomDisabled() {
+      return this.store.autoZoom.mode === AutoZoomMode.DISABLED
     },
   },
 

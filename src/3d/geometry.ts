@@ -119,14 +119,14 @@ export class PartialSphere extends Geometry {
   }
 }
 
-export const geometryTypes = {
-  Cube: 'Cube',
-  Sphere: 'Sphere',
-  PartialSphere: 'Partial Sphere',
+export enum GeometryType {
+  CUBE = 'Cube',
+  SPHERE = 'Sphere',
+  PARTIAL_SPHERE = 'Partial Sphere',
 }
 
 export interface GeometryAttributes {
-  type: (typeof geometryTypes)[keyof typeof geometryTypes]
+  type: GeometryType
   color: string
   solid: boolean
   radius: number
@@ -135,11 +135,11 @@ export interface GeometryAttributes {
 
 export function geometryFactory(attributes: GeometryAttributes): Geometry {
   switch (attributes.type) {
-    case geometryTypes.Cube:
+    case GeometryType.CUBE:
       return new Cube(attributes)
-    case geometryTypes.Sphere:
+    case GeometryType.SPHERE:
       return new Sphere(attributes)
-    case geometryTypes.PartialSphere:
+    case GeometryType.PARTIAL_SPHERE:
     default:
       return new PartialSphere(attributes)
   }
