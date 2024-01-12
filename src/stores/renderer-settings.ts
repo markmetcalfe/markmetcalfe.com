@@ -106,18 +106,29 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       this.zoom.current -= 0.1
     },
 
-    tick(data: { targetPosition: Vector3 | undefined }) {
-      this.movementTick(data.targetPosition)
+    tick(positionData: {
+      mousePosition: Vector3 | undefined
+      startingPosition: Vector3 | undefined
+    }) {
+      this.movementTick(positionData)
       this.autoZoomTick()
       this.randomiseTick()
     },
 
-    movementTick(targetPosition: Vector3 | undefined) {
+    movementTick({
+      mousePosition,
+      startingPosition,
+    }: {
+      mousePosition: Vector3 | undefined
+      startingPosition: Vector3 | undefined
+    }) {
       const objectScale = this.isMobile ? 0.9 : 1
       this.geometry.active.forEach(object => {
         object.rotate().setSize(objectScale)
-        if (!this.isMobile && this.followCursor && targetPosition) {
-          object.moveTowardPosition(targetPosition)
+        if (!this.isMobile && this.followCursor && mousePosition) {
+          object.moveTowardPosition(mousePosition)
+        } else if (startingPosition) {
+          object.moveTowardPosition(startingPosition)
         }
       })
     },

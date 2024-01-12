@@ -73,8 +73,10 @@ export class ThreeJSRenderer {
       return
     }
 
-    const targetPosition = this.getMousePosition() ?? this.getStartingPosition()
-    this.store.tick({ targetPosition })
+    this.store.tick({
+      mousePosition: this.getMousePosition(),
+      startingPosition: this.getStartingPosition(),
+    })
 
     this.camera!.position.z = this.store.zoom.current
 
