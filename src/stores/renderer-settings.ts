@@ -11,6 +11,7 @@ import { Vector3 } from 'three'
 export enum AutoZoomMode {
   DISABLED = 'Disabled',
   SMOOTH = 'Smooth',
+  JUMP = '4/4 Jump',
   RANDOM = 'Random',
 }
 
@@ -31,6 +32,7 @@ export interface RendererSettings {
     mode: AutoZoomMode
     speed: number
     direction: 'in' | 'out'
+    beat: number
   }
   randomisation: {
     bpm: number
@@ -84,6 +86,7 @@ const defaultSettings: RendererSettings = {
     mode: AutoZoomMode.SMOOTH,
     speed: 0.01,
     direction: 'out',
+    beat: 0,
   },
   randomisation: {
     bpm: 140 / 4, // 1 bar of 140s dub
@@ -198,6 +201,13 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       if (this.autoZoom.mode === AutoZoomMode.RANDOM) {
         this.zoom.current =
           Math.random() * (this.zoom.max - this.zoom.min) + this.zoom.min
+      } else if (this.autoZoom.mode === AutoZoomMode.JUMP) {
+        const zoomIncrement = (this.zoom.max - this.zoom.min) / 3
+        this.zoom.current = this.zoom.max - zoomIncrement * this.autoZoom.beat
+        this.autoZoom.beat++
+        if (this.autoZoom.beat >= 4) {
+          this.autoZoom.beat = 0
+        }
       }
 
       this.randomisation.lastTime = new Date()
@@ -219,6 +229,11 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
 
       this.randomisation.taps.push(now)
       this.randomisation.lastTime = new Date(0) // Set last time to 0 to force randomisation
+
+      if (this.autoZoom.mode === AutoZoomMode.JUMP) {
+        this.autoZoom.beat = 0
+        this.zoom.current = this.zoom.max
+      }
 
       if (this.randomisation.taps.length < 2) {
         return
