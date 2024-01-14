@@ -36,6 +36,8 @@ export interface RendererSettings {
     bpm: number
     lastTime: Date
     taps: Date[]
+    minRotationSpeed: number
+    maxRotationSpeed: number
   }
   isMobile: boolean
   isDesktop: boolean
@@ -87,6 +89,8 @@ const defaultSettings: RendererSettings = {
     bpm: 140 / 4, // 1 bar of 140s dub
     lastTime: new Date(0),
     taps: [],
+    minRotationSpeed: 15,
+    maxRotationSpeed: 20,
   },
   isMobile: isMobile(),
   isDesktop: !isMobile(),
@@ -180,7 +184,12 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
 
       this.geometry.active.forEach(geometry => {
         const randomRotationPosition = Math.floor(Math.random() * 100)
-        const randomRotationSpeed = Math.random() * 0.002
+        const randomRotationSpeed =
+          Math.random() *
+            (this.randomisation.maxRotationSpeed / 10000 -
+              this.randomisation.minRotationSpeed / 10000) +
+          this.randomisation.minRotationSpeed / 10000
+
         geometry
           .setRotation(randomRotationPosition)
           .setRotationSpeed(randomRotationSpeed)

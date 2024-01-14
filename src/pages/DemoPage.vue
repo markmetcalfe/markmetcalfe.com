@@ -132,6 +132,58 @@
             ></v-text-field>
           </template>
         </v-slider>
+
+        <v-slider
+          v-model="settings.randomisation.minRotationSpeed"
+          color="primary"
+          class="align-center"
+          :min="0"
+          :max="100"
+          hide-details
+        >
+          <template #prepend>
+            <label for="settings-randomisation-min-rotation-speed"
+              >Min Rotation Speed</label
+            >
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-randomisation-min-rotation-speed"
+              v-model="settings.randomisation.minRotationSpeed"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+            ></v-text-field>
+          </template>
+        </v-slider>
+
+        <v-slider
+          v-model="settings.randomisation.maxRotationSpeed"
+          color="primary"
+          class="align-center"
+          :min="0"
+          :max="100"
+          hide-details
+        >
+          <template #prepend>
+            <label for="settings-randomisation-max-rotation-speed"
+              >Max Rotation Speed</label
+            >
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-randomisation-max-rotation-speed"
+              v-model="settings.randomisation.maxRotationSpeed"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+            ></v-text-field>
+          </template>
+        </v-slider>
       </div>
 
       <p v-if="store.isDesktop">Scroll to zoom in and out</p>
