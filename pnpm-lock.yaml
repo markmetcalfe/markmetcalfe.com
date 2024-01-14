@@ -896,11 +896,11 @@ packages:
       estree-walker: 2.0.2
       source-map-js: 1.0.2
 
-  /@vue/compiler-core@3.4.10:
-    resolution: {integrity: sha512-53vxh7K9qbx+JILnGEhrFRyr7H7e4NdT8RuTNU3m6HhJKFvcAqFTNXpYMHnyuAzzRGdsbsYHBgQC3H6xEXTG6w==}
+  /@vue/compiler-core@3.4.13:
+    resolution: {integrity: sha512-zGUdmB3j3Irn9z51GXLJ5s0EAHxmsm5/eXl0y6MBaajMeOAaiT4+zaDoxui4Ets98dwIRr8BBaqXXHtHSfm+KA==}
     dependencies:
       '@babel/parser': 7.23.6
-      '@vue/shared': 3.4.10
+      '@vue/shared': 3.4.13
       entities: 4.5.0
       estree-walker: 2.0.2
       source-map-js: 1.0.2
@@ -912,11 +912,11 @@ packages:
       '@vue/compiler-core': 3.3.4
       '@vue/shared': 3.3.4
 
-  /@vue/compiler-dom@3.4.10:
-    resolution: {integrity: sha512-QAALBJksIFpXGYuo74rtMgnwpVZDvd3kYbUa4gYX9s/5QiqEvZSgbKtOdUGydXcxKPt3ifC+0/bhPVHXN2694A==}
+  /@vue/compiler-dom@3.4.13:
+    resolution: {integrity: sha512-XSNbpr5Rs3kCfVAmBqMu/HDwOS+RL6y28ZZjDlnDUuf146pRWt2sQkwhsOYc9uu2lxjjJy2NcyOkK7MBLVEc7w==}
     dependencies:
-      '@vue/compiler-core': 3.4.10
-      '@vue/shared': 3.4.10
+      '@vue/compiler-core': 3.4.13
+      '@vue/shared': 3.4.13
     dev: true
 
   /@vue/compiler-sfc@3.3.4:
@@ -973,9 +973,9 @@ packages:
     dependencies:
       '@volar/language-core': 1.10.10
       '@volar/source-map': 1.10.10
-      '@vue/compiler-dom': 3.4.10
-      '@vue/reactivity': 3.4.10
-      '@vue/shared': 3.4.10
+      '@vue/compiler-dom': 3.4.13
+      '@vue/reactivity': 3.4.13
+      '@vue/shared': 3.4.13
       minimatch: 9.0.3
       muggle-string: 0.3.1
       typescript: 5.2.2
@@ -996,10 +996,10 @@ packages:
     dependencies:
       '@vue/shared': 3.3.4
 
-  /@vue/reactivity@3.4.10:
-    resolution: {integrity: sha512-SmGGpo37LzPcAFTopHNIJRNVOQfma9YgyPkAzx9/TJ01lbCCYigS28hEcY1hjiJ1PRK8iVX62Ov5yzmUgYH/pQ==}
+  /@vue/reactivity@3.4.13:
+    resolution: {integrity: sha512-/ZdUOrGKkGVONzVJkfDqNcn2fLMvaa5VlYx2KwTbnRbX06YZ4GJE0PVTmWzIxtBYdpSTLLXgw3pDggO+96KXzg==}
     dependencies:
-      '@vue/shared': 3.4.10
+      '@vue/shared': 3.4.13
     dev: true
 
   /@vue/runtime-core@3.3.4:
@@ -1027,8 +1027,8 @@ packages:
   /@vue/shared@3.3.4:
     resolution: {integrity: sha512-7OjdcV8vQ74eiz1TZLzZP4JwqM5fA94K6yntPS5Z25r9HDuGNzaGdgvwKYq6S+MxwF0TFRwe50fIR/MYnakdkQ==}
 
-  /@vue/shared@3.4.10:
-    resolution: {integrity: sha512-C0mIVhwW1xQLMFyqMJxnhq6fWyE02lCgcE+TDdtGpg6B3H6kh/0YcqS54qYc76UJNlWegf3VgsLqgk6D9hBmzQ==}
+  /@vue/shared@3.4.13:
+    resolution: {integrity: sha512-56crFKLPpzk85WXX1L1c0QzPOuoapWlPVys8eMG8kkRmqdMjWUqK8KpFdE2d7BQA4CEbXwyyHPq6MpFr8H9rcg==}
     dev: true
 
   /@vue/typescript@1.8.18(typescript@5.2.2):
