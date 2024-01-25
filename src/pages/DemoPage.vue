@@ -267,6 +267,7 @@ export default defineComponent({
         this.isFullscreen = true
         document.body.style.cursor = 'none'
       }
+      document.getElementById('ga-insta-link')?.remove()
     },
   },
 })
