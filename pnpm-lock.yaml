@@ -34,7 +34,7 @@ dependencies:
     version: 3.4.21(typescript@5.3.3)
   vuetify:
     specifier: ^3.4.9
-    version: 3.5.8(typescript@5.3.3)(vue@3.4.21)
+    version: 3.5.15(typescript@5.3.3)(vue@3.4.21)
 
 devDependencies:
   '@babel/types':
@@ -42,7 +42,7 @@ devDependencies:
     version: 7.24.0
   '@fortawesome/fontawesome-free':
     specifier: ^6.5.1
-    version: 6.5.1
+    version: 6.5.2
   '@playwright/test':
     specifier: 1.42.1
     version: 1.42.1
@@ -453,8 +453,8 @@ packages:
     requiresBuild: true
     dev: false
 
-  /@fortawesome/fontawesome-free@6.5.1:
-    resolution: {integrity: sha512-CNy5vSwN3fsUStPRLX7fUYojyuzoEMSXPl7zSLJ8TgtRfjv24LOnOWKT2zYwaHZCJGkdyRnTmstR0P+Ah503Gw==}
+  /@fortawesome/fontawesome-free@6.5.2:
+    resolution: {integrity: sha512-hRILoInAx8GNT5IMkrtIt9blOdrqHOnPBH+k70aWUAqPZPgopb9G5EQJFpaBx/S8zp2fC+mPW349Bziuk1o28Q==}
     engines: {node: '>=6'}
     requiresBuild: true
     dev: true
@@ -3569,15 +3569,15 @@ packages:
       '@vue/shared': 3.4.21
       typescript: 5.3.3
 
-  /vuetify@3.5.8(typescript@5.3.3)(vue@3.4.21):
-    resolution: {integrity: sha512-8nGS+lKejZkev55HFwIfsRt+9fOqbeDQNmXxfmLKAlnUT8FtynVwbjAwHMtX/OQAQ3ZwRaR1ptqQQmx3OgxzbQ==}
+  /vuetify@3.5.15(typescript@5.3.3)(vue@3.4.21):
+    resolution: {integrity: sha512-4v+t3yjgZ5M4+YKRK2eOxymWU34/Sg8YP6Dqi4ZMYFjchiwijOns1WW4ywYlYXih0TSPVeAeQpCzztDu89nTyg==}
     engines: {node: ^12.20 || >=14.13}
     peerDependencies:
       typescript: '>=4.7'
-      vite-plugin-vuetify: '>=1.0.0-alpha.12'
+      vite-plugin-vuetify: '>=1.0.0'
       vue: ^3.3.0
       vue-i18n: ^9.0.0
-      webpack-plugin-vuetify: '>=2.0.0-alpha.11'
+      webpack-plugin-vuetify: '>=2.0.0'
     peerDependenciesMeta:
       typescript:
         optional: true
