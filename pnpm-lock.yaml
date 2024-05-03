@@ -6,19 +6,19 @@ settings:
 
 dependencies:
   '@fortawesome/fontawesome-svg-core':
-    specifier: 6.5.1
+    specifier: ^6.5.1
     version: 6.5.1
   '@fortawesome/free-brands-svg-icons':
-    specifier: 6.5.1
+    specifier: ^6.5.1
     version: 6.5.1
   '@fortawesome/free-regular-svg-icons':
-    specifier: 6.5.1
+    specifier: ^6.5.1
     version: 6.5.1
   '@fortawesome/free-solid-svg-icons':
-    specifier: 6.5.1
+    specifier: ^6.5.1
     version: 6.5.1
   '@fortawesome/vue-fontawesome':
-    specifier: 3.0.6
+    specifier: ^3.0.6
     version: 3.0.6(@fortawesome/fontawesome-svg-core@6.5.1)(vue@3.4.21)
   is-mobile:
     specifier: ^4.0.0
@@ -27,10 +27,10 @@ dependencies:
     specifier: ^2.1.7
     version: 2.1.7(typescript@5.3.3)(vue@3.4.21)
   three:
-    specifier: 0.162.0
+    specifier: ^0.162.0
     version: 0.162.0
   vue:
-    specifier: 3.4.21
+    specifier: ^3.4.21
     version: 3.4.21(typescript@5.3.3)
   vuetify:
     specifier: ^3.4.9
@@ -38,88 +38,88 @@ dependencies:
 
 devDependencies:
   '@babel/types':
-    specifier: 7.24.0
+    specifier: ^7.24.0
     version: 7.24.0
   '@fortawesome/fontawesome-free':
     specifier: ^6.5.1
     version: 6.5.2
   '@playwright/test':
-    specifier: 1.42.1
+    specifier: ^1.42.1
     version: 1.42.1
   '@types/node':
-    specifier: 20.11.24
+    specifier: ^20.11.24
     version: 20.11.24
   '@types/three':
-    specifier: 0.162.0
+    specifier: ^0.162.0
     version: 0.162.0
   '@typescript-eslint/eslint-plugin':
-    specifier: 6.21.0
+    specifier: ^6.21.0
     version: 6.21.0(@typescript-eslint/parser@6.21.0)(eslint@8.57.0)(typescript@5.3.3)
   '@typescript-eslint/parser':
-    specifier: 6.21.0
+    specifier: ^6.21.0
     version: 6.21.0(eslint@8.57.0)(typescript@5.3.3)
   '@vitejs/plugin-vue':
-    specifier: 5.0.4
+    specifier: ^5.0.4
     version: 5.0.4(vite@5.1.5)(vue@3.4.21)
   '@vue/eslint-config-typescript':
-    specifier: 12.0.0
+    specifier: ^12.0.0
     version: 12.0.0(eslint-plugin-vue@9.22.0)(eslint@8.57.0)(typescript@5.3.3)
   eslint:
-    specifier: 8.57.0
+    specifier: ^8.57.0
     version: 8.57.0
   eslint-config-prettier:
-    specifier: 9.1.0
+    specifier: ^9.1.0
     version: 9.1.0(eslint@8.57.0)
   eslint-plugin-vue:
-    specifier: 9.22.0
+    specifier: ^9.22.0
     version: 9.22.0(eslint@8.57.0)
   husky:
-    specifier: 8.0.3
+    specifier: ^8.0.3
     version: 8.0.3
   lint-staged:
-    specifier: 15.2.2
+    specifier: ^15.2.2
     version: 15.2.2
   npm-run-all:
-    specifier: 4.1.5
+    specifier: ^4.1.5
     version: 4.1.5
   postcss:
-    specifier: 8.4.35
+    specifier: ^8.4.35
     version: 8.4.35
   postcss-html:
-    specifier: 1.6.0
+    specifier: ^1.6.0
     version: 1.6.0
   prettier:
-    specifier: 3.2.5
+    specifier: ^3.2.5
     version: 3.2.5
   sass:
-    specifier: 1.71.1
+    specifier: ^1.71.1
     version: 1.71.1
   stylelint:
-    specifier: 16.2.1
+    specifier: ^16.2.1
     version: 16.2.1(typescript@5.3.3)
   stylelint-config-recommended-scss:
-    specifier: 14.0.0
+    specifier: ^14.0.0
     version: 14.0.0(postcss@8.4.35)(stylelint@16.2.1)
   stylelint-config-recommended-vue:
-    specifier: 1.5.0
+    specifier: ^1.5.0
     version: 1.5.0(postcss-html@1.6.0)(stylelint@16.2.1)
   stylelint-config-standard-scss:
-    specifier: 13.0.0
+    specifier: ^13.0.0
     version: 13.0.0(postcss@8.4.35)(stylelint@16.2.1)
   typescript:
-    specifier: 5.3.3
+    specifier: ^5.3.3
     version: 5.3.3
   vite:
-    specifier: 5.1.5
+    specifier: ^5.1.5
     version: 5.1.5(@types/node@20.11.24)(sass@1.71.1)
   vite-plugin-eslint:
-    specifier: 1.8.1
+    specifier: ^1.8.1
     version: 1.8.1(eslint@8.57.0)(vite@5.1.5)
   vue-router:
-    specifier: 4.3.0
+    specifier: ^4.3.0
     version: 4.3.0(vue@3.4.21)
   vue-tsc:
-    specifier: 1.8.27
+    specifier: ^1.8.27
     version: 1.8.27(typescript@5.3.3)
 
 packages:
