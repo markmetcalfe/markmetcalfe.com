@@ -15,7 +15,8 @@
     "fix-eslint": "eslint . --max-warnings=0 --ext .js,.ts,.jsx,.tsx --ignore-path=.prettierignore --fix",
     "check": "npm-run-all check-prettier check-eslint check-typescript",
     "fix": "npm-run-all fix-prettier fix-eslint",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "chromatic": "chromatic --playwright --exit-zero-on-changes"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@babel/types": "^7.24.0",
+    "@chromatic-com/playwright": "^0.6.11",
     "@fortawesome/fontawesome-free": "^6.5.1",
     "@playwright/test": "1.44.1",
     "@types/node": "^20.11.24",
@@ -39,6 +41,7 @@
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/eslint-config-typescript": "^12.0.0",
+    "chromatic": "^11.5.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vue": "^9.22.0",

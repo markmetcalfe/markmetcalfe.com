@@ -1,20 +1,19 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@chromatic-com/playwright'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/contact')
 })
 
 test.describe('ContactPage', () => {
-  test('matches snapshot', async ({ page }) => {
-    await page.waitForTimeout(1000)
-    expect(await page.screenshot()).toMatchSnapshot()
+  test('can load page', async ({ page }) => {
+    await expect(page.locator('text="Contact"')).toBeVisible()
   })
 
   test('can navigate back home', async ({ page }) => {
     const link = page.locator('[aria-label="Back"]')
 
     await Promise.all([page.waitForURL('/'), link.click()])
-
+    await page.waitForTimeout(1000)
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
 
@@ -35,8 +34,9 @@ test.describe('ContactPage', () => {
       link.click(),
     ])
 
+    await page.waitForTimeout(1000)
     expect(page1.url()).toContain('linkedin.com/in/mark-metcalfe')
-    await expect(page1.locator('body')).toContainText('LinkedIn')
+    await expect(page1).toHaveTitle(/LinkedIn/)
   })
 
   test('can navigate to instagram', async ({ page }) => {
@@ -47,6 +47,7 @@ test.describe('ContactPage', () => {
       link.click(),
     ])
 
+    await page.waitForTimeout(1000)
     expect(page1.url()).toContain('instagram.com')
     expect(page1.url()).toContain('markus_vizshun')
     await expect(page1).toHaveTitle(/Instagram/)

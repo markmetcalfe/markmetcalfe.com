@@ -51,3 +51,11 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+      - name: Run Chromatic
+        uses: chromaui/action@latest
+        with:
+          playwright: true
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          exitZeroOnChanges: true
+        env:
+          CHROMATIC_ARCHIVE_LOCATION: ./test-results

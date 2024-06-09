@@ -1,13 +1,12 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@chromatic-com/playwright'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/demo')
 })
 
 test.describe('DemoPage', () => {
-  test('matches snapshot', async ({ page }) => {
-    await page.waitForTimeout(1000)
-    expect(await page.screenshot()).toMatchSnapshot()
+  test('can load page', async ({ page }) => {
+    await expect(page.locator('text="3D Demo"')).toBeVisible()
   })
 
   test('can navigate back home', async ({ page }) => {
@@ -15,12 +14,11 @@ test.describe('DemoPage', () => {
 
     await Promise.all([page.waitForURL('/'), link.click()])
 
+    await page.waitForTimeout(1000)
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
 
-  test('can open geometry definitions dialog and it matches snapshot', async ({
-    page,
-  }) => {
+  test('can open geometry definitions dialog', async ({ page }) => {
     const button = page.locator('[aria-label="Configure Geometry Definitions"]')
 
     await button.click()
@@ -28,6 +26,5 @@ test.describe('DemoPage', () => {
     await expect(page.locator('body')).toContainText('Save')
 
     await page.waitForTimeout(1000)
-    expect(await page.screenshot()).toMatchSnapshot()
   })
 })

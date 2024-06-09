@@ -1,13 +1,12 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@chromatic-com/playwright'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/portfolio')
 })
 
 test.describe('PortfolioPage', () => {
-  test('matches snapshot', async ({ page }) => {
-    await page.waitForTimeout(1000)
-    expect(await page.screenshot()).toMatchSnapshot()
+  test('can load page', async ({ page }) => {
+    await expect(page.locator('text="My Work"')).toBeVisible()
   })
 
   test('can navigate back home', async ({ page }) => {
@@ -26,6 +25,7 @@ test.describe('PortfolioPage', () => {
       link.click(),
     ])
 
+    await page.waitForTimeout(1000)
     expect(page1.url()).toContain('instagram.com')
     expect(page1.url()).toContain('markus_vizshun')
     await expect(page1).toHaveTitle(/Instagram/)
@@ -39,6 +39,7 @@ test.describe('PortfolioPage', () => {
       link.click(),
     ])
 
+    await page.waitForTimeout(1000)
     expect(page1.url()).toContain('github.com/markmetcalfe')
     await expect(page1.locator('body')).toContainText('GitHub')
   })

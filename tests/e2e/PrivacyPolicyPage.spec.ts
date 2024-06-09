@@ -1,13 +1,12 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@chromatic-com/playwright'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/privacy-policy')
 })
 
 test.describe('PrivacyPolicyPage', () => {
-  test('matches snapshot', async ({ page }) => {
-    await page.waitForTimeout(1000)
-    expect(await page.screenshot()).toMatchSnapshot()
+  test('can load page', async ({ page }) => {
+    await expect(page.locator('text="Privacy Policy"')).toBeVisible()
   })
 
   test('can navigate back home', async ({ page }) => {
@@ -15,6 +14,7 @@ test.describe('PrivacyPolicyPage', () => {
 
     await Promise.all([page.waitForURL('/'), link.click()])
 
+    await page.waitForTimeout(1000)
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
 })
