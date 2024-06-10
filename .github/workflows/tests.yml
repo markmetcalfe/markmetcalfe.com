@@ -1,0 +1,55 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint:
+    name: Lint and Build the Project
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        with:
+          run_install: true
+      - name: Lint and check code quality
+        run: pnpm run check
+      - name: Build the project
+        run: pnpm run build
+
+  playwright:
+    name: Playwright E2E Tests
+    needs: build
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.44.0-jammy
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        with:
+          run_install: true
+      - name: Install Playwright
+        run: npx playwright install
+      - name: Run Playwright tests
+        run: CI=1 pnpm run test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

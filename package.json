@@ -32,7 +32,7 @@
   "devDependencies": {
     "@babel/types": "^7.24.0",
     "@fortawesome/fontawesome-free": "^6.5.1",
-    "@playwright/test": "^1.42.1",
+    "@playwright/test": "1.44.0",
     "@types/node": "^20.11.24",
     "@types/three": "^0.165.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
