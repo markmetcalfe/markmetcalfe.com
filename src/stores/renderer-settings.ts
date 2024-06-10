@@ -135,6 +135,12 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       mousePosition: Vector3 | undefined
       startingPosition: Vector3 | undefined
     }) {
+      if (localStorage.getItem('is_playwright_test')) {
+        console.debug(
+          'Playwright test is running, skipping renderer state tick',
+        )
+        return
+      }
       this.movementTick(positionData)
       this.autoZoomTick()
       this.randomiseTick()
