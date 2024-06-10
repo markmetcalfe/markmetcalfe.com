@@ -2,17 +2,12 @@
   "extends": ["config:base"],
   "packageRules": [
     {
-      "matchPackagePatterns": ["*"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     },
     {
-      "matchPackagePatterns": ["*"],
-      "matchUpdateTypes": ["major"],
-      "groupName": "all major dependencies",
-      "groupSlug": "all-major"
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true
     },
     {
       "packageNames": ["node"],
@@ -23,6 +18,7 @@
     "enabled": true,
     "automerge": true
   },
+  "platformAutomerge": true,
   "timezone": "Pacific/Auckland",
   "schedule": "* 6-7 * * 1"
 }
