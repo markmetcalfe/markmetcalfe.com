@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      v-show="!isPlaywrightTest && renderer"
+      v-show="renderer"
       class="dynamicbackground-3d"
       :style="{
         opacity: dimBackground ? 0.66 : 1,
@@ -27,16 +27,6 @@ export default defineComponent({
   computed: {
     dimBackground(): boolean {
       return this.$route.fullPath !== '/demo'
-    },
-
-    isPlaywrightTest(): boolean {
-      if (localStorage.getItem('is_playwright_test')) {
-        console.debug(
-          'Playwright test is running, dont render video or 3d canvas',
-        )
-        return true
-      }
-      return false
     },
   },
 
