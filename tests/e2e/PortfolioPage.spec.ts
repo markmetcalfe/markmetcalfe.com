@@ -14,6 +14,7 @@ test.describe('PortfolioPage', () => {
 
     await Promise.all([page.waitForURL('/'), link.click()])
 
+    await page.waitForTimeout(1000)
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
 
