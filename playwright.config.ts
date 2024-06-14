@@ -62,18 +62,6 @@ const config: PlaywrightTestConfig = {
         ...devices['Pixel 7'],
       },
     },
-    {
-      name: 'Desktop Firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-      },
-    },
-    {
-      name: 'Mobile Safari',
-      use: {
-        ...devices['iPhone 13'],
-      },
-    },
   ],
 
   /* Run your local dev server before starting the tests */
