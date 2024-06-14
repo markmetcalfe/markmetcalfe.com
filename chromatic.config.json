@@ -1,0 +1,8 @@
+{
+  "projectId": "Project:66651da85615f83e88576708",
+  "playwright": true,
+  "autoAcceptChanges": "master",
+  "exitOnceUploaded": true,
+  "exitZeroOnChanges": true,
+  "onlyChanged": true
+}
