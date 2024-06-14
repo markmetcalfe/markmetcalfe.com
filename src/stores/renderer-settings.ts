@@ -136,9 +136,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       startingPosition: Vector3 | undefined
     }) {
       if (localStorage.getItem('is_playwright_test')) {
-        console.debug(
-          'Playwright test is running, skipping renderer state tick',
-        )
+        // Playwright test is running, skipping renderer state tick
         return
       }
       this.movementTick(positionData)
