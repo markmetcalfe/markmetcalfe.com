@@ -40,6 +40,7 @@ export default defineComponent({
   --color-light: #fdfdfd;
   --color-link: #0f0;
   --color-green: #0f0;
+  --color-red: #f00;
   --color-white: #fff;
   --color-black: #000;
 }

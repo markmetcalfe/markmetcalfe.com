@@ -46,6 +46,15 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "demo" */ './pages/DemoPage.vue'),
   },
   {
+    path: '/status',
+    name: 'NetworkStatusPage',
+    meta: {
+      title: 'Network Status',
+    },
+    component: () =>
+      import(/* webpackChunkName: "status" */ './pages/NetworkStatusPage.vue'),
+  },
+  {
     path: '/privacy-policy',
     name: 'PrivacyPolicyPage',
     meta: {
