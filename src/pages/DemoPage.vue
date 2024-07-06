@@ -6,7 +6,26 @@
       <p v-if="store.isMobile">View this on desktop for more options</p>
 
       <div class="demopage-settings">
-        <GeometryConfig />
+        <GeometryConfig v-slot="{ modalOpen }">
+          <v-btn
+            color="primary"
+            variant="flat"
+            style="margin-right: 1rem"
+            @click="store.randomise"
+            ><template #prepend>
+              <v-icon
+                ><font-awesome-icon icon="fas fa-dice"
+              /></v-icon> </template
+            >Randomise</v-btn
+          >
+          <v-btn
+            color="primary"
+            variant="outlined"
+            v-bind="modalOpen"
+            aria-label="Configure Geometry Definitions"
+            >Geometry Defintions</v-btn
+          >
+        </GeometryConfig>
 
         <v-switch
           v-if="store.isDesktop"
@@ -117,6 +136,38 @@
         </v-slider>
 
         <v-slider
+          v-show="autoZoomIsSmooth"
+          :model-value="settings.autoZoom.speed * 1000"
+          color="primary"
+          class="align-center"
+          :min="0"
+          :max="100"
+          hide-details
+          @update:model-value="
+            (value: number) => (store.autoZoom.speed = value / 1000)
+          "
+        >
+          <template #prepend>
+            <label for="settings-autozoom-speed">Zoom Speed</label>
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-autozoom-speed"
+              :model-value="(settings.autoZoom.speed * 1000).toFixed(0)"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+              @update:model-value="
+                (value: string) =>
+                  (store.autoZoom.speed = parseFloat(value) / 1000)
+              "
+            ></v-text-field>
+          </template>
+        </v-slider>
+
+        <v-slider
           v-model="settings.randomisation.bpm"
           color="primary"
           class="align-center"
@@ -138,12 +189,12 @@
             >
             <v-text-field
               id="settings-randomisation-bpm"
+              :model-value="settings.randomisation.bpm.toFixed(0)"
               hide-details
               single-line
               density="compact"
               type="number"
               style="width: 100px"
-              :model-value="settings.randomisation.bpm.toFixed(2)"
               @update:model-value="
                 (value: string) => (store.randomisation.bpm = parseFloat(value))
               "
@@ -169,7 +220,7 @@
           <template #append>
             <v-text-field
               id="settings-randomisation-min-rotation-speed"
-              :model-value="settings.randomisation.minRotationSpeed.toFixed(2)"
+              :model-value="settings.randomisation.minRotationSpeed.toFixed(0)"
               hide-details
               single-line
               density="compact"
@@ -200,7 +251,7 @@
           <template #append>
             <v-text-field
               id="settings-randomisation-max-rotation-speed"
-              :model-value="settings.randomisation.maxRotationSpeed.toFixed(2)"
+              :model-value="settings.randomisation.maxRotationSpeed.toFixed(0)"
               hide-details
               single-line
               density="compact"
@@ -268,6 +319,9 @@ export default defineComponent({
     },
     autoZoomDisabled() {
       return this.store.autoZoom.mode === AutoZoomMode.DISABLED
+    },
+    autoZoomIsSmooth() {
+      return this.store.autoZoom.mode === AutoZoomMode.SMOOTH
     },
   },
 

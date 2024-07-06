@@ -22,6 +22,8 @@ export class ThreeJSRenderer {
   }
 
   private async initialise() {
+    this.store.renderer = this
+
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(
       50,
@@ -46,18 +48,21 @@ export class ThreeJSRenderer {
 
     this.container.appendChild(this.renderer.domElement)
 
-    const startingPosition = this.getStartingPosition()
-    const callback = (geometry: Geometry[]) => {
-      this.scene!.clear()
-      geometry.forEach(object => {
-        this.scene!.add(object.getObject())
-        object.setPosition(startingPosition.x, startingPosition.y)
-      })
-    }
-
-    this.store.generateGeometry(callback)
+    this.store.generateGeometry()
 
     this.animate()
+  }
+
+  public placeGeometry(geometry: Geometry[]) {
+    const startingPosition = this.getStartingPosition()
+    geometry.forEach(object => {
+      this.scene!.add(object.getObject())
+      object.setPosition(startingPosition.x, startingPosition.y)
+    })
+    this.store.geometry.active.forEach(geometry => {
+      this.scene!.remove(geometry.getObject())
+    })
+    this.store.geometry.active = geometry
   }
 
   private handleScroll(event: WheelEvent) {

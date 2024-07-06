@@ -11,6 +11,7 @@ import {
   faGear,
   faPlay,
   faLaptopCode,
+  faDice,
 } from '@fortawesome/free-solid-svg-icons'
 import {
   faComments,
@@ -22,6 +23,7 @@ import { App, Plugin } from 'vue'
 const icons = [
   faChevronLeft,
   faComments,
+  faDice,
   faEnvelope,
   faFileLines,
   faGear,

@@ -7,6 +7,7 @@ import {
 } from '../3d/geometry'
 import isMobile from 'is-mobile'
 import { Vector3 } from 'three'
+import { ThreeJSRenderer } from '../3d'
 
 export enum AutoZoomMode {
   DISABLED = 'Disabled',
@@ -18,6 +19,7 @@ export enum AutoZoomMode {
 export interface RendererSettings {
   initialiseRenderer: (() => Promise<void>) | undefined
   destroyRenderer: (() => void) | undefined
+  renderer: ThreeJSRenderer | undefined
   geometry: {
     config: GeometryAttributes[]
     active: Geometry[]
@@ -72,6 +74,7 @@ const defaultGeometry: GeometryAttributes[] = [
 const defaultSettings: RendererSettings = {
   initialiseRenderer: undefined,
   destroyRenderer: undefined,
+  renderer: undefined,
   geometry: {
     config: defaultGeometry,
     active: [],
@@ -102,14 +105,11 @@ const defaultSettings: RendererSettings = {
 export const useRendererSettingsStore = defineStore('renderer-settings', {
   state: () => defaultSettings,
   actions: {
-    generateGeometry(callback: (geometry: Geometry[]) => void) {
+    generateGeometry() {
       const geometry = this.geometry.config.map(geometry =>
         geometryFactory(geometry),
       )
-
-      callback(geometry)
-
-      this.geometry.active = geometry
+      this.renderer?.placeGeometry(geometry)
     },
     addNewGeometryConfig() {
       this.geometry.config.push({
@@ -123,12 +123,53 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     deleteGeometryConfig(index: number) {
       this.geometry.config.splice(index, 1)
     },
+    randomiseGeometry() {
+      const geometryAttributes: GeometryAttributes[] = []
+      for (let i = 0; i < randomInt(1, 3); i++) {
+        const color = ('#' + randomInt(0, 16777215).toString(16)).padEnd(7, '0')
+
+        geometryAttributes.push({
+          type: getRandomObjectValue(GeometryType),
+          color,
+          solid: false,
+          radius: randomInt(4, 8),
+          detail: randomInt(50, 100),
+        })
+      }
+
+      this.geometry.config = geometryAttributes
+      const geometry = this.geometry.config.map(geometry =>
+        geometryFactory(geometry),
+      )
+      this.renderer?.placeGeometry(geometry)
+    },
+
+    randomise() {
+      this.randomisation.bpm = randomInt(20, 140)
+      this.setMinRotationSpeed(randomInt(10, 30))
+      this.setMaxRotationSpeed(
+        randomInt(this.randomisation.minRotationSpeed, 100),
+      )
+
+      this.randomiseZoom()
+      this.randomiseGeometry()
+      this.followCursor = false
+    },
 
     zoomIn() {
       this.zoom.current += 0.1
     },
     zoomOut() {
       this.zoom.current -= 0.1
+    },
+    randomiseZoom() {
+      this.setMinZoom(randomInt(-4, 4))
+      this.setMaxZoom(randomInt(8, 16))
+      this.setCurrentZoom(randomInt(this.zoom.min, this.zoom.max))
+
+      this.autoZoom.mode = getRandomObjectValue(AutoZoomMode)
+      this.autoZoom.direction = this.autoZoom.direction === 'in' ? 'out' : 'in'
+      this.autoZoom.speed = random(0.001, 0.1)
     },
 
     tick(positionData: {
@@ -190,12 +231,11 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       }
 
       this.geometry.active.forEach(geometry => {
-        const randomRotationPosition = Math.floor(Math.random() * 100)
-        const randomRotationSpeed =
-          Math.random() *
-            (this.randomisation.maxRotationSpeed / 10000 -
-              this.randomisation.minRotationSpeed / 10000) +
-          this.randomisation.minRotationSpeed / 10000
+        const randomRotationPosition = random(0, 100)
+        const randomRotationSpeed = random(
+          this.randomisation.minRotationSpeed / 10000,
+          this.randomisation.maxRotationSpeed / 10000,
+        )
 
         geometry
           .setRotation(randomRotationPosition)
@@ -203,8 +243,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       })
 
       if (this.autoZoom.mode === AutoZoomMode.RANDOM) {
-        this.zoom.current =
-          Math.random() * (this.zoom.max - this.zoom.min) + this.zoom.min
+        this.zoom.current = random(this.zoom.min, this.zoom.max)
       } else if (this.autoZoom.mode === AutoZoomMode.JUMP) {
         const zoomIncrement = (this.zoom.max - this.zoom.min) / 3
         this.zoom.current = this.zoom.max - zoomIncrement * this.autoZoom.beat
@@ -294,3 +333,12 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     },
   },
 })
+
+const random = (min: number, max: number) => Math.random() * (max - min) + min
+
+const randomInt = (min: number, max: number) => Math.floor(random(min, max))
+
+const getRandomObjectValue = (object: object) => {
+  const values = Object.values(object)
+  return values[randomInt(0, values.length)]
+}

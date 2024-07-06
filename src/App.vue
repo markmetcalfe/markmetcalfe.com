@@ -69,14 +69,16 @@ b {
 }
 
 a,
-a:visited {
+a:visited,
+button.button-icon {
   color: var(--color-link);
   text-decoration: none;
   transition: all 250ms;
 }
 
 a:hover,
-a:focus {
+a:focus,
+button.button-icon:hover {
   color: inherit;
 }
 

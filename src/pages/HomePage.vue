@@ -27,7 +27,14 @@
         extra-padding
       />
     </ButtonSection>
-    <div class="home-demobutton">
+    <div v-if="store.renderer" class="home-demobutton">
+      <button
+        class="button-icon home-randomisebutton"
+        title="Randomise Demo"
+        @click="store.randomise"
+      >
+        <font-awesome-icon icon="fa-solid fa-dice" />
+      </button>
       <router-link to="/demo" title="Demo Settings">
         <font-awesome-icon icon="fa-solid fa-gear" />
       </router-link>
@@ -40,9 +47,15 @@ import { defineComponent } from 'vue'
 import PageCard from '../components/PageCard.vue'
 import ButtonSection from '../components/ButtonSection.vue'
 import LinkButton from '../components/LinkButton.vue'
+import { useRendererSettingsStore } from '../stores/renderer-settings'
 export default defineComponent({
   name: 'HomePage',
   components: { PageCard, ButtonSection, LinkButton },
+  computed: {
+    store() {
+      return useRendererSettingsStore()
+    },
+  },
 })
 </script>
 
@@ -157,6 +170,10 @@ export default defineComponent({
     @include mobile-only {
       font-size: 1.5rem;
     }
+  }
+
+  &-randomisebutton {
+    margin-right: 1rem;
   }
 }
 </style>

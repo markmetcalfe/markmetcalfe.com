@@ -7,13 +7,7 @@
       :scrim="false"
     >
       <template #activator="{ props }">
-        <v-btn
-          color="primary"
-          variant="outlined"
-          v-bind="props"
-          aria-label="Configure Geometry Definitions"
-          >Geometry Defintions</v-btn
-        >
+        <slot :modal-open="props"></slot>
       </template>
       <v-card>
         <v-toolbar color="background">
