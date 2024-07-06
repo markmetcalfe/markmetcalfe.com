@@ -19,7 +19,7 @@ test.describe('DemoPage', () => {
   })
 
   test('can open geometry definitions dialog', async ({ page }) => {
-    const button = page.locator('[aria-label="Configure Geometry Definitions"]')
+    const button = page.locator('[aria-label="Edit Shapes"]')
 
     await button.click()
 

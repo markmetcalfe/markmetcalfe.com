@@ -5,28 +5,33 @@
     <div class="demopage">
       <p v-if="store.isMobile">View this on desktop for more options</p>
 
-      <div class="demopage-settings">
+      <div class="demopage-buttons">
+        <v-btn color="primary" variant="flat" @click="store.randomise"
+          ><template #prepend>
+            <v-icon><font-awesome-icon icon="fas fa-dice" /></v-icon> </template
+          >Randomise</v-btn
+        >
         <GeometryConfig v-slot="{ modalOpen }">
-          <v-btn
-            color="primary"
-            variant="flat"
-            style="margin-right: 1rem"
-            @click="store.randomise"
+          <v-btn color="primary" variant="flat" v-bind="modalOpen"
             ><template #prepend>
               <v-icon
-                ><font-awesome-icon icon="fas fa-dice"
+                ><font-awesome-icon icon="fas fa-shapes"
               /></v-icon> </template
-            >Randomise</v-btn
-          >
-          <v-btn
-            color="primary"
-            variant="outlined"
-            v-bind="modalOpen"
-            aria-label="Configure Geometry Definitions"
-            >Geometry Defintions</v-btn
+            >Edit Shapes</v-btn
           >
         </GeometryConfig>
+        <v-btn
+          v-if="store.isDesktop"
+          color="primary"
+          variant="flat"
+          @click="requestFullscreen"
+          ><template #prepend>
+            <v-icon><font-awesome-icon icon="fas fa-play" /></v-icon> </template
+          >Fullscreen</v-btn
+        >
+      </div>
 
+      <div class="demopage-settings">
         <v-switch
           v-if="store.isDesktop"
           v-model="settings.followCursor"
@@ -35,137 +40,6 @@
           inset
           hide-details
         ></v-switch>
-
-        <v-select
-          v-model="settings.autoZoom.mode"
-          label="Select"
-          :items="autoZoomOptions"
-        >
-          <template #prepend>
-            <label>Auto Zoom Mode</label>
-          </template></v-select
-        >
-
-        <v-slider
-          v-show="!autoZoomDisabled"
-          :model-value="settings.zoom.min"
-          color="primary"
-          class="align-center"
-          :min="-10"
-          :max="20"
-          :ripple="false"
-          hide-details
-          @update:model-value="store.setMinZoom"
-        >
-          <template #prepend>
-            <label for="settings-zoom-min">Min Zoom</label>
-          </template>
-          <template #append>
-            <v-text-field
-              id="settings-zoom-min"
-              :model-value="settings.zoom.min.toFixed(2)"
-              hide-details
-              single-line
-              density="compact"
-              type="number"
-              style="width: 100px"
-              @update:model-value="
-                (value: string) => (store.zoom.min = parseFloat(value))
-              "
-            ></v-text-field>
-          </template>
-        </v-slider>
-
-        <v-slider
-          v-show="!autoZoomDisabled"
-          :model-value="settings.zoom.max"
-          color="primary"
-          class="align-center"
-          :min="-10"
-          :max="20"
-          :ripple="false"
-          hide-details
-          @update:model-value="store.setMaxZoom"
-        >
-          <template #prepend>
-            <label for="settings-zoom-max">Max Zoom</label>
-          </template>
-          <template #append>
-            <v-text-field
-              id="settings-zoom-max"
-              :model-value="settings.zoom.max.toFixed(2)"
-              hide-details
-              single-line
-              density="compact"
-              type="number"
-              style="width: 100px"
-              @update:model-value="
-                (value: string) => store.setMaxZoom(parseFloat(value))
-              "
-            ></v-text-field>
-          </template>
-        </v-slider>
-
-        <v-slider
-          :model-value="settings.zoom.current"
-          color="primary"
-          class="align-center"
-          :min="-10"
-          :max="20"
-          :ripple="false"
-          hide-details
-          @update:model-value="store.setCurrentZoom"
-        >
-          <template #prepend>
-            <label for="settings-zoom-current">Current Zoom</label>
-          </template>
-          <template #append>
-            <v-text-field
-              id="settings-zoom-current"
-              :model-value="settings.zoom.current.toFixed(2)"
-              hide-details
-              single-line
-              density="compact"
-              type="number"
-              style="width: 100px"
-              @update:model-value="
-                (value: string) => store.setCurrentZoom(parseFloat(value))
-              "
-            ></v-text-field>
-          </template>
-        </v-slider>
-
-        <v-slider
-          v-show="autoZoomIsSmooth"
-          :model-value="settings.autoZoom.speed * 1000"
-          color="primary"
-          class="align-center"
-          :min="0"
-          :max="100"
-          hide-details
-          @update:model-value="
-            (value: number) => (store.autoZoom.speed = value / 1000)
-          "
-        >
-          <template #prepend>
-            <label for="settings-autozoom-speed">Zoom Speed</label>
-          </template>
-          <template #append>
-            <v-text-field
-              id="settings-autozoom-speed"
-              :model-value="(settings.autoZoom.speed * 1000).toFixed(0)"
-              hide-details
-              single-line
-              density="compact"
-              type="number"
-              style="width: 100px"
-              @update:model-value="
-                (value: string) =>
-                  (store.autoZoom.speed = parseFloat(value) / 1000)
-              "
-            ></v-text-field>
-          </template>
-        </v-slider>
 
         <v-slider
           v-model="settings.randomisation.bpm"
@@ -263,24 +137,145 @@
             ></v-text-field>
           </template>
         </v-slider>
+
+        <v-slider
+          :model-value="settings.zoom.current"
+          color="primary"
+          class="align-center"
+          :min="-10"
+          :max="20"
+          :ripple="false"
+          hide-details
+          @update:model-value="store.setCurrentZoom"
+        >
+          <template #prepend>
+            <label for="settings-zoom-current">Current Zoom</label>
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-zoom-current"
+              :model-value="settings.zoom.current.toFixed(2)"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+              @update:model-value="
+                (value: string) => store.setCurrentZoom(parseFloat(value))
+              "
+            ></v-text-field>
+          </template>
+        </v-slider>
+
+        <v-select
+          v-model="settings.autoZoom.mode"
+          label="Select"
+          :items="autoZoomOptions"
+        >
+          <template #prepend>
+            <label>Auto Zoom Mode</label>
+          </template></v-select
+        >
+
+        <v-slider
+          :disabled="autoZoomDisabled"
+          :model-value="settings.zoom.min"
+          color="primary"
+          class="align-center"
+          :min="-10"
+          :max="20"
+          :ripple="false"
+          hide-details
+          @update:model-value="store.setMinZoom"
+        >
+          <template #prepend>
+            <label for="settings-zoom-min">Min Zoom</label>
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-zoom-min"
+              :disabled="autoZoomDisabled"
+              :model-value="settings.zoom.min.toFixed(2)"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+              @update:model-value="
+                (value: string) => (store.zoom.min = parseFloat(value))
+              "
+            ></v-text-field>
+          </template>
+        </v-slider>
+
+        <v-slider
+          :disabled="autoZoomDisabled"
+          :model-value="settings.zoom.max"
+          color="primary"
+          class="align-center"
+          :min="-10"
+          :max="20"
+          :ripple="false"
+          hide-details
+          @update:model-value="store.setMaxZoom"
+        >
+          <template #prepend>
+            <label for="settings-zoom-max">Max Zoom</label>
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-zoom-max"
+              :disabled="autoZoomDisabled"
+              :model-value="settings.zoom.max.toFixed(2)"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+              @update:model-value="
+                (value: string) => store.setMaxZoom(parseFloat(value))
+              "
+            ></v-text-field>
+          </template>
+        </v-slider>
+
+        <v-slider
+          :disabled="!autoZoomIsSmooth"
+          :model-value="settings.autoZoom.speed * 1000"
+          color="primary"
+          class="align-center"
+          :min="0"
+          :max="100"
+          hide-details
+          @update:model-value="
+            (value: number) => (store.autoZoom.speed = value / 1000)
+          "
+        >
+          <template #prepend>
+            <label for="settings-autozoom-speed">Zoom Speed</label>
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-autozoom-speed"
+              :disabled="!autoZoomIsSmooth"
+              :model-value="(settings.autoZoom.speed * 1000).toFixed(0)"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+              @update:model-value="
+                (value: string) =>
+                  (store.autoZoom.speed = parseFloat(value) / 1000)
+              "
+            ></v-text-field>
+          </template>
+        </v-slider>
       </div>
 
       <p v-if="store.isDesktop">Scroll to zoom in and out</p>
       <p v-if="store.isDesktop">
         When fullscreen, click to beatmatch the randomisation
-      </p>
-
-      <p>
-        <v-btn
-          v-if="store.isDesktop"
-          color="primary"
-          variant="flat"
-          size="large"
-          @click="requestFullscreen"
-          ><template #prepend>
-            <v-icon><font-awesome-icon icon="fas fa-play" /></v-icon> </template
-          >Fullscreen</v-btn
-        >
       </p>
     </div>
   </PageCard>
@@ -373,6 +368,14 @@ export default defineComponent({
 
   &-settings {
     padding-bottom: 1.5rem;
+  }
+
+  &-buttons {
+    display: flex;
+    flex: none;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   @include desktop-only {

@@ -14,9 +14,7 @@
           <v-btn icon @click="dialogOpen = false">
             <v-icon color="primary">fas fa-xmark</v-icon>
           </v-btn>
-          <v-toolbar-title color="primary"
-            >Geometry Definitions</v-toolbar-title
-          >
+          <v-toolbar-title color="primary">Edit Shapes</v-toolbar-title>
           <v-toolbar-items>
             <v-btn
               variant="text"
