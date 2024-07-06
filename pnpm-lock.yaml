@@ -71,7 +71,7 @@ importers:
         version: 12.0.0(eslint-plugin-vue@9.26.0(eslint@8.57.0))(eslint@8.57.0)(typescript@5.3.3)
       chromatic:
         specifier: ^11.5.3
-        version: 11.5.3(@chromatic-com/playwright@0.6.16(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@playwright/test@1.44.1)(@types/react@18.3.3)(esbuild@0.20.2)(prettier@3.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.3.3))
+        version: 11.5.4(@chromatic-com/playwright@0.6.16(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@playwright/test@1.44.1)(@types/react@18.3.3)(esbuild@0.20.2)(prettier@3.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.3.3))
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -2128,8 +2128,8 @@ packages:
     resolution: {integrity: sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==}
     engines: {node: '>=10'}
 
-  chromatic@11.5.3:
-    resolution: {integrity: sha512-EtDDXA4OdhsjE0IuLr5AZvOX+ZYXgqdRPtdTAQrM3nImjlteQ5biBmdEEEcdAXDTPU881rEUaUIy2owecB0wYg==}
+  chromatic@11.5.4:
+    resolution: {integrity: sha512-+J+CopeUSyGUIQJsU6X7CfvSmeVBs0j6LZ9AgF4+XTjI4pFmUiUXsTc00rH9x9W1jCppOaqDXv2kqJJXGDK3mA==}
     hasBin: true
     peerDependencies:
       '@chromatic-com/cypress': ^0.*.* || ^1.0.0
@@ -7435,7 +7435,7 @@ snapshots:
 
   chownr@2.0.0: {}
 
-  chromatic@11.5.3(@chromatic-com/playwright@0.6.16(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@playwright/test@1.44.1)(@types/react@18.3.3)(esbuild@0.20.2)(prettier@3.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.3.3)):
+  chromatic@11.5.4(@chromatic-com/playwright@0.6.16(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@playwright/test@1.44.1)(@types/react@18.3.3)(esbuild@0.20.2)(prettier@3.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.3.3)):
     optionalDependencies:
       '@chromatic-com/playwright': 0.6.16(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@playwright/test@1.44.1)(@types/react@18.3.3)(esbuild@0.20.2)(prettier@3.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.3.3)
 
