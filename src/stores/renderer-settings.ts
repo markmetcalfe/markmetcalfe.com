@@ -254,5 +254,43 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
         timesBetween.reduce((a, b) => a + b) / timesBetween.length
       this.randomisation.bpm = (60 / averageTimeBetween) * 1000
     },
+
+    setMinZoom(zoom: number) {
+      this.zoom.min = zoom
+      if (this.zoom.max < zoom) {
+        this.zoom.max = zoom
+      }
+    },
+
+    setMaxZoom(zoom: number) {
+      this.zoom.max = zoom
+      if (this.zoom.min > zoom) {
+        this.zoom.min = zoom
+      }
+    },
+
+    setCurrentZoom(zoom: number) {
+      this.zoom.current = zoom
+      if (this.zoom.min > zoom) {
+        this.zoom.min = zoom
+      }
+      if (this.zoom.max < zoom) {
+        this.zoom.max = zoom
+      }
+    },
+
+    setMinRotationSpeed(rotationSpeed: number) {
+      this.randomisation.minRotationSpeed = rotationSpeed
+      if (this.randomisation.maxRotationSpeed < rotationSpeed) {
+        this.randomisation.maxRotationSpeed = rotationSpeed
+      }
+    },
+
+    setMaxRotationSpeed(rotationSpeed: number) {
+      this.randomisation.maxRotationSpeed = rotationSpeed
+      if (this.randomisation.minRotationSpeed > rotationSpeed) {
+        this.randomisation.minRotationSpeed = rotationSpeed
+      }
+    },
   },
 })

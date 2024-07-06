@@ -29,12 +29,14 @@
 
         <v-slider
           v-show="!autoZoomDisabled"
-          v-model="settings.zoom.min"
+          :model-value="settings.zoom.min"
           color="primary"
           class="align-center"
           :min="-10"
           :max="20"
+          :ripple="false"
           hide-details
+          @update:model-value="store.setMinZoom"
         >
           <template #prepend>
             <label for="settings-zoom-min">Min Zoom</label>
@@ -42,24 +44,29 @@
           <template #append>
             <v-text-field
               id="settings-zoom-min"
-              v-model="settings.zoom.min"
+              :model-value="settings.zoom.min.toFixed(2)"
               hide-details
               single-line
               density="compact"
               type="number"
               style="width: 100px"
+              @update:model-value="
+                (value: string) => (store.zoom.min = parseFloat(value))
+              "
             ></v-text-field>
           </template>
         </v-slider>
 
         <v-slider
           v-show="!autoZoomDisabled"
-          v-model="settings.zoom.max"
+          :model-value="settings.zoom.max"
           color="primary"
           class="align-center"
           :min="-10"
           :max="20"
+          :ripple="false"
           hide-details
+          @update:model-value="store.setMaxZoom"
         >
           <template #prepend>
             <label for="settings-zoom-max">Max Zoom</label>
@@ -67,23 +74,28 @@
           <template #append>
             <v-text-field
               id="settings-zoom-max"
-              v-model="settings.zoom.max"
+              :model-value="settings.zoom.max.toFixed(2)"
               hide-details
               single-line
               density="compact"
               type="number"
               style="width: 100px"
+              @update:model-value="
+                (value: string) => store.setMaxZoom(parseFloat(value))
+              "
             ></v-text-field>
           </template>
         </v-slider>
 
         <v-slider
-          v-model="settings.zoom.current"
+          :model-value="settings.zoom.current"
           color="primary"
           class="align-center"
           :min="-10"
           :max="20"
+          :ripple="false"
           hide-details
+          @update:model-value="store.setCurrentZoom"
         >
           <template #prepend>
             <label for="settings-zoom-current">Current Zoom</label>
@@ -91,12 +103,15 @@
           <template #append>
             <v-text-field
               id="settings-zoom-current"
-              v-model="settings.zoom.current"
+              :model-value="settings.zoom.current.toFixed(2)"
               hide-details
               single-line
               density="compact"
               type="number"
               style="width: 100px"
+              @update:model-value="
+                (value: string) => store.setCurrentZoom(parseFloat(value))
+              "
             ></v-text-field>
           </template>
         </v-slider>
@@ -123,23 +138,28 @@
             >
             <v-text-field
               id="settings-randomisation-bpm"
-              v-model="settings.randomisation.bpm"
               hide-details
               single-line
               density="compact"
               type="number"
               style="width: 100px"
+              :model-value="settings.randomisation.bpm.toFixed(2)"
+              @update:model-value="
+                (value: string) => (store.randomisation.bpm = parseFloat(value))
+              "
             ></v-text-field>
           </template>
         </v-slider>
 
         <v-slider
-          v-model="settings.randomisation.minRotationSpeed"
+          :model-value="settings.randomisation.minRotationSpeed"
           color="primary"
           class="align-center"
           :min="0"
           :max="100"
+          :ripple="false"
           hide-details
+          @update:model-value="store.setMinRotationSpeed"
         >
           <template #prepend>
             <label for="settings-randomisation-min-rotation-speed"
@@ -149,23 +169,28 @@
           <template #append>
             <v-text-field
               id="settings-randomisation-min-rotation-speed"
-              v-model="settings.randomisation.minRotationSpeed"
+              :model-value="settings.randomisation.minRotationSpeed.toFixed(2)"
               hide-details
               single-line
               density="compact"
               type="number"
               style="width: 100px"
+              @update:model-value="
+                (value: string) => store.setMinRotationSpeed(parseFloat(value))
+              "
             ></v-text-field>
           </template>
         </v-slider>
 
         <v-slider
-          v-model="settings.randomisation.maxRotationSpeed"
+          :model-value="settings.randomisation.maxRotationSpeed.toFixed(2)"
           color="primary"
           class="align-center"
           :min="0"
           :max="100"
+          :ripple="false"
           hide-details
+          @update:model-value="store.setMaxRotationSpeed"
         >
           <template #prepend>
             <label for="settings-randomisation-max-rotation-speed"
@@ -175,12 +200,15 @@
           <template #append>
             <v-text-field
               id="settings-randomisation-max-rotation-speed"
-              v-model="settings.randomisation.maxRotationSpeed"
+              :model-value="settings.randomisation.maxRotationSpeed.toFixed(2)"
               hide-details
               single-line
               density="compact"
               type="number"
               style="width: 100px"
+              @update:model-value="
+                (value: string) => store.setMaxRotationSpeed(parseFloat(value))
+              "
             ></v-text-field>
           </template>
         </v-slider>
