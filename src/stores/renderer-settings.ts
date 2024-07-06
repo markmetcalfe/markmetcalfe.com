@@ -17,8 +17,6 @@ export enum AutoZoomMode {
 }
 
 export interface RendererSettings {
-  initialiseRenderer: (() => Promise<void>) | undefined
-  destroyRenderer: (() => void) | undefined
   renderer: ThreeJSRenderer | undefined
   geometry: {
     config: GeometryAttributes[]
@@ -72,8 +70,6 @@ const defaultGeometry: GeometryAttributes[] = [
 ]
 
 const defaultSettings: RendererSettings = {
-  initialiseRenderer: undefined,
-  destroyRenderer: undefined,
   renderer: undefined,
   geometry: {
     config: defaultGeometry,

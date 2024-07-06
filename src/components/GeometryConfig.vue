@@ -135,26 +135,26 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useRendererSettingsStore } from '../stores/renderer-settings'
-import { storeToRefs } from 'pinia'
 import { GeometryType } from '../3d/geometry'
 
 export default defineComponent({
   name: 'GeometryConfig',
 
   data() {
-    const store = storeToRefs(useRendererSettingsStore())
-
     return {
       dialogOpen: false,
       loading: false,
       activeTab: '0',
-      config: store.geometry.value.config,
     }
   },
 
   computed: {
     store() {
       return useRendererSettingsStore()
+    },
+
+    config() {
+      return this.store.geometry.config
     },
 
     geometryTypes() {
@@ -179,19 +179,11 @@ export default defineComponent({
 
     updateGeometryConfig() {
       this.loading = true
-      this.store.destroyRenderer?.()
       setTimeout(() => {
-        this.store
-          .initialiseRenderer?.()
-          .then(() => {
-            this.dialogOpen = false
-            this.loading = false
-          })
-          .catch(() => {
-            this.dialogOpen = false
-            this.loading = false
-          })
-      }, 500)
+        this.dialogOpen = false
+        this.loading = false
+      }, 250)
+      this.store.generateGeometry()
     },
   },
 })

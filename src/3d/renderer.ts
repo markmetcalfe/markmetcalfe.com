@@ -17,8 +17,6 @@ export class ThreeJSRenderer {
     this.store = useRendererSettingsStore()
     this.container = container
     this.initialise()
-    this.store.initialiseRenderer = async () => this.initialise()
-    this.store.destroyRenderer = () => this.cleanUp()
   }
 
   private async initialise() {
