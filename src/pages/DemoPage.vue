@@ -73,62 +73,62 @@
         </v-slider>
 
         <v-slider
-          :model-value="settings.rotation.minSpeed"
+          :model-value="settings.rotationSpeed.x"
           color="primary"
           class="align-center"
           :min="0"
           :max="100"
           :ripple="false"
           hide-details
-          @update:model-value="store.setMinRotationSpeed"
+          @update:model-value="store.setXRotationSpeed"
         >
           <template #prepend>
-            <label for="settings-randomisation-min-rotation-speed"
-              >Min Rotation Speed</label
+            <label for="settings-randomisation-x-rotation-speed"
+              >X-Axis Rotation Speed</label
             >
           </template>
           <template #append>
             <v-text-field
-              id="settings-randomisation-min-rotation-speed"
-              :model-value="settings.rotation.minSpeed.toFixed(0)"
+              id="settings-randomisation-x-rotation-speed"
+              :model-value="settings.rotationSpeed.x.toFixed(0)"
               hide-details
               single-line
               density="compact"
               type="number"
               style="width: 100px"
               @update:model-value="
-                (value: string) => store.setMinRotationSpeed(parseFloat(value))
+                (value: string) => store.setXRotationSpeed(parseFloat(value))
               "
             ></v-text-field>
           </template>
         </v-slider>
 
         <v-slider
-          :model-value="settings.rotation.maxSpeed.toFixed(2)"
+          :model-value="settings.rotationSpeed.y"
           color="primary"
           class="align-center"
           :min="0"
           :max="100"
           :ripple="false"
           hide-details
-          @update:model-value="store.setMaxRotationSpeed"
+          @update:model-value="store.setYRotationSpeed"
         >
           <template #prepend>
-            <label for="settings-randomisation-max-rotation-speed"
-              >Max Rotation Speed</label
+            <label for="settings-randomisation-y-rotation-speed"
+              >Y-Axis Rotation Speed</label
             >
           </template>
           <template #append>
             <v-text-field
-              id="settings-randomisation-max-rotation-speed"
-              :model-value="settings.rotation.maxSpeed.toFixed(0)"
+              id="settings-randomisation-y-rotation-speed"
+              :model-value="settings.rotationSpeed.y.toFixed(0)"
               hide-details
               single-line
               density="compact"
               type="number"
               style="width: 100px"
               @update:model-value="
-                (value: string) => store.setMaxRotationSpeed(parseFloat(value))
+                (value: string) => store.setYRotationSpeed(parseFloat(value))
               "
             ></v-text-field>
           </template>

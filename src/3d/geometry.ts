@@ -3,7 +3,7 @@ import * as THREE from 'three'
 export abstract class Geometry {
   private object: THREE.Object3D
   private attributes: GeometryAttributes
-  private rotationSpeed = 0.01
+  private rotationSpeed = { x: 0, y: 0 }
 
   constructor(geometry: THREE.BufferGeometry, attributes: GeometryAttributes) {
     if (attributes.solid) {
@@ -42,14 +42,22 @@ export abstract class Geometry {
     return this
   }
 
-  public setRotationSpeed(speed: number) {
+  public setRotationSpeed(speed: { x: number; y: number }) {
     this.rotationSpeed = speed
     return this
   }
 
   public rotate() {
-    this.object.rotation.x += this.rotationSpeed
-    this.object.rotation.y += this.rotationSpeed
+    const rotationMultiplier = 5000
+    let xRotationAmount = this.rotationSpeed.x / rotationMultiplier
+    let yRotationAmount = this.rotationSpeed.y / rotationMultiplier
+    if (this.attributes.reverseRotation) {
+      xRotationAmount *= -1
+      yRotationAmount *= -1
+    }
+    // Deliberately swap the values as otherwise it looks wrong
+    this.object.rotation.x += yRotationAmount
+    this.object.rotation.y += xRotationAmount
     return this
   }
 
@@ -131,6 +139,7 @@ export interface GeometryAttributes {
   solid: boolean
   radius: number
   detail: number
+  reverseRotation: boolean
 }
 
 export function geometryFactory(attributes: GeometryAttributes): Geometry {

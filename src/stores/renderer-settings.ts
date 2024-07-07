@@ -41,9 +41,9 @@ export interface RendererSettings {
     direction: 'in' | 'out'
     beat: number
   }
-  rotation: {
-    minSpeed: number
-    maxSpeed: number
+  rotationSpeed: {
+    x: number
+    y: number
   }
   beatMatch: {
     enabled: boolean
@@ -58,10 +58,11 @@ export interface RendererSettings {
 const defaultGeometry: GeometryAttributes[] = [
   {
     type: GeometryType.PARTIAL_SPHERE,
-    color: 'rgb(0, 255, 0)',
+    color: 'rgb(0, 128, 0)',
     solid: false,
     radius: 5,
     detail: 80,
+    reverseRotation: false,
   },
   {
     type: GeometryType.PARTIAL_SPHERE,
@@ -69,6 +70,7 @@ const defaultGeometry: GeometryAttributes[] = [
     solid: false,
     radius: 5,
     detail: 90,
+    reverseRotation: false,
   },
   {
     type: GeometryType.PARTIAL_SPHERE,
@@ -76,6 +78,7 @@ const defaultGeometry: GeometryAttributes[] = [
     solid: false,
     radius: 5,
     detail: 100,
+    reverseRotation: false,
   },
 ]
 
@@ -97,9 +100,9 @@ const defaultSettings: RendererSettings = {
     direction: 'out',
     beat: 0,
   },
-  rotation: {
-    minSpeed: 15,
-    maxSpeed: 20,
+  rotationSpeed: {
+    x: 20,
+    y: 20,
   },
   beatMatch: {
     enabled: true,
@@ -119,6 +122,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
         geometryFactory(geometry),
       )
       this.renderer?.placeGeometry(geometry)
+      this.syncRotationSpeed()
     },
     addRandomGeometryConfig() {
       this.geometry.config.push(getRandomGeometry())
@@ -141,17 +145,13 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     randomise() {
       this.followCursor = false
 
-      this.setMinRotationSpeed(getRandomInt(10, 30))
-      this.setMaxRotationSpeed(getRandomInt(this.rotation.minSpeed, 100))
-
       this.randomiseZoom()
 
       this.setBeatMatchEnabled(getRandomBool())
-      if (this.beatMatch.enabled) {
-        this.beatMatch.bpm = getRandomInt(20, 140)
-      }
+      this.setBeatMatchBpm(getRandomInt(20, 140))
 
       this.randomiseGeometry()
+      this.setRotationSpeed(getRandomNum(10, 25), getRandomNum(10, 25))
     },
 
     zoomIn() {
@@ -200,7 +200,8 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     }) {
       const objectScale = this.isMobile ? 0.9 : 1
       this.geometry.active.forEach(object => {
-        object.rotate().setSize(objectScale)
+        object.rotate()
+        object.setSize(objectScale)
         if (!this.isMobile && this.followCursor && mousePosition) {
           object.moveTowardPosition(mousePosition)
         } else if (startingPosition) {
@@ -242,14 +243,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
 
       this.geometry.active.forEach(geometry => {
         const randomRotationPosition = getRandomNum(0, 100)
-        const randomRotationSpeed = getRandomNum(
-          this.rotation.minSpeed / 10000,
-          this.rotation.maxSpeed / 10000,
-        )
-
-        geometry
-          .setRotation(randomRotationPosition)
-          .setRotationSpeed(randomRotationSpeed)
+        geometry.setRotation(randomRotationPosition)
       })
 
       if (this.autoZoom.mode === AutoZoomMode.RANDOM) {
@@ -317,6 +311,11 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
         this.autoZoom.mode = AutoZoomMode.SMOOTH
       }
     },
+    setBeatMatchBpm(bpm: number) {
+      if (this.beatMatch.enabled) {
+        this.beatMatch.bpm = bpm
+      }
+    },
 
     setMinZoom(zoom: number) {
       this.zoom.min = zoom
@@ -342,18 +341,22 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       }
     },
 
-    setMinRotationSpeed(rotationSpeed: number) {
-      this.rotation.minSpeed = rotationSpeed
-      if (this.rotation.maxSpeed < rotationSpeed) {
-        this.rotation.maxSpeed = rotationSpeed
-      }
+    syncRotationSpeed() {
+      this.geometry.active.forEach(geometry => {
+        geometry.setRotationSpeed(this.rotationSpeed)
+      })
     },
-
-    setMaxRotationSpeed(rotationSpeed: number) {
-      this.rotation.maxSpeed = rotationSpeed
-      if (this.rotation.minSpeed > rotationSpeed) {
-        this.rotation.minSpeed = rotationSpeed
-      }
+    setRotationSpeed(x: number, y: number) {
+      this.rotationSpeed = { x, y }
+      this.syncRotationSpeed()
+    },
+    setXRotationSpeed(speed: number) {
+      this.rotationSpeed.x = speed
+      this.syncRotationSpeed()
+    },
+    setYRotationSpeed(speed: number) {
+      this.rotationSpeed.y = speed
+      this.syncRotationSpeed()
     },
   },
 })

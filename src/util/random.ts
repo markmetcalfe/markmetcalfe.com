@@ -27,5 +27,6 @@ export const getRandomGeometry = (): GeometryAttributes => {
     solid: false,
     radius: getRandomInt(4, 8),
     detail: getRandomInt(50, 100),
+    reverseRotation: getRandomBool(),
   }
 }

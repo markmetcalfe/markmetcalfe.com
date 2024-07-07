@@ -89,6 +89,14 @@
                 hide-details
               ></v-switch>
 
+              <v-switch
+                v-model="config[index].reverseRotation"
+                label="Reverse Rotation"
+                color="primary"
+                inset
+                hide-details
+              ></v-switch>
+
               <v-text-field
                 v-model="config[index].radius"
                 single-line
