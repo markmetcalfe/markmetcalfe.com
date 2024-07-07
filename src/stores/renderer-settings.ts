@@ -34,12 +34,15 @@ export interface RendererSettings {
     direction: 'in' | 'out'
     beat: number
   }
-  randomisation: {
+  rotation: {
+    minSpeed: number
+    maxSpeed: number
+  }
+  beatMatch: {
+    enabled: boolean
     bpm: number
     lastTime: Date
     taps: Date[]
-    minRotationSpeed: number
-    maxRotationSpeed: number
   }
   isMobile: boolean
   isDesktop: boolean
@@ -87,12 +90,15 @@ const defaultSettings: RendererSettings = {
     direction: 'out',
     beat: 0,
   },
-  randomisation: {
+  rotation: {
+    minSpeed: 15,
+    maxSpeed: 20,
+  },
+  beatMatch: {
+    enabled: true,
     bpm: 140 / 4, // 1 bar of 140s dub
     lastTime: new Date(0),
     taps: [],
-    minRotationSpeed: 15,
-    maxRotationSpeed: 20,
   },
   isMobile: isMobile(),
   isDesktop: !isMobile(),
@@ -122,10 +128,10 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     randomiseGeometry() {
       const geometryAttributes: GeometryAttributes[] = []
       for (let i = 0; i < randomInt(1, 3); i++) {
-        const color = ('#' + randomInt(0, 16777215).toString(16)).padEnd(7, '0')
+        const color = `rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`
 
         geometryAttributes.push({
-          type: getRandomObjectValue(GeometryType),
+          type: getRandomValue(GeometryType),
           color,
           solid: false,
           radius: randomInt(4, 8),
@@ -141,15 +147,19 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     },
 
     randomise() {
-      this.randomisation.bpm = randomInt(20, 140)
+      this.followCursor = false
+
       this.setMinRotationSpeed(randomInt(10, 30))
-      this.setMaxRotationSpeed(
-        randomInt(this.randomisation.minRotationSpeed, 100),
-      )
+      this.setMaxRotationSpeed(randomInt(this.rotation.minSpeed, 100))
 
       this.randomiseZoom()
+
+      this.setBeatMatchEnabled(randomBool())
+      if (this.beatMatch.enabled) {
+        this.beatMatch.bpm = randomInt(20, 140)
+      }
+
       this.randomiseGeometry()
-      this.followCursor = false
     },
 
     zoomIn() {
@@ -159,13 +169,21 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       this.zoom.current -= 0.1
     },
     randomiseZoom() {
-      this.setMinZoom(randomInt(-4, 4))
-      this.setMaxZoom(randomInt(8, 16))
       this.setCurrentZoom(randomInt(this.zoom.min, this.zoom.max))
 
-      this.autoZoom.mode = getRandomObjectValue(AutoZoomMode)
+      this.autoZoom.mode = getRandomValue([
+        AutoZoomMode.SMOOTH,
+        AutoZoomMode.RANDOM,
+        AutoZoomMode.JUMP,
+      ])
+
+      if (this.autoZoom.mode === AutoZoomMode.SMOOTH) {
+        this.autoZoom.speed = random(0.001, 0.1)
+      }
+
+      this.setMinZoom(randomInt(-4, 4))
+      this.setMaxZoom(randomInt(8, 16))
       this.autoZoom.direction = this.autoZoom.direction === 'in' ? 'out' : 'in'
-      this.autoZoom.speed = random(0.001, 0.1)
     },
 
     tick(positionData: {
@@ -178,7 +196,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       }
       this.movementTick(positionData)
       this.autoZoomTick()
-      this.randomiseTick()
+      this.beatMatchTick()
     },
 
     movementTick({
@@ -217,11 +235,15 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       }
     },
 
-    randomiseTick() {
-      const intervalMs = (60 / this.randomisation.bpm) * 1000
+    beatMatchTick() {
+      if (!this.beatMatch.enabled) {
+        return
+      }
+
+      const intervalMs = (60 / this.beatMatch.bpm) * 1000
       if (
         new Date().getTime() <=
-        this.randomisation.lastTime.getTime() + intervalMs
+        this.beatMatch.lastTime.getTime() + intervalMs
       ) {
         return
       }
@@ -229,8 +251,8 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       this.geometry.active.forEach(geometry => {
         const randomRotationPosition = random(0, 100)
         const randomRotationSpeed = random(
-          this.randomisation.minRotationSpeed / 10000,
-          this.randomisation.maxRotationSpeed / 10000,
+          this.rotation.minSpeed / 10000,
+          this.rotation.maxSpeed / 10000,
         )
 
         geometry
@@ -249,45 +271,55 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
         }
       }
 
-      this.randomisation.lastTime = new Date()
+      this.beatMatch.lastTime = new Date()
     },
-    tap() {
+    tapBpm() {
       const now = new Date()
 
       // We only care about the latest 4 taps
-      if (this.randomisation.taps.length >= 4) {
-        this.randomisation.taps.shift()
+      if (this.beatMatch.taps.length >= 4) {
+        this.beatMatch.taps.shift()
       }
 
       // If the last tap was over 2 seconds ago we ignore all previous taps
-      const lastTap =
-        this.randomisation.taps[this.randomisation.taps.length - 1]
+      const lastTap = this.beatMatch.taps[this.beatMatch.taps.length - 1]
       if (lastTap && now.getTime() - lastTap.getTime() > 2000) {
-        this.randomisation.taps = []
+        this.beatMatch.taps = []
       }
 
-      this.randomisation.taps.push(now)
-      this.randomisation.lastTime = new Date(0) // Set last time to 0 to force randomisation
+      this.beatMatch.taps.push(now)
+      this.beatMatch.lastTime = new Date(0) // Set last time to 0 to force randomisation
 
       if (this.autoZoom.mode === AutoZoomMode.JUMP) {
         this.autoZoom.beat = 0
         this.zoom.current = this.zoom.max
       }
 
-      if (this.randomisation.taps.length < 2) {
+      if (this.beatMatch.taps.length < 2) {
         return
       }
 
       const timesBetween = []
-      for (let i = 1; i < this.randomisation.taps.length; i++) {
-        const a = this.randomisation.taps[i - 1].getTime()
-        const b = this.randomisation.taps[i].getTime()
+      for (let i = 1; i < this.beatMatch.taps.length; i++) {
+        const a = this.beatMatch.taps[i - 1].getTime()
+        const b = this.beatMatch.taps[i].getTime()
         timesBetween.push(b - a)
       }
 
       const averageTimeBetween =
         timesBetween.reduce((a, b) => a + b) / timesBetween.length
-      this.randomisation.bpm = (60 / averageTimeBetween) * 1000
+      this.beatMatch.bpm = (60 / averageTimeBetween) * 1000
+    },
+    setBeatMatchEnabled(enabled: boolean) {
+      this.beatMatch.enabled = enabled
+      if (
+        !enabled &&
+        ![AutoZoomMode.DISABLED, AutoZoomMode.SMOOTH].includes(
+          this.autoZoom.mode,
+        )
+      ) {
+        this.autoZoom.mode = AutoZoomMode.SMOOTH
+      }
     },
 
     setMinZoom(zoom: number) {
@@ -315,16 +347,16 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     },
 
     setMinRotationSpeed(rotationSpeed: number) {
-      this.randomisation.minRotationSpeed = rotationSpeed
-      if (this.randomisation.maxRotationSpeed < rotationSpeed) {
-        this.randomisation.maxRotationSpeed = rotationSpeed
+      this.rotation.minSpeed = rotationSpeed
+      if (this.rotation.maxSpeed < rotationSpeed) {
+        this.rotation.maxSpeed = rotationSpeed
       }
     },
 
     setMaxRotationSpeed(rotationSpeed: number) {
-      this.randomisation.maxRotationSpeed = rotationSpeed
-      if (this.randomisation.minRotationSpeed > rotationSpeed) {
-        this.randomisation.minRotationSpeed = rotationSpeed
+      this.rotation.maxSpeed = rotationSpeed
+      if (this.rotation.minSpeed > rotationSpeed) {
+        this.rotation.minSpeed = rotationSpeed
       }
     },
   },
@@ -334,7 +366,14 @@ const random = (min: number, max: number) => Math.random() * (max - min) + min
 
 const randomInt = (min: number, max: number) => Math.floor(random(min, max))
 
-const getRandomObjectValue = (object: object) => {
-  const values = Object.values(object)
-  return values[randomInt(0, values.length)]
+const randomBool = () => Math.random() >= 0.5
+
+function getRandomValue<T>(values: object | T[]): T {
+  if (typeof values === 'object') {
+    const entries = Object.values(values)
+    return entries[randomInt(0, entries.length)]
+  } else {
+    // @ts-expect-error Weirdly being inferred as 'never'
+    return values[randomInt(0, values.length)]
+  }
 }

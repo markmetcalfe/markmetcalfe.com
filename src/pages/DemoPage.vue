@@ -3,7 +3,9 @@
     <template #title>3D Demo</template>
 
     <div class="demopage">
-      <p v-if="store.isMobile">View this on desktop for more options</p>
+      <div v-if="store.isMobile" class="demopage-headernote">
+        View this on desktop for more options
+      </div>
 
       <div class="demopage-buttons">
         <v-btn color="primary" variant="flat" @click="store.randomise"
@@ -31,7 +33,7 @@
         >
       </div>
 
-      <div class="demopage-settings">
+      <div class="demopage-sliders">
         <v-switch
           v-if="store.isDesktop"
           v-model="settings.followCursor"
@@ -40,103 +42,6 @@
           inset
           hide-details
         ></v-switch>
-
-        <v-slider
-          v-model="settings.randomisation.bpm"
-          color="primary"
-          class="align-center"
-          :min="0"
-          :max="200"
-          hide-details
-        >
-          <template #prepend>
-            <label for="settings-randomisation-bpm">BPM</label>
-          </template>
-          <template #append>
-            <v-btn
-              color="primary"
-              variant="outlined"
-              size="small"
-              style="margin-right: 1rem"
-              @click="store.tap"
-              >Tap</v-btn
-            >
-            <v-text-field
-              id="settings-randomisation-bpm"
-              :model-value="settings.randomisation.bpm.toFixed(0)"
-              hide-details
-              single-line
-              density="compact"
-              type="number"
-              style="width: 100px"
-              @update:model-value="
-                (value: string) => (store.randomisation.bpm = parseFloat(value))
-              "
-            ></v-text-field>
-          </template>
-        </v-slider>
-
-        <v-slider
-          :model-value="settings.randomisation.minRotationSpeed"
-          color="primary"
-          class="align-center"
-          :min="0"
-          :max="100"
-          :ripple="false"
-          hide-details
-          @update:model-value="store.setMinRotationSpeed"
-        >
-          <template #prepend>
-            <label for="settings-randomisation-min-rotation-speed"
-              >Min Rotation Speed</label
-            >
-          </template>
-          <template #append>
-            <v-text-field
-              id="settings-randomisation-min-rotation-speed"
-              :model-value="settings.randomisation.minRotationSpeed.toFixed(0)"
-              hide-details
-              single-line
-              density="compact"
-              type="number"
-              style="width: 100px"
-              @update:model-value="
-                (value: string) => store.setMinRotationSpeed(parseFloat(value))
-              "
-            ></v-text-field>
-          </template>
-        </v-slider>
-
-        <v-slider
-          :model-value="settings.randomisation.maxRotationSpeed.toFixed(2)"
-          color="primary"
-          class="align-center"
-          :min="0"
-          :max="100"
-          :ripple="false"
-          hide-details
-          @update:model-value="store.setMaxRotationSpeed"
-        >
-          <template #prepend>
-            <label for="settings-randomisation-max-rotation-speed"
-              >Max Rotation Speed</label
-            >
-          </template>
-          <template #append>
-            <v-text-field
-              id="settings-randomisation-max-rotation-speed"
-              :model-value="settings.randomisation.maxRotationSpeed.toFixed(0)"
-              hide-details
-              single-line
-              density="compact"
-              type="number"
-              style="width: 100px"
-              @update:model-value="
-                (value: string) => store.setMaxRotationSpeed(parseFloat(value))
-              "
-            ></v-text-field>
-          </template>
-        </v-slider>
 
         <v-slider
           :model-value="settings.zoom.current"
@@ -167,10 +72,121 @@
           </template>
         </v-slider>
 
+        <v-slider
+          :model-value="settings.rotation.minSpeed"
+          color="primary"
+          class="align-center"
+          :min="0"
+          :max="100"
+          :ripple="false"
+          hide-details
+          @update:model-value="store.setMinRotationSpeed"
+        >
+          <template #prepend>
+            <label for="settings-randomisation-min-rotation-speed"
+              >Min Rotation Speed</label
+            >
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-randomisation-min-rotation-speed"
+              :model-value="settings.rotation.minSpeed.toFixed(0)"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+              @update:model-value="
+                (value: string) => store.setMinRotationSpeed(parseFloat(value))
+              "
+            ></v-text-field>
+          </template>
+        </v-slider>
+
+        <v-slider
+          :model-value="settings.rotation.maxSpeed.toFixed(2)"
+          color="primary"
+          class="align-center"
+          :min="0"
+          :max="100"
+          :ripple="false"
+          hide-details
+          @update:model-value="store.setMaxRotationSpeed"
+        >
+          <template #prepend>
+            <label for="settings-randomisation-max-rotation-speed"
+              >Max Rotation Speed</label
+            >
+          </template>
+          <template #append>
+            <v-text-field
+              id="settings-randomisation-max-rotation-speed"
+              :model-value="settings.rotation.maxSpeed.toFixed(0)"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+              @update:model-value="
+                (value: string) => store.setMaxRotationSpeed(parseFloat(value))
+              "
+            ></v-text-field>
+          </template>
+        </v-slider>
+
+        <v-switch
+          :model-value="settings.beatMatch.enabled"
+          label="Beat Matching"
+          color="primary"
+          inset
+          hide-details
+          @update:model-value="store.setBeatMatchEnabled"
+        ></v-switch>
+
+        <v-slider
+          v-model="settings.beatMatch.bpm"
+          :disabled="!settings.beatMatch.enabled"
+          color="primary"
+          class="align-center"
+          :min="0"
+          :max="200"
+          hide-details
+        >
+          <template #prepend>
+            <label for="settings-randomisation-bpm">BPM</label>
+          </template>
+          <template #append>
+            <v-btn
+              :disabled="!settings.beatMatch.enabled"
+              color="primary"
+              variant="outlined"
+              size="small"
+              style="margin-right: 1rem"
+              :ripple="false"
+              @click="store.tapBpm"
+              >Tap</v-btn
+            >
+            <v-text-field
+              id="settings-randomisation-bpm"
+              :model-value="settings.beatMatch.bpm.toFixed(0)"
+              :disabled="!settings.beatMatch.enabled"
+              hide-details
+              single-line
+              density="compact"
+              type="number"
+              style="width: 100px"
+              @update:model-value="
+                (value: string) => (store.beatMatch.bpm = parseFloat(value))
+              "
+            ></v-text-field>
+          </template>
+        </v-slider>
+
         <v-select
           v-model="settings.autoZoom.mode"
           label="Select"
           :items="autoZoomOptions"
+          density="comfortable"
         >
           <template #prepend>
             <label>Auto Zoom Mode</label>
@@ -273,10 +289,10 @@
         </v-slider>
       </div>
 
-      <p v-if="store.isDesktop">Scroll to zoom in and out</p>
-      <p v-if="store.isDesktop">
-        When fullscreen, click to beatmatch the randomisation
-      </p>
+      <div v-if="store.isDesktop" class="demopage-footnote">
+        <p>Scroll to zoom in and out</p>
+        <p>When fullscreen, click to beatmatch the randomisation</p>
+      </div>
     </div>
   </PageCard>
 </template>
@@ -310,7 +326,11 @@ export default defineComponent({
     },
 
     autoZoomOptions() {
-      return Object.values(AutoZoomMode)
+      if (this.store.beatMatch.enabled) {
+        return Object.values(AutoZoomMode)
+      } else {
+        return [AutoZoomMode.DISABLED, AutoZoomMode.SMOOTH]
+      }
     },
     autoZoomDisabled() {
       return this.store.autoZoom.mode === AutoZoomMode.DISABLED
@@ -354,28 +374,42 @@ export default defineComponent({
 @import '../variables';
 
 .demopage {
-  & > * {
-    padding: 0.5rem 0;
-  }
-
-  & > *:first-child {
-    padding-top: 0;
-  }
-
-  & > *:last-child {
-    padding-bottom: 0;
-  }
-
-  &-settings {
-    padding-bottom: 1.5rem;
-  }
-
   &-buttons {
     display: flex;
-    flex: none;
     gap: 1rem;
     flex-wrap: wrap;
     justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  &-sliders {
+    .v-input {
+      margin: 2px 0;
+    }
+
+    // stylelint-disable-next-line selector-class-pattern
+    .v-input__details {
+      display: none;
+    }
+
+    // stylelint-disable-next-line selector-class-pattern
+    .v-slider.v-input--horizontal {
+      margin-inline: 0 !important;
+    }
+
+    .v-switch {
+      .v-label {
+        opacity: 1;
+      }
+    }
+  }
+
+  &-headernote {
+    padding-bottom: 1.5rem;
+  }
+
+  &-footnote {
+    padding-top: 1.5rem;
   }
 
   @include desktop-only {

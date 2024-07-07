@@ -39,7 +39,7 @@ export class ThreeJSRenderer {
     )
     this.renderer.domElement.addEventListener(
       'mousedown',
-      () => this.store.tap(),
+      () => this.store.tapBpm(),
       false,
     )
     document.addEventListener('wheel', event => this.handleScroll(event), false)
