@@ -81,11 +81,21 @@ export abstract class Geometry {
   public getAttributes() {
     return this.attributes
   }
+
+  public static getName(): string {
+    throw new Error('Can not call getName() on class Geometry')
+  }
+  public static getMinDetail(): number {
+    throw new Error('Can not call getMinDetail() on class Geometry')
+  }
+  public static getMaxDetail(): number {
+    throw new Error('Can not call getMaxDetail() on class Geometry')
+  }
 }
 
 export class Cube extends Geometry {
   constructor(attributes: GeometryAttributes) {
-    const sphere = new THREE.BoxGeometry(
+    const geometry = new THREE.BoxGeometry(
       attributes.radius,
       attributes.radius,
       attributes.radius,
@@ -93,24 +103,44 @@ export class Cube extends Geometry {
       attributes.detail,
       attributes.detail,
     )
-    super(sphere, attributes)
+    super(geometry, attributes)
+  }
+
+  public static getName() {
+    return 'Cube'
+  }
+  public static getMinDetail() {
+    return 1
+  }
+  public static getMaxDetail() {
+    return 50
   }
 }
 
 export class Sphere extends Geometry {
   constructor(attributes: GeometryAttributes) {
-    const sphere = new THREE.SphereGeometry(
+    const geometry = new THREE.SphereGeometry(
       attributes.radius,
       attributes.detail,
       attributes.detail,
     )
-    super(sphere, attributes)
+    super(geometry, attributes)
+  }
+
+  public static getName() {
+    return 'Sphere'
+  }
+  public static getMinDetail() {
+    return 5
+  }
+  public static getMaxDetail() {
+    return 100
   }
 }
 
 export class PartialSphere extends Geometry {
   constructor(attributes: GeometryAttributes) {
-    const polyhedron = new THREE.PolyhedronGeometry(
+    const geometry = new THREE.PolyhedronGeometry(
       [
         -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, -1, 1, 1, 1,
         1, -1, 1, 1,
@@ -122,34 +152,37 @@ export class PartialSphere extends Geometry {
       attributes.radius,
       attributes.detail,
     )
-    const geometry = new THREE.EdgesGeometry(polyhedron)
-    super(geometry, attributes)
+    super(new THREE.EdgesGeometry(geometry), attributes)
+  }
+
+  public static getName() {
+    return 'Partial Sphere'
+  }
+  public static getMinDetail() {
+    return 50
+  }
+  public static getMaxDetail() {
+    return 100
   }
 }
 
-export enum GeometryType {
-  CUBE = 'Cube',
-  SPHERE = 'Sphere',
-  PARTIAL_SPHERE = 'Partial Sphere',
+export const geometryClasses = [Cube, Sphere, PartialSphere]
+
+export const getGeometryClassFromName = (name: string) => {
+  const geometryClass = geometryClasses.find(
+    geometryClass => geometryClass.getName() === name,
+  )
+  if (!geometryClass) {
+    throw new Error("Couldn't find geometry class with name " + name)
+  }
+  return geometryClass
 }
 
 export interface GeometryAttributes {
-  type: GeometryType
+  type: (typeof geometryClasses)[number]
   color: string
   solid: boolean
   radius: number
   detail: number
   reverseRotation: boolean
-}
-
-export function geometryFactory(attributes: GeometryAttributes): Geometry {
-  switch (attributes.type) {
-    case GeometryType.CUBE:
-      return new Cube(attributes)
-    case GeometryType.SPHERE:
-      return new Sphere(attributes)
-    case GeometryType.PARTIAL_SPHERE:
-    default:
-      return new PartialSphere(attributes)
-  }
 }

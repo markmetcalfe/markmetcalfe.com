@@ -61,9 +61,12 @@
           >
             <div class="geometryconfig-settings">
               <v-select
-                v-model="config[index].type"
+                :model-value="config[index].type.getName()"
                 label="Select"
-                :items="Object.values(geometryTypes)"
+                :items="geometryTypes"
+                @update:model-value="
+                  (name: string) => setGeometryType(index, name)
+                "
               >
                 <template #prepend>
                   <label>Type</label>
@@ -98,11 +101,15 @@
               ></v-switch>
 
               <v-text-field
-                v-model="config[index].radius"
+                :model-value="config[index].radius.toFixed(0)"
                 single-line
                 density="compact"
                 type="number"
                 hint="The size of the object"
+                @update:model-value="
+                  (radius: string) =>
+                    (config[index].radius = parseFloat(radius))
+                "
                 ><template #prepend>
                   <label>Radius</label>
                 </template></v-text-field
@@ -143,7 +150,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useRendererSettingsStore } from '../stores/renderer-settings'
-import { GeometryAttributes, GeometryType } from '../3d/geometry'
+import {
+  GeometryAttributes,
+  geometryClasses,
+  getGeometryClassFromName,
+} from '../3d/geometry'
 import { getColorName } from '../util/color'
 
 export default defineComponent({
@@ -167,13 +178,17 @@ export default defineComponent({
     },
 
     geometryTypes() {
-      return Object.values(GeometryType)
+      return geometryClasses.map(geometryClass => geometryClass.getName())
     },
   },
 
   methods: {
     getGeometryName(geometry: GeometryAttributes) {
-      return `${getColorName(geometry.color)} ${geometry.type}`
+      return `${getColorName(geometry.color)} ${geometry.type.getName()}`
+    },
+
+    setGeometryType(index: number, name: string) {
+      this.config[index].type = getGeometryClassFromName(name)
     },
 
     addNewGeometryConfig() {

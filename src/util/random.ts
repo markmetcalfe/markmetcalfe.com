@@ -1,4 +1,4 @@
-import { GeometryAttributes, GeometryType } from '../3d/geometry'
+import { GeometryAttributes, geometryClasses } from '../3d/geometry'
 import { getRandomColor } from './color'
 
 export const getRandomNum = (min: number, max: number) =>
@@ -21,12 +21,13 @@ export function getRandomValue<T>(values: object | T[]): T {
 
 export const getRandomGeometry = (): GeometryAttributes => {
   const [red, green, blue] = getRandomColor()
+  const type = getRandomValue(geometryClasses)
   return {
-    type: getRandomValue(GeometryType),
+    type,
     color: `rgb(${red}, ${green}, ${blue})`,
     solid: false,
-    radius: getRandomInt(4, 8),
-    detail: getRandomInt(50, 100),
+    radius: getRandomNum(4, 8),
+    detail: getRandomInt(type.getMinDetail(), type.getMaxDetail()),
     reverseRotation: getRandomBool(),
   }
 }

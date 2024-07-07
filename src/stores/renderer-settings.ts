@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia'
-import {
-  Geometry,
-  GeometryAttributes,
-  GeometryType,
-  geometryFactory,
-} from '../3d/geometry'
+import { Geometry, GeometryAttributes, PartialSphere } from '../3d/geometry'
 import isMobile from 'is-mobile'
 import { Vector3 } from 'three'
 import { ThreeJSRenderer } from '../3d'
@@ -57,7 +52,7 @@ export interface RendererSettings {
 
 const defaultGeometry: GeometryAttributes[] = [
   {
-    type: GeometryType.PARTIAL_SPHERE,
+    type: PartialSphere,
     color: 'rgb(0, 128, 0)',
     solid: false,
     radius: 5,
@@ -65,7 +60,7 @@ const defaultGeometry: GeometryAttributes[] = [
     reverseRotation: false,
   },
   {
-    type: GeometryType.PARTIAL_SPHERE,
+    type: PartialSphere,
     color: 'rgb(0, 0, 255)',
     solid: false,
     radius: 5,
@@ -73,7 +68,7 @@ const defaultGeometry: GeometryAttributes[] = [
     reverseRotation: false,
   },
   {
-    type: GeometryType.PARTIAL_SPHERE,
+    type: PartialSphere,
     color: 'rgb(255, 0, 0)',
     solid: false,
     radius: 5,
@@ -118,8 +113,8 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
   state: () => defaultSettings,
   actions: {
     generateGeometry() {
-      const geometry = this.geometry.config.map(geometry =>
-        geometryFactory(geometry),
+      const geometry = this.geometry.config.map(
+        geometry => new geometry.type(geometry),
       )
       this.renderer?.placeGeometry(geometry)
       this.syncRotationSpeed()
@@ -135,11 +130,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       for (let i = 0; i < getRandomInt(1, 4); i++) {
         this.addRandomGeometryConfig()
       }
-
-      const geometry = this.geometry.config.map(geometry =>
-        geometryFactory(geometry),
-      )
-      this.renderer?.placeGeometry(geometry)
+      this.generateGeometry()
     },
 
     randomise() {
