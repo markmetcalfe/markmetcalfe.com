@@ -166,7 +166,70 @@ export class PartialSphere extends Geometry {
   }
 }
 
-export const geometryClasses = [Cube, Sphere, PartialSphere]
+export class Octahedron extends Geometry {
+  constructor(attributes: GeometryAttributes) {
+    const geometry = new THREE.OctahedronGeometry(attributes.radius, 0)
+    super(geometry, attributes)
+  }
+
+  public static getName() {
+    return 'Octahedron'
+  }
+  public static getMinDetail() {
+    return 1
+  }
+  public static getMaxDetail() {
+    return 1
+  }
+}
+
+export class Dodecahedron extends Geometry {
+  constructor(attributes: GeometryAttributes) {
+    const geometry = new THREE.DodecahedronGeometry(attributes.radius, 0)
+    super(geometry, attributes)
+  }
+
+  public static getName() {
+    return 'Dodecahedron'
+  }
+  public static getMinDetail() {
+    return 1
+  }
+  public static getMaxDetail() {
+    return 1
+  }
+}
+
+export class TorusKnot extends Geometry {
+  constructor(attributes: GeometryAttributes) {
+    const geometry = new THREE.TorusKnotGeometry(
+      attributes.radius,
+      undefined,
+      attributes.detail,
+      attributes.detail,
+    )
+    super(geometry, attributes)
+  }
+
+  public static getName() {
+    return 'Torus Knot'
+  }
+  public static getMinDetail() {
+    return 1
+  }
+  public static getMaxDetail() {
+    return 30
+  }
+}
+
+export const geometryClasses = [
+  Cube,
+  Sphere,
+  PartialSphere,
+  Octahedron,
+  Dodecahedron,
+  TorusKnot,
+]
 
 export const getGeometryClassFromName = (name: string) => {
   const geometryClass = geometryClasses.find(
