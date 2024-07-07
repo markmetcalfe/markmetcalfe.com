@@ -15,7 +15,6 @@
     "prettier"
   ],
   "rules": {
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-non-null-assertion": "off"
+    "no-unused-vars": "off" // use the @typescript-eslint/no-unused-vars rule instead
   }
 }

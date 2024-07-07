@@ -38,7 +38,7 @@
                 :key="index"
                 :value="index"
               >
-                {{ geometry.color }} {{ geometry.type }}
+                {{ getGeometryName(geometry) }}
               </v-tab>
 
               <v-btn
@@ -75,7 +75,7 @@
                 single-line
                 density="compact"
                 type="text"
-                hint="Can be any valid HTML colour value, e.g. 'green' or '#00ff00'"
+                hint="Can be any valid HTML colour value, e.g. 'green' or '#00ff00' or 'rgb(20,30,40)'"
                 ><template #prepend>
                   <label>Colour</label>
                 </template></v-text-field
@@ -135,7 +135,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useRendererSettingsStore } from '../stores/renderer-settings'
-import { GeometryType } from '../3d/geometry'
+import { GeometryAttributes, GeometryType } from '../3d/geometry'
+import { getColorName } from '../util/color'
 
 export default defineComponent({
   name: 'GeometryConfig',
@@ -163,8 +164,12 @@ export default defineComponent({
   },
 
   methods: {
+    getGeometryName(geometry: GeometryAttributes) {
+      return `${getColorName(geometry.color)} ${geometry.type}`
+    },
+
     addNewGeometryConfig() {
-      this.store.addNewGeometryConfig()
+      this.store.addRandomGeometryConfig()
       setTimeout(() => {
         this.activeTab = (this.store.geometry.config.length - 1).toString()
       }, 50)

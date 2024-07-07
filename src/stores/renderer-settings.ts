@@ -8,6 +8,13 @@ import {
 import isMobile from 'is-mobile'
 import { Vector3 } from 'three'
 import { ThreeJSRenderer } from '../3d'
+import {
+  getRandomBool,
+  getRandomGeometry,
+  getRandomInt,
+  getRandomNum,
+  getRandomValue,
+} from '../util/random'
 
 export enum AutoZoomMode {
   DISABLED = 'Disabled',
@@ -51,21 +58,21 @@ export interface RendererSettings {
 const defaultGeometry: GeometryAttributes[] = [
   {
     type: GeometryType.PARTIAL_SPHERE,
-    color: 'green',
+    color: 'rgb(0, 255, 0)',
     solid: false,
     radius: 5,
     detail: 80,
   },
   {
     type: GeometryType.PARTIAL_SPHERE,
-    color: 'blue',
+    color: 'rgb(0, 0, 255)',
     solid: false,
     radius: 5,
     detail: 90,
   },
   {
     type: GeometryType.PARTIAL_SPHERE,
-    color: 'red',
+    color: 'rgb(255, 0, 0)',
     solid: false,
     radius: 5,
     detail: 100,
@@ -113,33 +120,18 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       )
       this.renderer?.placeGeometry(geometry)
     },
-    addNewGeometryConfig() {
-      this.geometry.config.push({
-        type: GeometryType.CUBE,
-        color: 'green',
-        solid: false,
-        radius: 5,
-        detail: 30,
-      })
+    addRandomGeometryConfig() {
+      this.geometry.config.push(getRandomGeometry())
     },
     deleteGeometryConfig(index: number) {
       this.geometry.config.splice(index, 1)
     },
     randomiseGeometry() {
-      const geometryAttributes: GeometryAttributes[] = []
-      for (let i = 0; i < randomInt(1, 3); i++) {
-        const color = `rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`
-
-        geometryAttributes.push({
-          type: getRandomValue(GeometryType),
-          color,
-          solid: false,
-          radius: randomInt(4, 8),
-          detail: randomInt(50, 100),
-        })
+      this.geometry.config = []
+      for (let i = 0; i < getRandomInt(1, 4); i++) {
+        this.addRandomGeometryConfig()
       }
 
-      this.geometry.config = geometryAttributes
       const geometry = this.geometry.config.map(geometry =>
         geometryFactory(geometry),
       )
@@ -149,14 +141,14 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     randomise() {
       this.followCursor = false
 
-      this.setMinRotationSpeed(randomInt(10, 30))
-      this.setMaxRotationSpeed(randomInt(this.rotation.minSpeed, 100))
+      this.setMinRotationSpeed(getRandomInt(10, 30))
+      this.setMaxRotationSpeed(getRandomInt(this.rotation.minSpeed, 100))
 
       this.randomiseZoom()
 
-      this.setBeatMatchEnabled(randomBool())
+      this.setBeatMatchEnabled(getRandomBool())
       if (this.beatMatch.enabled) {
-        this.beatMatch.bpm = randomInt(20, 140)
+        this.beatMatch.bpm = getRandomInt(20, 140)
       }
 
       this.randomiseGeometry()
@@ -169,7 +161,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       this.zoom.current -= 0.1
     },
     randomiseZoom() {
-      this.setCurrentZoom(randomInt(this.zoom.min, this.zoom.max))
+      this.setCurrentZoom(getRandomInt(this.zoom.min, this.zoom.max))
 
       this.autoZoom.mode = getRandomValue([
         AutoZoomMode.SMOOTH,
@@ -178,11 +170,11 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       ])
 
       if (this.autoZoom.mode === AutoZoomMode.SMOOTH) {
-        this.autoZoom.speed = random(0.001, 0.1)
+        this.autoZoom.speed = getRandomNum(0.001, 0.1)
       }
 
-      this.setMinZoom(randomInt(-4, 4))
-      this.setMaxZoom(randomInt(8, 16))
+      this.setMinZoom(getRandomInt(-1, 4))
+      this.setMaxZoom(getRandomInt(8, 16))
       this.autoZoom.direction = this.autoZoom.direction === 'in' ? 'out' : 'in'
     },
 
@@ -249,8 +241,8 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       }
 
       this.geometry.active.forEach(geometry => {
-        const randomRotationPosition = random(0, 100)
-        const randomRotationSpeed = random(
+        const randomRotationPosition = getRandomNum(0, 100)
+        const randomRotationSpeed = getRandomNum(
           this.rotation.minSpeed / 10000,
           this.rotation.maxSpeed / 10000,
         )
@@ -261,7 +253,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       })
 
       if (this.autoZoom.mode === AutoZoomMode.RANDOM) {
-        this.zoom.current = random(this.zoom.min, this.zoom.max)
+        this.zoom.current = getRandomNum(this.zoom.min, this.zoom.max)
       } else if (this.autoZoom.mode === AutoZoomMode.JUMP) {
         const zoomIncrement = (this.zoom.max - this.zoom.min) / 3
         this.zoom.current = this.zoom.max - zoomIncrement * this.autoZoom.beat
@@ -274,6 +266,10 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       this.beatMatch.lastTime = new Date()
     },
     tapBpm() {
+      if (!this.beatMatch.enabled) {
+        return
+      }
+
       const now = new Date()
 
       // We only care about the latest 4 taps
@@ -361,19 +357,3 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     },
   },
 })
-
-const random = (min: number, max: number) => Math.random() * (max - min) + min
-
-const randomInt = (min: number, max: number) => Math.floor(random(min, max))
-
-const randomBool = () => Math.random() >= 0.5
-
-function getRandomValue<T>(values: object | T[]): T {
-  if (typeof values === 'object') {
-    const entries = Object.values(values)
-    return entries[randomInt(0, entries.length)]
-  } else {
-    // @ts-expect-error Weirdly being inferred as 'never'
-    return values[randomInt(0, values.length)]
-  }
-}
