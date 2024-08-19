@@ -20,10 +20,7 @@ test.describe('ContactPage', () => {
   test('email link has valid mailto value', async ({ page }) => {
     const link = page.locator('a:has-text("Email")')
 
-    await expect(link).toHaveAttribute(
-      'href',
-      'mailto:mark@markmetcalfe.com',
-    )
+    await expect(link).toHaveAttribute('href', 'mailto:mark@markmetcalfe.com')
   })
 
   test('can navigate to linkedin', async ({ page }) => {
