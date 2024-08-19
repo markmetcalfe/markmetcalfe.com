@@ -1,8 +1,8 @@
-# [markmetcalfe.io](https://markmetcalfe.io)
+# [markmetcalfe.com](https://markmetcalfe.com)
 
-[![Playwright Tests](https://github.com/markmetcalfe/markmetcalfe.io/actions/workflows/playwright.yml/badge.svg)](https://github.com/markmetcalfe/markmetcalfe.io/actions/workflows/playwright.yml)
+[![Playwright Tests](https://github.com/markmetcalfe/markmetcalfe.com/actions/workflows/playwright.yml/badge.svg)](https://github.com/markmetcalfe/markmetcalfe.com/actions/workflows/playwright.yml)
 
-The code for my portfolio site located at [markmetcalfe.io](https://markmetcalfe.io)
+The code for my portfolio site located at [markmetcalfe.com](https://markmetcalfe.com)
 
 Written in Vue 3 and Typescript, using the Vite vue framework.
 

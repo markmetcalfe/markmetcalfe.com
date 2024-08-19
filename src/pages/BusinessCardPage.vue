@@ -15,7 +15,7 @@
             </h2>
           </div>
           <div class="businesscard-row">
-            <h2>markmetcalfe.io</h2>
+            <h2>markmetcalfe.com</h2>
           </div>
         </div>
       </section>

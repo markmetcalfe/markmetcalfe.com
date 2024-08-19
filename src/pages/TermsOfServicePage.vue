@@ -31,7 +31,7 @@
         <p>
           <strong>Company</strong> (referred to as either &quot;the
           Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in
-          this Agreement) refers to markmetcalfe.io.
+          this Agreement) refers to markmetcalfe.com.
         </p>
       </li>
       <li>
@@ -60,12 +60,12 @@
       </li>
       <li>
         <p>
-          <strong>Website</strong> refers to markmetcalfe.io, accessible from
+          <strong>Website</strong> refers to markmetcalfe.com, accessible from
           <a
-            href="https://markmetcalfe.io"
+            href="https://markmetcalfe.com"
             rel="external nofollow noopener"
             target="_blank"
-            >https://markmetcalfe.io</a
+            >https://markmetcalfe.com</a
           >
         </p>
       </li>
