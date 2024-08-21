@@ -3,7 +3,7 @@
     <PageCard>
       <section class="businesscard">
         <div class="businesscard-column businesscard-photo-container">
-          <img src="/me.png" alt="Photo of Mark Metcalfe" />
+          <img src="/me.png?v=2" alt="Photo of Mark Metcalfe" />
         </div>
         <div class="businesscard-column businesscard-content">
           <div class="businesscard-row">
@@ -48,7 +48,8 @@ export default defineComponent({
 
   img {
     border-radius: 50%;
-    height: 250px;
+    height: 210px;
+    filter: contrast(190%) brightness(90%) grayscale(100%);
   }
 
   &-column {

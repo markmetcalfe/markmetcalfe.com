@@ -3,7 +3,7 @@
     <section class="home-header">
       <h1>Mark Metcalfe</h1>
       <div class="photo-of-me">
-        <img src="/me.png" />
+        <img src="/me.png?v=2" />
       </div>
       <div class="home-header-about">
         <h3>Developer <span>/</span> VJ <span>/</span> Digital Wizard</h3>
@@ -93,16 +93,19 @@ export default defineComponent({
     .photo-of-me {
       display: inline-block;
       transform: translateZ(0);
+      filter: contrast(190%) brightness(90%) grayscale(100%);
 
       @include desktop-only {
-        height: 10.5rem;
-        width: 10.5rem;
+        height: 9rem;
+        width: 9rem;
+        margin: 1rem 0;
         font-size: 5.25rem;
       }
 
       @include mobile-only {
-        height: 7.5rem;
-        width: 7.5rem;
+        height: 6.5rem;
+        width: 6.5rem;
+        margin: 0.5rem 0;
         font-size: 3.75rem;
       }
 
