@@ -1,11 +1,11 @@
 <template>
   <PageCard back-button-page="/">
     <template #title>Connection Status</template>
-    <div class="networkstatus">
-      <p v-if="isConnected === true" class="networkstatus-connected">
+    <div>
+      <p v-if="isConnected === true" class="networkstatus green">
         Connected To Local Network
       </p>
-      <p v-else-if="isConnected === false" class="networkstatus-notconnected">
+      <p v-else-if="isConnected === false" class="networkstatus red">
         Not Connected To Local Network
       </p>
       <p v-if="homeIp">Home IP: {{ homeIp }}</p>
@@ -50,8 +50,7 @@ export default defineComponent({
 <style lang="scss">
 @import '../variables';
 
-.networkstatus-connected,
-.networkstatus-notconnected {
+.networkstatus {
   font-weight: bold;
   padding-bottom: 1rem;
 
@@ -62,13 +61,5 @@ export default defineComponent({
   @include mobile-only {
     font-size: 1.25rem;
   }
-}
-
-.networkstatus-connected {
-  color: var(--color-green);
-}
-
-.networkstatus-notconnected {
-  color: var(--color-red);
 }
 </style>

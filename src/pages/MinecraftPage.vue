@@ -6,8 +6,8 @@
       class="mapframe"
     ></iframe>
     <div class="banner-overlay">
-      <span style="color: var(--color-white)">Server IP: </span
-      ><span style="color: var(--color-green)">minecraft.markmetcalfe.com</span>
+      <span class="white">Server IP: </span
+      ><span class="green">minecraft.markmetcalfe.com</span>
     </div>
   </div>
 </template>

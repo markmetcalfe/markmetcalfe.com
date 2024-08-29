@@ -82,6 +82,19 @@ button.button-icon:hover {
   color: inherit;
 }
 
+.black {
+  color: var(--color-black);
+}
+.white {
+  color: var(--color-white);
+}
+.green {
+  color: var(--color-green);
+}
+.red {
+  color: var(--color-red);
+}
+
 ::selection {
   background: var(--color-dark);
   color: var(--color-light);
