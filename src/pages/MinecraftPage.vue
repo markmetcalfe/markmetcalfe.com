@@ -29,7 +29,7 @@ export default defineComponent({
 
 .banner-overlay {
   position: absolute;
-  background-color: var(--color-black);
+  background-color: rgb(0 0 0 / 80%);
   z-index: 10;
 
   @include desktop-only {
@@ -38,6 +38,7 @@ export default defineComponent({
     padding: 1rem 2rem;
     font-size: 2rem;
   }
+
   @include mobile-only {
     bottom: 2rem;
     border-radius: 0.5rem;
