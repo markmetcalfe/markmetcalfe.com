@@ -29,7 +29,7 @@
     "pinia": "^2.1.7",
     "three": "^0.165.0",
     "vue": "^3.4.21",
-    "vuetify": "^3.4.9"
+    "vuetify": "^3.7.1"
   },
   "devDependencies": {
     "@babel/types": "^7.24.0",
