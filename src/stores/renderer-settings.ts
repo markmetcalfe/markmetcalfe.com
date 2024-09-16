@@ -10,6 +10,7 @@ import {
   getRandomNum,
   getRandomValue,
 } from '../util/random'
+import { getRandomColor } from '../util/color'
 
 export enum AutoZoomMode {
   DISABLED = 'Disabled',
@@ -42,6 +43,7 @@ export interface RendererSettings {
   }
   beatMatch: {
     enabled: boolean
+    randomizeColors: boolean
     bpm: number
     lastTime: Date
     taps: Date[]
@@ -101,6 +103,7 @@ const defaultSettings: RendererSettings = {
   },
   beatMatch: {
     enabled: true,
+    randomizeColors: false,
     bpm: 140 / 4, // 1 bar of 140s dub
     lastTime: new Date(0),
     taps: [],
@@ -140,6 +143,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
 
       this.setBeatMatchEnabled(getRandomBool())
       this.setBeatMatchBpm(getRandomInt(20, 140))
+      this.beatMatch.randomizeColors = this.beatMatch.enabled
 
       this.randomiseGeometry()
       this.setRotationSpeed(getRandomNum(10, 25), getRandomNum(10, 25))
@@ -232,9 +236,15 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
         return
       }
 
-      this.geometry.active.forEach(geometry => {
+      this.geometry.active.forEach((geometry, index) => {
         const randomRotationPosition = getRandomNum(0, 100)
         geometry.setRotation(randomRotationPosition)
+
+        if (this.beatMatch.randomizeColors) {
+          const randomColor = getRandomColor()
+          this.geometry.config[index].color = `rgb(${randomColor.join(', ')})`
+          geometry.setColor(...randomColor)
+        }
       })
 
       if (this.autoZoom.mode === AutoZoomMode.RANDOM) {
@@ -291,8 +301,8 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
         timesBetween.reduce((a, b) => a + b) / timesBetween.length
       this.beatMatch.bpm = (60 / averageTimeBetween) * 1000
     },
-    setBeatMatchEnabled(enabled: boolean) {
-      this.beatMatch.enabled = enabled
+    setBeatMatchEnabled(enabled: boolean | null) {
+      this.beatMatch.enabled = enabled ?? false
       if (
         !enabled &&
         ![AutoZoomMode.DISABLED, AutoZoomMode.SMOOTH].includes(

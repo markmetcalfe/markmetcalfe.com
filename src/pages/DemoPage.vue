@@ -3,10 +3,6 @@
     <template #title>3D Demo</template>
 
     <div class="demopage">
-      <div v-if="store.isMobile" class="demopage-headernote">
-        View this on desktop for more options
-      </div>
-
       <div class="demopage-buttons">
         <v-btn color="primary" variant="flat" @click="store.randomise"
           ><template #prepend>
@@ -134,14 +130,25 @@
           </template>
         </v-slider>
 
-        <v-switch
-          :model-value="settings.beatMatch.enabled"
-          label="Beat Matching"
-          color="primary"
-          inset
-          hide-details
-          @update:model-value="store.setBeatMatchEnabled"
-        ></v-switch>
+        <div class="demopage-cols-two">
+          <v-switch
+            :model-value="settings.beatMatch.enabled"
+            label="Beat Matching"
+            color="primary"
+            inset
+            hide-details
+            @update:model-value="store.setBeatMatchEnabled"
+          ></v-switch>
+
+          <v-switch
+            v-model="settings.beatMatch.randomizeColors"
+            :disabled="!settings.beatMatch.enabled"
+            label="Colour Changes"
+            color="primary"
+            inset
+            hide-details
+          ></v-switch>
+        </div>
 
         <v-slider
           v-model="settings.beatMatch.bpm"
@@ -404,16 +411,20 @@ export default defineComponent({
     }
   }
 
-  &-headernote {
-    padding-bottom: 1.5rem;
-  }
-
   &-footnote {
     padding-top: 1.5rem;
   }
 
   @include desktop-only {
     min-width: 500px;
+
+    &-cols {
+      &-two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+    }
   }
 
   @include mobile-only {

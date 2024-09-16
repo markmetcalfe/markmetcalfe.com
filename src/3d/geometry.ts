@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 
 export abstract class Geometry {
-  private object: THREE.Object3D
+  private object: THREE.Mesh | THREE.LineSegments
   private attributes: GeometryAttributes
   private rotationSpeed = { x: 0, y: 0 }
 
@@ -27,6 +27,12 @@ export abstract class Geometry {
       this.object.position.z = z
     }
     return this
+  }
+
+  public setColor(r: number, g: number, b: number) {
+    this.getMaterials().forEach(material => {
+      material.color.setRGB(r / 255, g / 255, b / 255)
+    })
   }
 
   public setRotation(x: number, y?: number, z?: number) {
@@ -80,6 +86,14 @@ export abstract class Geometry {
 
   public getAttributes() {
     return this.attributes
+  }
+
+  public getMaterials(): THREE.MeshBasicMaterial[] | THREE.LineBasicMaterial[] {
+    return this.object.material instanceof THREE.Material
+      ? [this.object.material as THREE.MeshBasicMaterial]
+      : (this.object.material as
+          | THREE.MeshBasicMaterial[]
+          | THREE.LineBasicMaterial[])
   }
 
   public static getName(): string {
