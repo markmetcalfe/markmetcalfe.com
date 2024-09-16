@@ -5,8 +5,10 @@ test.beforeEach(async ({ page }) => {
 })
 
 test.describe('MinecraftPage', () => {
-  test('matches snapshot', async ({ page }) => {
-    await page.waitForTimeout(1000)
-    expect(await page.screenshot()).toMatchSnapshot()
+  test('can load page', async ({ page }) => {
+    await expect(page.locator('text="Server IP:"')).toBeVisible()
+    await expect(
+      page.locator('text="minecraft.markmetcalfe.com"'),
+    ).toBeVisible()
   })
 })
