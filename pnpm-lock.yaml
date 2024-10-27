@@ -46,8 +46,8 @@ importers:
         specifier: ^7.24.0
         version: 7.26.0
       '@chromatic-com/playwright':
-        specifier: ^0.9.0
-        version: 0.9.0(@playwright/test@1.48.2)(esbuild@0.23.1)(typescript@5.3.3)(webpack-sources@3.2.3)
+        specifier: ^0.10.0
+        version: 0.10.0(@playwright/test@1.48.2)(esbuild@0.23.1)(typescript@5.3.3)(webpack-sources@3.2.3)
       '@fortawesome/fontawesome-free':
         specifier: ^6.5.1
         version: 6.6.0
@@ -77,7 +77,7 @@ importers:
         version: 12.0.0(eslint-plugin-vue@9.29.1(eslint@8.57.1))(eslint@8.57.1)(typescript@5.3.3)
       chromatic:
         specifier: ^11.5.3
-        version: 11.16.1(@chromatic-com/playwright@0.9.0(@playwright/test@1.48.2)(esbuild@0.23.1)(typescript@5.3.3)(webpack-sources@3.2.3))
+        version: 11.16.1(@chromatic-com/playwright@0.10.0(@playwright/test@1.48.2)(esbuild@0.23.1)(typescript@5.3.3)(webpack-sources@3.2.3))
       eslint:
         specifier: ^8.57.0
         version: 8.57.1
@@ -163,8 +163,8 @@ packages:
     resolution: {integrity: sha512-Z/yiTPj+lDVnF7lWeKCIJzaIkI0vYO87dMpZ4bg4TDrFe4XXLFWL1TbXU27gBP3QccxV9mZICCrnjnYlJjXHOA==}
     engines: {node: '>=6.9.0'}
 
-  '@chromatic-com/playwright@0.9.0':
-    resolution: {integrity: sha512-A1EOD1KysoK/P+WE2NMGEeilALRFu5j5X9B4BnL22gsAy3yXYKFnnv77KzHvvqSj0yzvhGM6CKXwlrvh7V+Qvw==}
+  '@chromatic-com/playwright@0.10.0':
+    resolution: {integrity: sha512-QjKnOfuIcq9Y97QwA3MMVzOceXn1ikelUeC8gy60d2PbsQ2NNxH2n/PrAJ8Sllr225mXD1ts9xBH+Hq3+Blo5A==}
     hasBin: true
     peerDependencies:
       '@playwright/test': ^1.0.0
@@ -3358,7 +3358,7 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@chromatic-com/playwright@0.9.0(@playwright/test@1.48.2)(esbuild@0.23.1)(typescript@5.3.3)(webpack-sources@3.2.3)':
+  '@chromatic-com/playwright@0.10.0(@playwright/test@1.48.2)(esbuild@0.23.1)(typescript@5.3.3)(webpack-sources@3.2.3)':
     dependencies:
       '@chromaui/rrweb-snapshot': 2.0.0-alpha.17-noAbsolute
       '@playwright/test': 1.48.2
@@ -4695,9 +4695,9 @@ snapshots:
     dependencies:
       readdirp: 4.0.2
 
-  chromatic@11.16.1(@chromatic-com/playwright@0.9.0(@playwright/test@1.48.2)(esbuild@0.23.1)(typescript@5.3.3)(webpack-sources@3.2.3)):
+  chromatic@11.16.1(@chromatic-com/playwright@0.10.0(@playwright/test@1.48.2)(esbuild@0.23.1)(typescript@5.3.3)(webpack-sources@3.2.3)):
     optionalDependencies:
-      '@chromatic-com/playwright': 0.9.0(@playwright/test@1.48.2)(esbuild@0.23.1)(typescript@5.3.3)(webpack-sources@3.2.3)
+      '@chromatic-com/playwright': 0.10.0(@playwright/test@1.48.2)(esbuild@0.23.1)(typescript@5.3.3)(webpack-sources@3.2.3)
 
   chrome-trace-event@1.0.4: {}
 
