@@ -43,6 +43,7 @@ export default defineComponent({
   --color-red: #f00;
   --color-white: #fff;
   --color-black: #000;
+  --profile-image-filter: contrast(133%) brightness(133%) grayscale(100%);
 }
 
 body {
@@ -85,12 +86,15 @@ button.button-icon:hover {
 .black {
   color: var(--color-black);
 }
+
 .white {
   color: var(--color-white);
 }
+
 .green {
   color: var(--color-green);
 }
+
 .red {
   color: var(--color-red);
 }

@@ -3,7 +3,7 @@
     <section class="home-header">
       <h1>Mark Metcalfe</h1>
       <div class="photo-of-me">
-        <img src="/me.png?v=2" />
+        <img src="/me.png?v=3" />
       </div>
       <div class="home-header-about">
         <h3>Developer <span>/</span> VJ <span>/</span> Digital Wizard</h3>
@@ -93,7 +93,7 @@ export default defineComponent({
     .photo-of-me {
       display: inline-block;
       transform: translateZ(0);
-      filter: contrast(190%) brightness(90%) grayscale(100%);
+      filter: var(--profile-image-filter);
 
       @include desktop-only {
         height: 9rem;
