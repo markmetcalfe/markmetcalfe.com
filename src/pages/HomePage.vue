@@ -93,7 +93,7 @@ export default defineComponent({
     .photo-of-me {
       display: inline-block;
       transform: translateZ(0);
-      filter: contrast(190%) brightness(90%) grayscale(100%);
+      filter: var(--profile-image-filter);
 
       @include desktop-only {
         height: 9rem;

@@ -36,8 +36,7 @@ export default defineComponent({
 .businesscard {
   padding: 5px;
   display: flex;
-  align-content: center;
-  justify-content: space-between;
+  place-content: center space-between;
   align-items: center;
 
   &-outer {
@@ -49,7 +48,7 @@ export default defineComponent({
   img {
     border-radius: 50%;
     height: 210px;
-    filter: contrast(190%) brightness(90%) grayscale(100%);
+    filter: var(--profile-image-filter);
   }
 
   &-column {
@@ -62,8 +61,7 @@ export default defineComponent({
     width: min-content;
     display: flex;
     flex-flow: column nowrap;
-    align-content: space-between;
-    justify-content: space-between;
+    place-content: space-between space-between;
     align-items: center;
     height: 200px;
 
