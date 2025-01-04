@@ -3,7 +3,7 @@
     <section class="home-header">
       <h1>Mark Metcalfe</h1>
       <div class="photo-of-me">
-        <img src="/me.png?v=3" />
+        <img src="/me.png?v=4" />
       </div>
       <div class="home-header-about">
         <h3>Developer <span>/</span> VJ <span>/</span> Digital Wizard</h3>

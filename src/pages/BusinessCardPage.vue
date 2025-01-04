@@ -3,7 +3,7 @@
     <PageCard>
       <section class="businesscard">
         <div class="businesscard-column businesscard-photo-container">
-          <img src="/me.png?v=3" alt="Photo of Mark Metcalfe" />
+          <img src="/me.png?v=4" alt="Photo of Mark Metcalfe" />
         </div>
         <div class="businesscard-column businesscard-content">
           <div class="businesscard-row">
