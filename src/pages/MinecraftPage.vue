@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrapper">
     <iframe
-      src="https://requests.markmetcalfe.com/minecraft/dynmap"
+      src="https://plex.markmetcalfe.com/minecraft/dynmap"
       title="Map of the Minecraft Server"
       class="mapframe"
     ></iframe>
