@@ -6,7 +6,7 @@
     <meta class="metaColor" name="theme-color" content="#00ff00" />
     <meta name="apple-mobile-web-app-status-bar-style" content="#00ff00" />
 
-    <title>Mark Metcalfe</title>
+    <title><%- title %></title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <!-- External resources -->
@@ -18,32 +18,14 @@
     />
 
     <!-- Page Info Begin -->
-    <meta
-      name="keywords"
-      content="mark,metcalfe,developer,software,engineer,web,coder,javascript,java,kotlin,php,vue,vuejs,typescript"
-    />
-    <meta property="og:title" content="Mark Metcalfe" />
-    <meta name="twitter:title" content="Mark Metcalfe" />
-    <meta
-      name="description"
-      content="Mark Metcalfe: Developer / Digital Wizard"
-    />
-    <meta
-      property="og:description"
-      content="Mark Metcalfe: Developer / Digital Wizard"
-    />
-    <meta
-      name="twitter:description"
-      content="Mark Metcalfe: Developer / Digital Wizard"
-    />
-    <meta
-      property="og:image"
-      content="https://markmetcalfe.com/social-card.jpg?v=3"
-    />
-    <meta
-      name="twitter:image"
-      content="https://markmetcalfe.com/social-card.jpg?v=3"
-    />
+    <meta name="keywords" content="<%- keywords %>" />
+    <meta property="og:title" content="<%- title %>" />
+    <meta name="twitter:title" content="<%- title %>" />
+    <meta name="description" content="<%- description %>" />
+    <meta property="og:description" content="<%- description %>" />
+    <meta name="twitter:description" content="<%- description %>" />
+    <meta property="og:image" content="<%- image %>" />
+    <meta name="twitter:image" content="<%- image %>" />
     <meta property="og:type" content="website" />
     <!-- Page Info End -->
 
@@ -56,5 +38,6 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <%- injectScript %>
   </body>
 </html>
