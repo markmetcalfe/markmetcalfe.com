@@ -7,8 +7,6 @@
 </template>
 
 <style lang="scss">
-@import '../variables';
-
 .buttonsection {
   width: 100%;
   height: auto;

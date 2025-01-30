@@ -32,8 +32,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import './variables';
-
 :root {
   --color-dark: #21252b;
   --color-dark-translucent: rgb(33 37 43 / 50%);

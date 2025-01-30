@@ -378,7 +378,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '../variables';
+@use '../variables' as vars;
 
 .demopage {
   &-buttons {
@@ -415,7 +415,7 @@ export default defineComponent({
     padding-top: 1.5rem;
   }
 
-  @include desktop-only {
+  @include vars.desktop-only {
     min-width: 500px;
 
     &-cols {
@@ -427,7 +427,7 @@ export default defineComponent({
     }
   }
 
-  @include mobile-only {
+  @include vars.mobile-only {
     min-width: calc(95vw - 1rem);
   }
 }

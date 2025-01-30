@@ -48,17 +48,17 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '../variables';
+@use '../variables' as vars;
 
 .networkstatus {
   font-weight: bold;
   padding-bottom: 1rem;
 
-  @include desktop-only {
+  @include vars.desktop-only {
     font-size: 1.75rem;
   }
 
-  @include mobile-only {
+  @include vars.mobile-only {
     font-size: 1.25rem;
   }
 }

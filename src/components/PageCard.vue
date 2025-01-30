@@ -42,7 +42,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '../variables';
+@use '../variables' as vars;
 
 .pagecard {
   display: flex;
@@ -61,12 +61,12 @@ export default defineComponent({
     background-color: none;
     color: var(--color-light);
 
-    @include desktop-only {
+    @include vars.desktop-only {
       padding: 1.5rem;
       border-radius: 0.75rem;
     }
 
-    @include mobile-only {
+    @include vars.mobile-only {
       padding: 1rem;
       border-radius: 0.5rem;
     }
@@ -82,22 +82,22 @@ export default defineComponent({
     text-align: center;
     margin: 0;
 
-    @include desktop-only {
+    @include vars.desktop-only {
       font-size: 1.25rem;
     }
 
-    @include mobile-only {
+    @include vars.mobile-only {
       font-size: 1rem;
     }
   }
 
   &-longform {
     & .pagecard-inner {
-      @include desktop-only {
+      @include vars.desktop-only {
         margin: 2rem;
       }
 
-      @include mobile-only {
+      @include vars.mobile-only {
         margin: 1rem;
       }
     }
@@ -113,12 +113,12 @@ export default defineComponent({
     display: inline-block;
     color: var(--color-link);
 
-    @include desktop-only {
+    @include vars.desktop-only {
       font-size: 2.25rem;
       left: 1.5rem;
     }
 
-    @include mobile-only {
+    @include vars.mobile-only {
       font-size: 1.75rem;
       left: 1rem;
     }
@@ -128,12 +128,12 @@ export default defineComponent({
     font-weight: 400;
     margin-top: 0.5rem;
 
-    @include desktop-only {
+    @include vars.desktop-only {
       font-size: 2.25rem;
       margin-bottom: 2rem;
     }
 
-    @include mobile-only {
+    @include vars.mobile-only {
       font-size: 1.75rem;
       margin-bottom: 1.5rem;
     }

@@ -42,8 +42,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '../variables';
-
 .dynamicbackground {
   &-3d {
     position: fixed;
