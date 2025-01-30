@@ -14,6 +14,7 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { aliases, fa } from 'vuetify/iconsets/fa'
 import '@fortawesome/fontawesome-free/css/all.css'
+import { isVizshun } from './util/site'
 
 const pinia = createPinia()
 
@@ -49,10 +50,11 @@ const router = createRouter({
   routes,
 })
 router.beforeEach((to: RouteLocationNormalized, _, next) => {
+  const siteName = isVizshun() ? 'Vizshun' : 'Mark Metcalfe'
   if (to.meta.title) {
-    document.title = `${to.meta.title} - Mark Metcalfe`
+    document.title = `${to.meta.title} - ${siteName}`
   } else {
-    document.title = 'Mark Metcalfe'
+    document.title = siteName
   }
   next()
 })

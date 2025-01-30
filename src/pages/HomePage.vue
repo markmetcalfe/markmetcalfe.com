@@ -1,12 +1,17 @@
 <template>
   <PageCard>
     <section class="home-header">
-      <h1>Mark Metcalfe</h1>
+      <h1 v-if="isVizshun()">Vizshun</h1>
+      <h1 v-else>Mark Metcalfe</h1>
       <div class="photo-of-me">
-        <img src="/me.png?v=4" />
+        <img v-if="isVizshun()" src="/vizshun.png?v=1" />
+        <img v-else src="/me.png?v=5" />
       </div>
       <div class="home-header-about">
-        <h3>Developer <span>/</span> VJ <span>/</span> Digital Wizard</h3>
+        <h3 v-if="isVizshun()">
+          Visual Artist <span>/</span> DJ <span>/</span> Digital Wizard
+        </h3>
+        <h3 v-else>Developer <span>/</span> Digital Wizard</h3>
       </div>
     </section>
     <ButtonSection>
@@ -48,6 +53,7 @@ import PageCard from '../components/PageCard.vue'
 import ButtonSection from '../components/ButtonSection.vue'
 import LinkButton from '../components/LinkButton.vue'
 import { useRendererSettingsStore } from '../stores/renderer-settings'
+import { isVizshun } from '../util/site'
 export default defineComponent({
   name: 'HomePage',
   components: { PageCard, ButtonSection, LinkButton },
@@ -56,6 +62,7 @@ export default defineComponent({
       return useRendererSettingsStore()
     },
   },
+  methods: { isVizshun },
 })
 </script>
 
@@ -93,7 +100,6 @@ export default defineComponent({
     .photo-of-me {
       display: inline-block;
       transform: translateZ(0);
-      filter: var(--profile-image-filter);
 
       @include vars.desktop-only {
         height: 9rem;

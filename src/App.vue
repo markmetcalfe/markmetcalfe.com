@@ -41,7 +41,6 @@ export default defineComponent({
   --color-red: #f00;
   --color-white: #fff;
   --color-black: #000;
-  --profile-image-filter: contrast(115%) brightness(125%) grayscale(100%);
 }
 
 body {

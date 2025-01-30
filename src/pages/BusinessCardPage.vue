@@ -3,18 +3,27 @@
     <PageCard>
       <section class="businesscard">
         <div class="businesscard-column businesscard-photo-container">
-          <img src="/me.png?v=4" alt="Photo of Mark Metcalfe" />
+          <img
+            v-if="isVizshun()"
+            src="/vizshun.png?v=1"
+            alt="Photo of Vizshun"
+          />
+          <img v-else src="/me.png?v=3" alt="Photo of Mark Metcalfe" />
         </div>
         <div class="businesscard-column businesscard-content">
           <div class="businesscard-row">
-            <h1>mark metcalfe</h1>
+            <h1 v-if="isVizshun()">vizshun</h1>
+            <h1 v-else>mark metcalfe</h1>
           </div>
           <div class="businesscard-row">
-            <h2 class="light">
-              Developer <span>/</span> VJ <span>/</span> Digital Wizard
+            <h2 v-if="isVizshun()" class="light">
+              Visual Artist <span>/</span> DJ
+            </h2>
+            <h2 v-else class="light">
+              Developer <span>/</span> Digital Wizard
             </h2>
           </div>
-          <div class="businesscard-row">
+          <div v-if="!isVizshun()" class="businesscard-row">
             <h2>markmetcalfe.com</h2>
           </div>
         </div>
@@ -26,9 +35,24 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import PageCard from '../components/PageCard.vue'
+import { isVizshun } from '../util/site'
+import { useRendererSettingsStore } from '../stores/renderer-settings'
+
 export default defineComponent({
   name: 'CardPage',
   components: { PageCard },
+  mounted() {
+    const rendererStore = useRendererSettingsStore()
+
+    rendererStore.setBeatMatchEnabled(false)
+    rendererStore.setFollowCursor(false)
+
+    const zoom = 2
+    rendererStore.setMaxZoom(zoom)
+    rendererStore.setMinZoom(zoom)
+    rendererStore.setCurrentZoom(zoom)
+  },
+  methods: { isVizshun },
 })
 </script>
 
@@ -48,12 +72,19 @@ export default defineComponent({
   img {
     border-radius: 50%;
     height: 210px;
-    filter: var(--profile-image-filter);
   }
 
   &-column {
     &:not(:first-child) {
       padding-left: 40px;
+    }
+  }
+
+  &-row {
+    line-height: initial;
+
+    &:not(:first-child) {
+      margin-top: 15px;
     }
   }
 
@@ -63,11 +94,11 @@ export default defineComponent({
     flex-flow: column nowrap;
     place-content: space-between space-between;
     align-items: center;
+    justify-content: center;
     height: 200px;
 
     h1,
     h2 {
-      margin: 0;
       white-space: nowrap;
     }
 
@@ -78,6 +109,7 @@ export default defineComponent({
 
     h2 {
       font-size: 35px;
+      margin: 0;
     }
 
     h2.light {

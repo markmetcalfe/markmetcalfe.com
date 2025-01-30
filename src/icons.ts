@@ -4,6 +4,7 @@ import {
   faGithub,
   faLinkedin,
   faInstagram,
+  faSoundcloud,
 } from '@fortawesome/free-brands-svg-icons'
 import {
   faMobileScreenButton,
@@ -35,6 +36,7 @@ const icons = [
   faMobileScreenButton,
   faPlay,
   faShapes,
+  faSoundcloud,
 ]
 
 const addIcons: Plugin = (app: App) => {
