@@ -60,15 +60,15 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '../variables';
+@use '../variables' as vars;
 
 .home {
   &-header {
-    @include desktop-only {
+    @include vars.desktop-only {
       margin-bottom: 1.5rem;
     }
 
-    @include mobile-only {
+    @include vars.mobile-only {
       margin-bottom: 1rem;
     }
 
@@ -81,11 +81,11 @@ export default defineComponent({
       letter-spacing: -3px;
       margin: 0;
 
-      @include desktop-only {
+      @include vars.desktop-only {
         font-size: 5rem;
       }
 
-      @include mobile-only {
+      @include vars.mobile-only {
         font-size: 3.25rem;
       }
     }
@@ -95,14 +95,14 @@ export default defineComponent({
       transform: translateZ(0);
       filter: var(--profile-image-filter);
 
-      @include desktop-only {
+      @include vars.desktop-only {
         height: 9rem;
         width: 9rem;
         margin: 1rem 0;
         font-size: 5.25rem;
       }
 
-      @include mobile-only {
+      @include vars.mobile-only {
         height: 6.5rem;
         width: 6.5rem;
         margin: 0.5rem 0;
@@ -118,23 +118,23 @@ export default defineComponent({
     }
 
     &-about {
-      @include desktop-only {
+      @include vars.desktop-only {
         margin: 0.75rem 0.5rem;
       }
 
-      @include mobile-only {
+      @include vars.mobile-only {
         margin: 0.5rem 0;
       }
 
       h3 {
         font-weight: 300;
 
-        @include desktop-only {
+        @include vars.desktop-only {
           margin: 0 0 1rem;
           font-size: 2rem;
         }
 
-        @include mobile-only {
+        @include vars.mobile-only {
           margin: 0 0 0.75rem;
           font-size: 1.5rem;
         }
@@ -148,11 +148,11 @@ export default defineComponent({
         margin: 0;
         text-align: left;
 
-        @include desktop-only {
+        @include vars.desktop-only {
           font-size: 1.35rem;
         }
 
-        @include mobile-only {
+        @include vars.mobile-only {
           font-size: 0.9rem;
         }
       }
@@ -166,11 +166,11 @@ export default defineComponent({
     margin-right: 1rem;
     margin-top: 1rem;
 
-    @include desktop-only {
+    @include vars.desktop-only {
       font-size: 2rem;
     }
 
-    @include mobile-only {
+    @include vars.mobile-only {
       font-size: 1.5rem;
     }
   }

@@ -20,7 +20,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '../variables';
+@use '../variables' as vars;
 
 .page-wrapper {
   display: flex;
@@ -32,14 +32,14 @@ export default defineComponent({
   background-color: rgb(0 0 0 / 80%);
   z-index: 10;
 
-  @include desktop-only {
+  @include vars.desktop-only {
     bottom: 3rem;
     border-radius: 0.5rem;
     padding: 1rem 2rem;
     font-size: 2rem;
   }
 
-  @include mobile-only {
+  @include vars.mobile-only {
     bottom: 2rem;
     border-radius: 0.5rem;
     padding: 0.75rem 1.25rem;

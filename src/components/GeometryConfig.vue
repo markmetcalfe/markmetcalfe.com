@@ -218,8 +218,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '../variables';
-
 .geometryconfig {
   &-settings {
     padding: 1rem 1.5rem;

@@ -83,7 +83,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import '../variables';
+@use '../variables' as vars;
 
 .linkbutton {
   a {
@@ -102,13 +102,13 @@ export default defineComponent({
       background: var(--color-hover);
     }
 
-    @include desktop-only {
+    @include vars.desktop-only {
       border-radius: 0.5rem;
       font-size: 2rem;
       padding: 0.75rem;
     }
 
-    @include mobile-only {
+    @include vars.mobile-only {
       border-radius: 0.25rem;
       font-size: 1.5rem;
       padding: 0.5rem;
@@ -120,14 +120,14 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
 
-    @include desktop-only {
+    @include vars.desktop-only {
       height: 3.25rem;
       width: 3.25rem;
       margin-right: 0.75rem;
       font-size: 3.25rem;
     }
 
-    @include mobile-only {
+    @include vars.mobile-only {
       height: 2.5rem;
       width: 2.5rem;
       margin-right: 0.5rem;
@@ -135,13 +135,13 @@ export default defineComponent({
     }
 
     &-extrapadding {
-      @include desktop-only {
+      @include vars.desktop-only {
         height: 3rem;
         width: auto;
         font-size: 3rem;
       }
 
-      @include mobile-only {
+      @include vars.mobile-only {
         height: 2rem;
         width: auto;
         font-size: 2rem;
