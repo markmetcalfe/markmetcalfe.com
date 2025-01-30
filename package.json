@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "vite",
+    "dev:vizshun": "VITE_SITE_NAME=vizshun vite",
     "build": "vue-tsc --noEmit && vite build",
+    "build:vizshun": "VITE_SITE_NAME=vizshun vue-tsc --noEmit && vite build",
     "test": "npx playwright test",
     "preview": "vite preview",
     "precommit": "lint-staged",
@@ -61,6 +63,7 @@
     "typescript": "5.7.3",
     "vite": "^5.1.5",
     "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-html": "^3.2.2",
     "vue-router": "^4.3.0",
     "vue-tsc": "^2.0.0"
   },

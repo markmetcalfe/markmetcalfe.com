@@ -359,5 +359,14 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       this.rotationSpeed.y = speed
       this.syncRotationSpeed()
     },
+    setFollowCursor(followCursor: boolean) {
+      this.followCursor = followCursor
+    },
+
+    setAllRotation(x: number, y: number, z: number) {
+      this.geometry.active.forEach(geometry => {
+        geometry.setRotation(x, y, z)
+      })
+    },
   },
 })
