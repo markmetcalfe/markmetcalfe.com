@@ -1,5 +1,6 @@
 import { RouteRecordRaw } from 'vue-router'
 import HomePage from './pages/HomePage.vue'
+import { isVizshun } from './util/site'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -46,15 +47,6 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "demo" */ './pages/DemoPage.vue'),
   },
   {
-    path: '/status',
-    name: 'NetworkStatusPage',
-    meta: {
-      title: 'Network Status',
-    },
-    component: () =>
-      import(/* webpackChunkName: "status" */ './pages/NetworkStatusPage.vue'),
-  },
-  {
     path: '/privacy-policy',
     name: 'PrivacyPolicyPage',
     meta: {
@@ -74,15 +66,32 @@ const routes: Array<RouteRecordRaw> = [
     component: () =>
       import(/* webpackChunkName: "terms" */ './pages/TermsOfServicePage.vue'),
   },
-  {
-    path: '/minecraft',
-    name: 'MinecraftPage',
-    meta: {
-      title: 'Minecraft',
-    },
-    component: () =>
-      import(/* webpackChunkName: "minecraft" */ './pages/MinecraftPage.vue'),
-  },
+  ...(!isVizshun()
+    ? [
+        {
+          path: '/status',
+          name: 'NetworkStatusPage',
+          meta: {
+            title: 'Network Status',
+          },
+          component: () =>
+            import(
+              /* webpackChunkName: "status" */ './pages/NetworkStatusPage.vue'
+            ),
+        },
+        {
+          path: '/minecraft',
+          name: 'MinecraftPage',
+          meta: {
+            title: 'Minecraft',
+          },
+          component: () =>
+            import(
+              /* webpackChunkName: "minecraft" */ './pages/MinecraftPage.vue'
+            ),
+        },
+      ]
+    : []),
   {
     path: '/5xx',
     name: 'ServerErrorPage',
