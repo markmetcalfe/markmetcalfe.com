@@ -35,7 +35,7 @@ test.describe('PortfolioPage', () => {
 
     await page.waitForTimeout(1000)
     expect(page1.url()).toContain('instagram.com')
-    expect(page1.url()).toContain('vizshun.nz')
+    expect(page1.url()).toContain('vizshun.art')
   })
 
   test('can navigate to soundcloud', async ({ page }) => {

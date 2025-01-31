@@ -15,10 +15,10 @@ export default defineConfig({
                 title: 'Vizshun',
                 description: 'Vizshun: Visual Artist / DJ / Digital Wizard',
                 keywords:
-                  'vizshun.nz,vizshun,vj,dj,creative,coding,coder,developer,art,visuals,vjing,resolume,techno,dubstep,psytrance,dub,house',
-                image: 'https://vizshun.nz/social-card-alt.jpg?v=1',
-                injectScript: `<a id="ga-insta-link" style="display:block;position:absolute;bottom:20px;right:20px;font-size:10px;color:#000!important;opacity:0!important" href="https://www.instagram.com/vizshun.nz/">@vizshun</a>
-                <a id="ga-insta-link" style="display:block;position:absolute;bottom:20px;right:20px;font-size:10px;color:#000!important;opacity:0!important" href="https://www.instagram.com/vizshun.nz/">@vizshun.nz</a>`,
+                  'vizshun,_vizshun,vj,dj,creative,coding,coder,developer,art,visuals,vjing,resolume,techno,dubstep,psytrance,dub,house',
+                image: 'https://vizshun.art/social-card-alt.jpg?v=1',
+                injectHtml: `<a id="ga-insta-link" style="display:block;position:absolute;bottom:20px;right:20px;font-size:10px;color:#000!important;opacity:0!important" href="https://www.instagram.com/_vizshun/">@vizshun</a>
+                <a id="ga-insta-link" style="display:block;position:absolute;bottom:20px;right:20px;font-size:10px;color:#000!important;opacity:0!important" href="https://www.instagram.com/_vizshun/">@_vizshun</a>`,
               }
             : {
                 title: 'Mark Metcalfe',
@@ -26,7 +26,7 @@ export default defineConfig({
                 keywords:
                   'mark,metcalfe,developer,software,engineer,web,coder,javascript,java,kotlin,php,vue,vuejs,typescript',
                 image: 'https://markmetcalfe.com/social-card.jpg?v=4',
-                injectScript: '',
+                injectHtml: '',
               },
       },
     }),
