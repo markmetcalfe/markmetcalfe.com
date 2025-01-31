@@ -31,7 +31,7 @@
         <p>
           <strong>Company</strong> (referred to as either &quot;the
           Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in
-          this Agreement) refers to markmetcalfe.com.
+          this Agreement) refers to {{ getSiteDomain() }}.
         </p>
       </li>
       <li>
@@ -60,12 +60,13 @@
       </li>
       <li>
         <p>
-          <strong>Website</strong> refers to markmetcalfe.com, accessible from
+          <strong>Website</strong> refers to {{ getSiteDomain() }}, accessible
+          from
           <a
-            href="https://markmetcalfe.com"
+            :href="'https://' + getSiteDomain()"
             rel="external nofollow noopener"
             target="_blank"
-            >https://markmetcalfe.com</a
+            >https://{{ getSiteDomain() }}</a
           >
         </p>
       </li>
@@ -272,8 +273,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import PageCard from '../components/PageCard.vue'
+import { getSiteDomain } from '../util/site'
 export default defineComponent({
   name: 'TermsOfServicePage',
   components: { PageCard },
+  methods: { getSiteDomain },
 })
 </script>
