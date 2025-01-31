@@ -5,7 +5,7 @@
       <LinkButton
         v-if="isVizshun()"
         text="Instagram"
-        href="https://instagram.com/vizshun.nz"
+        href="https://instagram.com/vizshun.art"
         icon="fab fa-instagram"
         color="#e1306c"
         external
