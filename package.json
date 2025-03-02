@@ -29,7 +29,7 @@
     "color-convert": "^2.0.1",
     "is-mobile": "^4.0.0",
     "pinia": "^2.1.7",
-    "three": "^0.171.0",
+    "three": "^0.174.0",
     "vue": "^3.4.21",
     "vuetify": "^3.7.1"
   },
@@ -40,7 +40,7 @@
     "@playwright/test": "1.50.1",
     "@types/color-convert": "^2.0.3",
     "@types/node": "^20.11.24",
-    "@types/three": "^0.171.0",
+    "@types/three": "^0.174.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-vue": "^5.0.4",
