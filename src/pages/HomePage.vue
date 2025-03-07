@@ -5,7 +5,7 @@
       <h1 v-else>Mark Metcalfe</h1>
       <div class="photo-of-me">
         <img v-if="isVizshun()" src="/vizshun.png?v=1" />
-        <img v-else src="/me.png?v=5" />
+        <img v-else src="/me.png?v=6" />
       </div>
       <div class="home-header-about">
         <h3 v-if="isVizshun()">
