@@ -8,7 +8,7 @@
             src="/vizshun.png?v=1"
             alt="Photo of Vizshun"
           />
-          <img v-else src="/me.png?v=3" alt="Photo of Mark Metcalfe" />
+          <img v-else src="/me.png?v=6" alt="Photo of Mark Metcalfe" />
         </div>
         <div class="businesscard-column businesscard-content">
           <div class="businesscard-row">
