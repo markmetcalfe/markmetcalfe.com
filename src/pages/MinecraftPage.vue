@@ -6,8 +6,8 @@
       class="mapframe"
     ></iframe>
     <div class="banner-overlay">
-      <span class="white">Server IP: </span
-      ><span class="green">minecraft.markmetcalfe.com</span>
+      <span class="light">Server IP: </span
+      ><span class="highlight">minecraft.markmetcalfe.com</span>
     </div>
   </div>
 </template>
@@ -30,18 +30,17 @@ export default defineComponent({
 .banner-overlay {
   position: absolute;
   background-color: rgb(0 0 0 / 80%);
+  border: var(--color-highlight) 1px solid;
   z-index: 10;
 
   @include vars.desktop-only {
     bottom: 3rem;
-    border-radius: 0.5rem;
     padding: 1rem 2rem;
     font-size: 2rem;
   }
 
   @include vars.mobile-only {
     bottom: 2rem;
-    border-radius: 0.5rem;
     padding: 0.75rem 1.25rem;
     font-size: 1.25rem;
   }

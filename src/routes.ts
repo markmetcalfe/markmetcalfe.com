@@ -9,42 +9,13 @@ const routes: Array<RouteRecordRaw> = [
     component: HomePage,
   },
   {
-    path: '/card',
-    name: 'BusinessCardPage',
+    path: '/visuals',
+    name: 'VisualsPage',
     meta: {
-      title: 'Business Card',
+      title: 'Visuals',
     },
     component: () =>
-      import(
-        /* webpackChunkName: "businesscard" */ './pages/BusinessCardPage.vue'
-      ),
-  },
-  {
-    path: '/contact',
-    name: 'ContactPage',
-    meta: {
-      title: 'Contact',
-    },
-    component: () =>
-      import(/* webpackChunkName: "contact" */ './pages/ContactPage.vue'),
-  },
-  {
-    path: '/portfolio',
-    name: 'PortfolioPage',
-    meta: {
-      title: 'My Work',
-    },
-    component: () =>
-      import(/* webpackChunkName: "portfolio" */ './pages/PortfolioPage.vue'),
-  },
-  {
-    path: '/demo',
-    name: 'DemoPage',
-    meta: {
-      title: '3D Demo',
-    },
-    component: () =>
-      import(/* webpackChunkName: "demo" */ './pages/DemoPage.vue'),
+      import(/* webpackChunkName: "visuals" */ './pages/VisualsPage.vue'),
   },
   {
     path: '/privacy-policy',

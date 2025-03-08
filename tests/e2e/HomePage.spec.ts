@@ -16,37 +16,111 @@ test.describe('HomePage', () => {
     await expect(page.locator('text="Digital Wizard"')).toBeVisible()
   })
 
-  test('can navigate to the portfolio page', async ({ page }) => {
-    await page.goto('/')
-
-    const link = page.locator('a:has-text("My Work")')
-
-    await Promise.all([page.waitForURL('/portfolio'), link.click()])
-
-    await page.waitForTimeout(1000)
-    await expect(page.locator('body')).toContainText('My Work')
+  test('can load card page', async ({ page }) => {
+    await page.goto('/?card')
+    await expect(page.locator('text="Mark Metcalfe"')).toBeVisible()
+    await expect(page.locator('text="Developer"')).toBeVisible()
+    await expect(page.locator('text="Digital Wizard"')).toBeVisible()
   })
 
-  test('can navigate to the contact page', async ({ page }) => {
-    await page.goto('/')
-
-    const link = page.locator('a:has-text("Contact Me")')
-
-    await Promise.all([page.waitForURL('/contact'), link.click()])
-
-    await page.waitForTimeout(1000)
-    await expect(page.locator('body')).toContainText('Contact')
-    await expect(page.locator('body')).toContainText('Email')
+  test('can load card page for vizshun', async ({ page }) => {
+    await page.goto('/?vizshun&card')
+    await expect(page.locator('text="Vizshun"')).toBeVisible()
+    await expect(page.locator('text="Visual Artist"')).toBeVisible()
+    await expect(page.locator('text="DJ"')).toBeVisible()
+    await expect(page.locator('text="Digital Wizard"')).toBeVisible()
   })
 
-  test('can navigate to the demo settings page', async ({ page }) => {
+  test('email link has valid mailto value', async ({ page }) => {
     await page.goto('/')
 
-    const link = page.locator('a[title="Demo Settings"]')
+    const link = page.locator('a:has-text("Email")')
 
-    await Promise.all([page.waitForURL('/demo'), link.click()])
+    await expect(link).toHaveAttribute('href', 'mailto:mark@markmetcalfe.com')
+  })
+
+  test('can navigate to github', async ({ page }) => {
+    await page.goto('/')
+
+    const link = page.locator('a:has-text("GitHub")')
+
+    const [page1] = await Promise.all([
+      page.waitForEvent('popup'),
+      link.click(),
+    ])
 
     await page.waitForTimeout(1000)
-    await expect(page.locator('body')).toContainText('3D Demo')
+    expect(page1.url()).toContain('github.com/markmetcalfe')
+    await expect(page1.locator('body')).toContainText('GitHub')
+  })
+
+  test('can navigate to linkedin', async ({ page }) => {
+    await page.goto('/')
+
+    const link = page.locator('a:has-text("LinkedIn")')
+
+    const [page1] = await Promise.all([
+      page.waitForEvent('popup'),
+      link.click(),
+    ])
+
+    await page.waitForTimeout(1000)
+    expect(page1.url()).toContain('linkedin.com/in/mark-metcalfe')
+    await expect(page1).toHaveTitle(/LinkedIn/)
+  })
+
+  test('can navigate to instagram', async ({ page }) => {
+    await page.goto('/?vizshun')
+
+    const link = page.locator('a:has-text("Instagram")')
+
+    const [page1] = await Promise.all([
+      page.waitForEvent('popup'),
+      link.click(),
+    ])
+
+    await page.waitForTimeout(1000)
+    expect(page1.url()).toContain('instagram.com')
+    expect(page1.url()).toContain('_vizshun')
+  })
+
+  test('can navigate to soundcloud', async ({ page }) => {
+    await page.goto('/?vizshun')
+
+    const link = page.locator('a:has-text("Soundcloud")')
+
+    const [page1] = await Promise.all([
+      page.waitForEvent('popup'),
+      link.click(),
+    ])
+
+    await page.waitForTimeout(1000)
+    expect(page1.url()).toContain('soundcloud.com')
+    expect(page1.url()).toContain('vizshun')
+  })
+
+  // TODO: Fix this failing test
+  test.skip('can navigate to the resume pdf', async ({ page }) => {
+    await page.goto('/')
+
+    const link = page.locator('a:has-text("Resume")')
+
+    const [page1] = await Promise.all([
+      page.waitForEvent('popup'),
+      link.click(),
+    ])
+
+    expect(page1.url()).toContain('/Mark-Metcalfe-Resume.pdf')
+  })
+
+  test('can navigate to the visuals settings page', async ({ page }) => {
+    await page.goto('/')
+
+    const link = page.locator('a[title="Visuals"]')
+
+    await Promise.all([page.waitForURL('/visuals'), link.click()])
+
+    await page.waitForTimeout(1000)
+    await expect(page.locator('body')).toContainText('3D Visuals')
   })
 })

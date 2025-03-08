@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="dynamicbackground-3d" />
-    <div class="dynamicbackground-black" />
   </div>
 </template>
 
@@ -23,10 +22,6 @@ export default defineComponent({
     store() {
       return useRendererSettingsStore()
     },
-
-    dimBackground(): boolean {
-      return this.$route.fullPath !== '/demo'
-    },
   },
 
   mounted() {
@@ -36,6 +31,7 @@ export default defineComponent({
       )
       this.store.setRenderer(renderer)
       renderer.initialise()
+      this.renderer = renderer
     })
   },
 
@@ -55,18 +51,8 @@ export default defineComponent({
     height: 100vh;
     min-width: 100vw;
     min-height: 100vh;
-    z-index: -1;
+    z-index: -100;
     transition: opacity 0.4s;
-  }
-
-  &-black {
-    position: fixed;
-    top: 0;
-    left: 0;
-    min-width: 100vw;
-    min-height: 100vh;
-    background-color: black;
-    z-index: -2;
   }
 }
 </style>

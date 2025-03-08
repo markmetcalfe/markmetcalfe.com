@@ -17,6 +17,7 @@ export class Renderer {
     this.mousePosX = event.clientX
     this.mousePosY = event.clientY
   }
+  protected onKeyDown = (_renderer: this, _event: KeyboardEvent) => {}
   protected onRenderTick = (
     _renderer: this,
     _positionData: {
@@ -27,6 +28,8 @@ export class Renderer {
   protected onInit = (_renderer: this) => {}
 
   protected getZoom = () => 1
+  protected getWidth = () => this.container.clientWidth
+  protected getHeight = () => this.container.clientHeight
   protected getDefaultGeometry = (): GeometryAttributes[] => []
 
   constructor(container: HTMLElement) {
@@ -54,6 +57,13 @@ export class Renderer {
     return this
   }
 
+  public setOnKeyDown(
+    onKeyDown: (renderer: this, event: KeyboardEvent) => void,
+  ): this {
+    this.onKeyDown = onKeyDown
+    return this
+  }
+
   public setOnRenderTick(
     onRenderTick: (
       renderer: this,
@@ -74,6 +84,16 @@ export class Renderer {
 
   public setGetZoom(getZoom: () => number): this {
     this.getZoom = getZoom
+    return this
+  }
+
+  public setGetWidth(getWidth: () => number): this {
+    this.getWidth = getWidth
+    return this
+  }
+
+  public setGetHeight(getHeight: () => number): this {
+    this.getHeight = getHeight
     return this
   }
 
@@ -120,6 +140,11 @@ export class Renderer {
     this.renderer?.domElement.addEventListener(
       'mousedown',
       event => this.onClick(this, event),
+      false,
+    )
+    this.renderer?.domElement.addEventListener(
+      'keydown',
+      event => this.onKeyDown(this, event),
       false,
     )
     document.addEventListener(
@@ -184,29 +209,26 @@ export class Renderer {
   }
 
   public cleanUp() {
+    window.removeEventListener('resize', () => this.onWindowResize(this), false)
+    document.removeEventListener('mousemove', _ => {}, false)
+    this.renderer?.domElement.removeEventListener('mousedown', _ => {}, false)
+    this.renderer?.domElement.removeEventListener('keydown', _ => {}, false)
+    document.removeEventListener('wheel', _ => {}, false)
+
     this.container.removeChild(this.container.firstChild!)
     this.scene = undefined
     this.camera = undefined
     this.renderer = undefined
     this.geometry = undefined
-
-    window.removeEventListener('resize', () => this.onWindowResize(this), false)
-    document.removeEventListener('mousemove', _ => {}, false)
-    document.removeEventListener('wheel', _ => {}, false)
   }
 
   protected onWindowResize(renderer: Renderer) {
-    this.camera!.aspect = renderer.getWidth() / renderer.getHeight()
-    this.camera!.updateProjectionMatrix()
+    if (!this.camera) {
+      return
+    }
+    this.camera.aspect = renderer.getWidth() / renderer.getHeight()
+    this.camera.updateProjectionMatrix()
     this.renderer!.setSize(renderer.getWidth(), renderer.getHeight())
-  }
-
-  public getWidth() {
-    return this.container.clientWidth
-  }
-
-  public getHeight() {
-    return this.container.clientHeight
   }
 
   public getGeometry() {

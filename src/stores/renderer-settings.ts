@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { GeometryAttributes, PartialSphere } from '../3d/geometry'
-import isMobile from 'is-mobile'
+import { isMobile } from 'is-mobile'
 import { Vector3 } from 'three'
 import { Renderer } from '../3d'
 import {
@@ -11,6 +11,7 @@ import {
   getRandomValue,
 } from '../util/random'
 import { getRandomColor } from '../util/color'
+import { isCardPreview } from '../util/site'
 
 export enum AutoZoomMode {
   DISABLED = 'Disabled',
@@ -45,8 +46,6 @@ export interface RendererSettings {
     lastTime: Date
     taps: Date[]
   }
-  isMobile: boolean
-  isDesktop: boolean
 }
 
 export const defaultGeometry: GeometryAttributes[] = [
@@ -82,8 +81,8 @@ const defaultSettings: RendererSettings = {
   followCursor: true,
   zoom: {
     min: -2,
-    max: 7,
-    current: 10,
+    max: 4,
+    current: 4,
   },
   autoZoom: {
     mode: AutoZoomMode.SMOOTH,
@@ -92,8 +91,8 @@ const defaultSettings: RendererSettings = {
     beat: 0,
   },
   rotationSpeed: {
-    x: 20,
-    y: 20,
+    x: 10,
+    y: 10,
   },
   beatMatch: {
     enabled: true,
@@ -102,8 +101,6 @@ const defaultSettings: RendererSettings = {
     lastTime: new Date(0),
     taps: [],
   },
-  isMobile: isMobile(),
-  isDesktop: !isMobile(),
 }
 
 export const useRendererSettingsStore = defineStore('renderer-settings', {
@@ -187,11 +184,11 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       mousePosition: Vector3 | undefined
       startingPosition: Vector3 | undefined
     }) {
-      const objectScale = this.isMobile ? 0.9 : 1
+      const objectScale = isMobile() ? 0.9 : 1
       this.renderer?.getGeometry()!.forEach(object => {
         object.rotate()
         object.setSize(objectScale)
-        if (!this.isMobile && this.followCursor && mousePosition) {
+        if (!isMobile() && this.followCursor && mousePosition) {
           object.moveTowardPosition(mousePosition)
         } else if (startingPosition) {
           object.moveTowardPosition(startingPosition)
@@ -367,8 +364,27 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       this.renderer = renderer
       this.renderer
         .setGetZoom(() => this.zoom.current)
-        .setOnRenderTick((_, positionData) => this.tick(positionData))
+        .setOnRenderTick((_, positionData) => {
+          if (isCardPreview()) {
+            return
+          }
+          this.tick(positionData)
+        })
         .setOnInit(() => this.syncRotationSpeed())
+        .setOnClick(() => this.randomise())
+        .setOnKeyDown((_renderer, event) => {
+          console.log(event.key)
+          if (event.key === 'Space') {
+            this.tapBpm()
+          }
+        })
+        .setOnScroll((_renderer, event) => {
+          if (event.deltaY > 0) {
+            this.zoomOut()
+          } else if (event.deltaY < 0) {
+            this.zoomIn()
+          }
+        })
         .setGetDefaultGeometry(() => this.geometryConfig)
     },
   },

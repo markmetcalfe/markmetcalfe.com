@@ -26,7 +26,8 @@ export const getRandomColor = (): RGB => {
   const red = getRandomInt(0, 255)
   const green = getRandomInt(0, 255)
   const blue = getRandomInt(0, 255)
-  if (red + green + blue < 100) {
+  const hexTotal = red + green + blue
+  if (hexTotal < 100 || hexTotal > 400) {
     return getRandomColor()
   }
   return [red, green, blue]

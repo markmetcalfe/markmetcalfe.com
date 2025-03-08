@@ -27,7 +27,7 @@
 }
 
 .loadingspinner {
-  fill: var(--color-white);
+  fill: var(--color-light);
 }
 
 .loadingspinner-animated {

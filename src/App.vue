@@ -32,28 +32,34 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@use './variables' as vars;
+
 :root {
-  --color-dark: #21252b;
-  --color-dark-translucent: rgb(33 37 43 / 50%);
-  --color-light: #fdfdfd;
-  --color-link: #0f0;
-  --color-green: #0f0;
-  --color-red: #f00;
-  --color-white: #fff;
-  --color-black: #000;
+  --color-dark: #000;
+  --color-light: #fff;
+  --color-highlight: #0f0;
+  --color-error: #f00;
+  --color-link: var(--color-highlight);
 }
 
 body {
   width: 100%;
   height: 100%;
   margin: 0;
-  font-family: Roboto, OpenSans, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, Roboto, OpenSans, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-weight: 300;
+  font-weight: 200;
   color: var(--color-light);
   overflow-x: hidden;
-  font-size: 6rem;
+
+  @include vars.desktop-only {
+    font-size: 1.15rem;
+  }
+
+  @include vars.mobile-only {
+    font-size: 0.9rem;
+  }
 }
 
 h1,
@@ -80,25 +86,29 @@ button.button-icon:hover {
   color: inherit;
 }
 
-.black {
-  color: var(--color-black);
+.dark {
+  color: var(--color-dark);
 }
 
-.white {
-  color: var(--color-white);
+.light {
+  color: var(--color-light);
 }
 
-.green {
-  color: var(--color-green);
+.highlight {
+  color: var(--color-highlight);
 }
 
-.red {
-  color: var(--color-red);
+.success {
+  color: var(--color-highlight);
+}
+
+.error {
+  color: var(--color-error);
 }
 
 ::selection {
-  background: var(--color-dark);
-  color: var(--color-light);
+  background: var(--color-highlight);
+  color: var(--color-dark);
 }
 
 /* Transition Animations */
