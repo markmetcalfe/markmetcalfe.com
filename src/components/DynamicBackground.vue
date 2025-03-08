@@ -1,23 +1,23 @@
 <template>
   <div>
-    <div
-      v-show="store.renderer"
-      class="dynamicbackground-3d"
-      :style="{
-        opacity: dimBackground ? 0.66 : 1,
-      }"
-    />
+    <div class="dynamicbackground-3d" />
     <div class="dynamicbackground-black" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { ThreeJSRenderer } from '../3d'
+import { Renderer } from '../3d'
 import { useRendererSettingsStore } from '../stores/renderer-settings'
 
 export default defineComponent({
   name: 'DynamicBackground',
+
+  data(): { renderer: Renderer | undefined } {
+    return {
+      renderer: undefined,
+    }
+  },
 
   computed: {
     store() {
@@ -30,13 +30,17 @@ export default defineComponent({
   },
 
   mounted() {
-    setTimeout(() => {
-      new ThreeJSRenderer(document.querySelector('.dynamicbackground-3d')!)
-    }, 100)
+    this.$nextTick(() => {
+      const renderer = new Renderer(
+        document.querySelector('.dynamicbackground-3d')!,
+      )
+      this.store.setRenderer(renderer)
+      renderer.initialise()
+    })
   },
 
   unmounted() {
-    this.store.renderer?.cleanUp()
+    this.renderer?.cleanUp()
   },
 })
 </script>

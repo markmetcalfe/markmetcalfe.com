@@ -15,6 +15,13 @@
     "prettier"
   ],
   "rules": {
-    "no-unused-vars": "off" // use the @typescript-eslint/no-unused-vars rule instead
+    "no-unused-vars": "off", // use the @typescript-eslint/no-unused-vars rule instead
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ]
   }
 }

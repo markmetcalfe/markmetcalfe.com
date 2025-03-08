@@ -1,1 +1,1 @@
-export { ThreeJSRenderer } from './renderer'
+export { Renderer } from './renderer'
