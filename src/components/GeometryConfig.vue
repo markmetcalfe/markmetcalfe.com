@@ -55,7 +55,7 @@
 
         <v-window v-model="activeTab">
           <v-window-item
-            v-for="(_, index) in store.geometry.config"
+            v-for="(_, index) in store.geometryConfig"
             :key="index"
             :value="index"
           >
@@ -127,7 +127,7 @@
               >
 
               <div
-                v-if="store.geometry.config.length > 1"
+                v-if="store.geometryConfig.length > 1"
                 class="geometryconfig-settings-deletebtn"
               >
                 <v-btn
@@ -174,7 +174,7 @@ export default defineComponent({
     },
 
     config() {
-      return this.store.geometry.config
+      return this.store.geometryConfig
     },
 
     geometryTypes() {
@@ -194,7 +194,7 @@ export default defineComponent({
     addNewGeometryConfig() {
       this.store.addRandomGeometryConfig()
       setTimeout(() => {
-        this.activeTab = (this.store.geometry.config.length - 1).toString()
+        this.activeTab = (this.store.geometryConfig.length - 1).toString()
       }, 50)
     },
 
@@ -234,5 +234,9 @@ export default defineComponent({
 .v-slide-group__next,
 .v-slide-group__prev {
   font-size: 12px;
+}
+
+.v-overlay__content {
+  border: var(--color-highlight) 1px solid;
 }
 </style>

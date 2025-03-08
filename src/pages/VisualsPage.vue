@@ -1,16 +1,28 @@
 <template>
-  <PageCard v-show="!isFullscreen" back-button-page="/">
-    <template #title>3D Demo</template>
+  <PageCard
+    v-show="!isFullscreen"
+    back-button-page="/"
+    :background-opacity="isMobile() ? 0.5 : 1"
+  >
+    <template #title>3D Visuals</template>
 
-    <div class="demopage">
-      <div class="demopage-buttons">
-        <v-btn color="primary" variant="flat" @click="store.randomise"
+    <div class="visualspage">
+      <div class="visualspage-buttons">
+        <v-btn
+          color="primary"
+          variant="flat"
+          :size="isMobile() ? 'small' : undefined"
+          @click="store.randomise"
           ><template #prepend>
             <v-icon><font-awesome-icon icon="fas fa-dice" /></v-icon> </template
           >Randomise</v-btn
         >
         <GeometryConfig v-slot="{ modalOpen }">
-          <v-btn color="primary" variant="flat" v-bind="modalOpen"
+          <v-btn
+            color="primary"
+            variant="flat"
+            v-bind="modalOpen"
+            :size="isMobile() ? 'small' : undefined"
             ><template #prepend>
               <v-icon
                 ><font-awesome-icon icon="fas fa-shapes"
@@ -19,7 +31,7 @@
           >
         </GeometryConfig>
         <v-btn
-          v-if="store.isDesktop"
+          v-if="!isMobile()"
           color="primary"
           variant="flat"
           @click="requestFullscreen"
@@ -29,9 +41,9 @@
         >
       </div>
 
-      <div class="demopage-sliders">
+      <div class="visualspage-sliders">
         <v-switch
-          v-if="store.isDesktop"
+          v-if="!isMobile()"
           v-model="settings.followCursor"
           label="Follow Cursor"
           color="primary"
@@ -79,9 +91,9 @@
           @update:model-value="store.setXRotationSpeed"
         >
           <template #prepend>
-            <label for="settings-randomisation-x-rotation-speed"
-              >X-Axis Rotation Speed</label
-            >
+            <label for="settings-randomisation-x-rotation-speed">{{
+              isMobile() ? 'X Rotation' : 'X-Axis Rotation Speed'
+            }}</label>
           </template>
           <template #append>
             <v-text-field
@@ -110,9 +122,9 @@
           @update:model-value="store.setYRotationSpeed"
         >
           <template #prepend>
-            <label for="settings-randomisation-y-rotation-speed"
-              >Y-Axis Rotation Speed</label
-            >
+            <label for="settings-randomisation-y-rotation-speed">{{
+              isMobile() ? 'Y Rotation' : 'Y-Axis Rotation Speed'
+            }}</label>
           </template>
           <template #append>
             <v-text-field
@@ -130,7 +142,7 @@
           </template>
         </v-slider>
 
-        <div class="demopage-cols-two">
+        <div class="visualspage-cols-two">
           <v-switch
             :model-value="settings.beatMatch.enabled"
             label="Beat Matching"
@@ -296,9 +308,9 @@
         </v-slider>
       </div>
 
-      <div v-if="store.isDesktop" class="demopage-footnote">
+      <div v-if="!isMobile()" class="visualspage-footnote">
         <p>Scroll to zoom in and out</p>
-        <p>When fullscreen, click to beatmatch the randomisation</p>
+        <p>When fullscreen, press spacebar to beatmatch the randomisation</p>
       </div>
     </div>
   </PageCard>
@@ -308,6 +320,7 @@
 import { defineComponent } from 'vue'
 import GeometryConfig from '../components/GeometryConfig.vue'
 import PageCard from '../components/PageCard.vue'
+import { isMobile } from 'is-mobile'
 import { storeToRefs } from 'pinia'
 import {
   AutoZoomMode,
@@ -315,7 +328,7 @@ import {
 } from '../stores/renderer-settings'
 
 export default defineComponent({
-  name: 'DemoPage',
+  name: 'VisualsPage',
   components: { GeometryConfig, PageCard },
 
   data() {
@@ -359,6 +372,8 @@ export default defineComponent({
   },
 
   methods: {
+    isMobile,
+
     requestFullscreen() {
       document.body.requestFullscreen()
     },
@@ -380,7 +395,7 @@ export default defineComponent({
 <style lang="scss">
 @use '../variables' as vars;
 
-.demopage {
+.visualspage {
   &-buttons {
     display: flex;
     gap: 1rem;
@@ -425,10 +440,6 @@ export default defineComponent({
         gap: 1rem;
       }
     }
-  }
-
-  @include vars.mobile-only {
-    min-width: calc(95vw - 1rem);
   }
 }
 </style>

@@ -9,16 +9,17 @@ import {
 import {
   faMobileScreenButton,
   faChevronLeft,
-  faGear,
   faPlay,
-  faLaptopCode,
   faDice,
   faShapes,
+  faEye as faEyeSolid,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons'
 import {
   faComments,
   faEnvelope,
   faFileLines,
+  faEye,
 } from '@fortawesome/free-regular-svg-icons'
 import { App, Plugin } from 'vue'
 
@@ -27,16 +28,17 @@ const icons = [
   faComments,
   faDice,
   faEnvelope,
+  faEye,
+  faEyeSolid,
   faFileLines,
-  faGear,
   faGithub,
   faInstagram,
-  faLaptopCode,
   faLinkedin,
   faMobileScreenButton,
   faPlay,
   faShapes,
   faSoundcloud,
+  faXmark,
 ]
 
 const addIcons: Plugin = (app: App) => {

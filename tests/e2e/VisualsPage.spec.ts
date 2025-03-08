@@ -1,12 +1,12 @@
 import { test, expect } from '@chromatic-com/playwright'
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/demo')
+  await page.goto('/visuals')
 })
 
-test.describe('DemoPage', () => {
+test.describe('VisualsPage', () => {
   test('can load page', async ({ page }) => {
-    await expect(page.locator('text="3D Demo"')).toBeVisible()
+    await expect(page.locator('text="3D Visuals"')).toBeVisible()
   })
 
   test('can navigate back home', async ({ page }) => {

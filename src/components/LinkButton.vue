@@ -1,42 +1,11 @@
 <template>
   <span class="linkbutton">
-    <a
-      v-if="external"
-      :href="href"
-      :style="{
-        // @ts-ignore
-        '--color-hover': color,
-        '--color-text': textColor,
-      }"
-      target="_blank"
-      rel="noopener noreferer"
-    >
-      <span
-        :class="
-          extraPadding
-            ? 'linkbutton-icon linkbutton-icon-extrapadding'
-            : 'linkbutton-icon'
-        "
-        ><font-awesome-icon :icon="icon"
-      /></span>
+    <a v-if="external" :href="href" target="_blank" rel="noopener noreferer">
+      <span class="linkbutton-icon"><font-awesome-icon :icon="icon" /></span>
       <span>{{ text }}</span>
     </a>
-    <router-link
-      v-else
-      :to="href"
-      :style="{
-        '--color-hover': color,
-        '--color-text': textColor,
-      }"
-    >
-      <span
-        :class="
-          extraPadding
-            ? 'linkbutton-icon linkbutton-icon-extrapadding'
-            : 'linkbutton-icon'
-        "
-        ><font-awesome-icon :icon="icon"
-      /></span>
+    <router-link v-else :to="href">
+      <span class="linkbutton-icon"><font-awesome-icon :icon="icon" /></span>
       <span>{{ text }}</span>
     </router-link>
   </span>
@@ -63,21 +32,6 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    color: {
-      type: String,
-      required: false,
-      default: () => 'var(--color-dark)',
-    },
-    textColor: {
-      type: String,
-      required: false,
-      default: () => 'var(--color-light)',
-    },
-    extraPadding: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
   },
 })
 </script>
@@ -89,29 +43,27 @@ export default defineComponent({
   a {
     display: flex;
     align-items: center;
-    background: rgb(217 212 242 / 20%);
     transition:
       border 0.4s,
       color 0.4s,
       background-color 0.4s;
-    color: rgb(255 255 255 / 75%);
+    color: var(--color-light);
+    border: var(--color-light) 1px solid;
     text-decoration: none;
 
     &:hover {
-      color: var(--color-text);
-      background: var(--color-hover);
+      color: var(--color-link);
+      border: var(--color-link) 1px solid;
     }
 
     @include vars.desktop-only {
-      border-radius: 0.5rem;
-      font-size: 2rem;
-      padding: 0.75rem;
+      font-size: 1.5rem;
+      padding: 0.5rem;
     }
 
     @include vars.mobile-only {
-      border-radius: 0.25rem;
-      font-size: 1.5rem;
-      padding: 0.5rem;
+      font-size: 1.25rem;
+      padding: 0.25rem;
     }
   }
 
@@ -121,31 +73,19 @@ export default defineComponent({
     justify-content: center;
 
     @include vars.desktop-only {
-      height: 3.25rem;
-      width: 3.25rem;
+      height: 1.75rem;
+      width: 1.75rem;
       margin-right: 0.75rem;
-      font-size: 3.25rem;
+      margin-left: 0.25rem;
+      font-size: 1.75rem;
     }
 
     @include vars.mobile-only {
-      height: 2.5rem;
-      width: 2.5rem;
+      height: 1.5rem;
+      width: 1.5rem;
       margin-right: 0.5rem;
-      font-size: 2.5rem;
-    }
-
-    &-extrapadding {
-      @include vars.desktop-only {
-        height: 3rem;
-        width: auto;
-        font-size: 3rem;
-      }
-
-      @include vars.mobile-only {
-        height: 2rem;
-        width: auto;
-        font-size: 2rem;
-      }
+      margin-left: 0.25rem;
+      font-size: 1.5rem;
     }
   }
 }
