@@ -1,99 +1,166 @@
 import * as THREE from 'three'
-import { useRendererSettingsStore } from '../stores/renderer-settings'
-import { Geometry } from './geometry'
+import { Geometry, GeometryAttributes } from './geometry'
 
-export class ThreeJSRenderer {
-  private store: ReturnType<typeof useRendererSettingsStore>
+export class Renderer {
+  protected container: HTMLElement
+  protected scene: THREE.Scene | undefined
+  protected camera: THREE.PerspectiveCamera | undefined
+  protected renderer: THREE.WebGLRenderer | undefined
+  protected geometry: Geometry[] | undefined
 
-  private mousePosX = 0
-  private mousePosY = 0
+  protected mousePosX = 0
+  protected mousePosY = 0
 
-  private container: HTMLElement
-  private scene: THREE.Scene | undefined
-  private camera: THREE.PerspectiveCamera | undefined
-  private renderer: THREE.WebGLRenderer | undefined
+  protected onClick = (_renderer: this, _event: MouseEvent) => {}
+  protected onScroll = (_renderer: this, _event: WheelEvent) => {}
+  protected onMouseMove = (_renderer: this, event: MouseEvent) => {
+    this.mousePosX = event.clientX
+    this.mousePosY = event.clientY
+  }
+  protected onRenderTick = (
+    _renderer: this,
+    _positionData: {
+      mousePosition: THREE.Vector3 | undefined
+      startingPosition: THREE.Vector3 | undefined
+    },
+  ) => {}
+  protected onInit = (_renderer: this) => {}
+
+  protected getZoom = () => 1
+  protected getDefaultGeometry = (): GeometryAttributes[] => []
 
   constructor(container: HTMLElement) {
-    this.store = useRendererSettingsStore()
     this.container = container
-    this.initialise()
   }
 
-  private async initialise() {
-    this.store.renderer = this
+  public setOnMouseMove(
+    onMouseMove: (renderer: this, event: MouseEvent) => void,
+  ): this {
+    this.onMouseMove = onMouseMove
+    return this
+  }
 
+  public setOnClick(
+    onClick: (renderer: this, event: MouseEvent) => void,
+  ): this {
+    this.onClick = onClick
+    return this
+  }
+
+  public setOnScroll(
+    onScroll: (renderer: this, event: WheelEvent) => void,
+  ): this {
+    this.onScroll = onScroll
+    return this
+  }
+
+  public setOnRenderTick(
+    onRenderTick: (
+      renderer: this,
+      positionData: {
+        mousePosition: THREE.Vector3 | undefined
+        startingPosition: THREE.Vector3 | undefined
+      },
+    ) => void,
+  ): this {
+    this.onRenderTick = onRenderTick
+    return this
+  }
+
+  public setOnInit(onInit: (_renderer: this) => void) {
+    this.onInit = onInit
+    return this
+  }
+
+  public setGetZoom(getZoom: () => number): this {
+    this.getZoom = getZoom
+    return this
+  }
+
+  public setGetDefaultGeometry(
+    getDefaultGeometry: () => GeometryAttributes[],
+  ): this {
+    this.getDefaultGeometry = getDefaultGeometry
+    return this
+  }
+
+  public initialise(): this {
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(
       50,
-      window.innerWidth / window.innerHeight,
+      this.getWidth() / this.getHeight(),
     )
 
     this.renderer = new THREE.WebGLRenderer()
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
+    this.renderer.setSize(this.getWidth(), this.getHeight())
 
-    window.addEventListener('resize', () => this.handleWindowResize(), false)
-    document.addEventListener(
-      'mousemove',
-      event => this.updateMousePos(event),
-      false,
-    )
-    this.renderer.domElement.addEventListener(
-      'mousedown',
-      () => this.store.tapBpm(),
-      false,
-    )
-    document.addEventListener('wheel', event => this.handleScroll(event), false)
+    this.initialiseEventListeners()
 
     this.container.appendChild(this.renderer.domElement)
 
-    this.store.generateGeometry()
+    const geometry = this.getDefaultGeometry().map(
+      geometry => new geometry.type(geometry),
+    )
+    this.placeGeometry(geometry)
+
+    this.onInit(this)
 
     this.animate()
+
+    return this
   }
 
-  public placeGeometry(geometry: Geometry[]) {
+  protected initialiseEventListeners(): void {
+    window.addEventListener('resize', () => this.onWindowResize(this), false)
+    document.addEventListener(
+      'mousemove',
+      event => this.onMouseMove(this, event),
+      false,
+    )
+    this.renderer?.domElement.addEventListener(
+      'mousedown',
+      event => this.onClick(this, event),
+      false,
+    )
+    document.addEventListener(
+      'wheel',
+      event => this.onScroll(this, event),
+      false,
+    )
+  }
+
+  public placeGeometry(geometry: Geometry[]): void {
     const startingPosition = this.getStartingPosition()
     geometry.forEach(object => {
       this.scene!.add(object.getObject())
       object.setPosition(startingPosition.x, startingPosition.y)
     })
-    this.store.geometry.active.forEach(geometry => {
-      this.scene!.remove(geometry.getObject())
+    this.geometry?.forEach(object => {
+      this.scene!.remove(object.getObject())
     })
-    this.store.geometry.active = geometry
+    this.geometry = geometry
   }
 
-  private handleScroll(event: WheelEvent) {
-    if (event.deltaY > 0) {
-      this.store.zoomOut()
-    } else if (event.deltaY < 0) {
-      this.store.zoomIn()
-    }
-  }
-
-  private animate() {
+  public animate() {
     if (!this.renderer) {
       return
     }
-
-    this.store.tick({
+    this.onRenderTick(this, {
       mousePosition: this.getMousePosition(),
       startingPosition: this.getStartingPosition(),
     })
-
-    this.camera!.position.z = this.store.zoom.current
-
+    this.camera!.position.z = this.getZoom()
     this.render()
   }
 
-  private render() {
+  protected render() {
     requestAnimationFrame(() => this.animate())
-    this.renderer?.render(this.scene!, this.camera!)
+    this.renderer!.render(this.scene!, this.camera!)
   }
 
-  private getStartingPosition() {
-    const startingPosX = window.innerWidth / 2
-    const startingPosY = window.innerHeight / 2
+  protected getStartingPosition() {
+    const startingPosX = this.getWidth() / 2
+    const startingPosY = this.getHeight() / 2
     return this.getObjectTargetPositionVector(startingPosX, startingPosY)
   }
 
@@ -105,9 +172,9 @@ export class ThreeJSRenderer {
   }
 
   /** Taken fron https://jsfiddle.net/atwfxdpd/10/ */
-  private getObjectTargetPositionVector(targetX: number, targetY: number) {
-    const x = (targetX / window.innerWidth) * 2 - 1
-    const y = -(targetY / window.innerHeight) * 2 + 1
+  protected getObjectTargetPositionVector(targetX: number, targetY: number) {
+    const x = (targetX / this.getWidth()) * 2 - 1
+    const y = -(targetY / this.getHeight()) * 2 + 1
     const vector = new THREE.Vector3(x, y, 0.5)
     vector.unproject(this.camera!)
     const dir = vector.sub(this.camera!.position).normalize()
@@ -121,20 +188,28 @@ export class ThreeJSRenderer {
     this.scene = undefined
     this.camera = undefined
     this.renderer = undefined
+    this.geometry = undefined
 
-    window.removeEventListener('resize', this.handleWindowResize, false)
-    document.removeEventListener('mousemove', this.updateMousePos, false)
-    document.removeEventListener('wheel', this.handleScroll, false)
+    window.removeEventListener('resize', () => this.onWindowResize(this), false)
+    document.removeEventListener('mousemove', _ => {}, false)
+    document.removeEventListener('wheel', _ => {}, false)
   }
 
-  private handleWindowResize() {
-    this.camera!.aspect = window.innerWidth / window.innerHeight
+  protected onWindowResize(renderer: Renderer) {
+    this.camera!.aspect = renderer.getWidth() / renderer.getHeight()
     this.camera!.updateProjectionMatrix()
-    this.renderer!.setSize(window.innerWidth, window.innerHeight)
+    this.renderer!.setSize(renderer.getWidth(), renderer.getHeight())
   }
 
-  private updateMousePos(event: MouseEvent) {
-    this.mousePosX = event.clientX
-    this.mousePosY = event.clientY
+  public getWidth() {
+    return this.container.clientWidth
+  }
+
+  public getHeight() {
+    return this.container.clientHeight
+  }
+
+  public getGeometry() {
+    return this.geometry
   }
 }

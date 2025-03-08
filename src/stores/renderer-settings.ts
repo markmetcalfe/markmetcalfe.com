@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
-import { Geometry, GeometryAttributes, PartialSphere } from '../3d/geometry'
+import { GeometryAttributes, PartialSphere } from '../3d/geometry'
 import isMobile from 'is-mobile'
 import { Vector3 } from 'three'
-import { ThreeJSRenderer } from '../3d'
+import { Renderer } from '../3d'
 import {
   getRandomBool,
   getRandomGeometry,
@@ -20,11 +20,8 @@ export enum AutoZoomMode {
 }
 
 export interface RendererSettings {
-  renderer: ThreeJSRenderer | undefined
-  geometry: {
-    config: GeometryAttributes[]
-    active: Geometry[]
-  }
+  renderer: Renderer | undefined
+  geometryConfig: GeometryAttributes[]
   followCursor: boolean
   zoom: {
     min: number
@@ -52,7 +49,7 @@ export interface RendererSettings {
   isDesktop: boolean
 }
 
-const defaultGeometry: GeometryAttributes[] = [
+export const defaultGeometry: GeometryAttributes[] = [
   {
     type: PartialSphere,
     color: 'rgb(0, 128, 0)',
@@ -81,10 +78,7 @@ const defaultGeometry: GeometryAttributes[] = [
 
 const defaultSettings: RendererSettings = {
   renderer: undefined,
-  geometry: {
-    config: defaultGeometry,
-    active: [],
-  },
+  geometryConfig: defaultGeometry,
   followCursor: true,
   zoom: {
     min: -2,
@@ -116,20 +110,20 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
   state: () => defaultSettings,
   actions: {
     generateGeometry() {
-      const geometry = this.geometry.config.map(
+      const geometry = this.geometryConfig.map(
         geometry => new geometry.type(geometry),
       )
-      this.renderer?.placeGeometry(geometry)
+      this.renderer!.placeGeometry(geometry)
       this.syncRotationSpeed()
     },
     addRandomGeometryConfig() {
-      this.geometry.config.push(getRandomGeometry())
+      this.geometryConfig.push(getRandomGeometry())
     },
     deleteGeometryConfig(index: number) {
-      this.geometry.config.splice(index, 1)
+      this.geometryConfig.splice(index, 1)
     },
     randomiseGeometry() {
-      this.geometry.config = []
+      this.geometryConfig = []
       for (let i = 0; i < getRandomInt(1, 4); i++) {
         this.addRandomGeometryConfig()
       }
@@ -194,7 +188,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       startingPosition: Vector3 | undefined
     }) {
       const objectScale = this.isMobile ? 0.9 : 1
-      this.geometry.active.forEach(object => {
+      this.renderer?.getGeometry()!.forEach(object => {
         object.rotate()
         object.setSize(objectScale)
         if (!this.isMobile && this.followCursor && mousePosition) {
@@ -236,13 +230,13 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
         return
       }
 
-      this.geometry.active.forEach((geometry, index) => {
+      this.renderer?.getGeometry()!.forEach((geometry, index) => {
         const randomRotationPosition = getRandomNum(0, 100)
         geometry.setRotation(randomRotationPosition)
 
         if (this.beatMatch.randomizeColors) {
           const randomColor = getRandomColor()
-          this.geometry.config[index].color = `rgb(${randomColor.join(', ')})`
+          this.geometryConfig[index].color = `rgb(${randomColor.join(', ')})`
           geometry.setColor(...randomColor)
         }
       })
@@ -343,7 +337,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     },
 
     syncRotationSpeed() {
-      this.geometry.active.forEach(geometry => {
+      this.renderer!.getGeometry()!.forEach(geometry => {
         geometry.setRotationSpeed(this.rotationSpeed)
       })
     },
@@ -364,9 +358,18 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     },
 
     setAllRotation(x: number, y: number, z: number) {
-      this.geometry.active.forEach(geometry => {
+      this.renderer!.getGeometry()!.forEach(geometry => {
         geometry.setRotation(x, y, z)
       })
+    },
+
+    setRenderer(renderer: Renderer) {
+      this.renderer = renderer
+      this.renderer
+        .setGetZoom(() => this.zoom.current)
+        .setOnRenderTick((_, positionData) => this.tick(positionData))
+        .setOnInit(() => this.syncRotationSpeed())
+        .setGetDefaultGeometry(() => this.geometryConfig)
     },
   },
 })
