@@ -439,7 +439,7 @@
     <h3>Contact Me</h3>
     <p>
       If you have any questions about this Privacy Policy,
-      <router-link to="/contact">You can contact us here</router-link>.
+      <a :href="getMailtoLink()">You can contact us here</a>.
     </p>
   </PageCard>
 </template>
@@ -447,10 +447,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import PageCard from '../components/PageCard.vue'
-import { getSiteDomain } from '../util/site'
+import { getSiteDomain, getMailtoLink } from '../util/site'
+
 export default defineComponent({
   name: 'PrivacyPolicyPage',
   components: { PageCard },
-  methods: { getSiteDomain },
+  methods: { getSiteDomain, getMailtoLink },
 })
 </script>

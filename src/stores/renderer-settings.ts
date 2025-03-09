@@ -11,7 +11,7 @@ import {
   getRandomValue,
 } from '../util/random'
 import { getRandomColor } from '../util/color'
-import { isCardPreview } from '../util/site'
+import { isCardPreview, isPlaywrightTest } from '../util/site'
 
 export enum AutoZoomMode {
   DISABLED = 'Disabled',
@@ -128,8 +128,6 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     },
 
     randomise() {
-      this.followCursor = false
-
       this.randomiseZoom()
 
       this.setBeatMatchEnabled(getRandomBool())
@@ -156,11 +154,11 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       ])
 
       if (this.autoZoom.mode === AutoZoomMode.SMOOTH) {
-        this.autoZoom.speed = getRandomNum(0.001, 0.1)
+        this.autoZoom.speed = getRandomNum(0.001, 0.05)
       }
 
-      this.setMinZoom(getRandomInt(-1, 4))
-      this.setMaxZoom(getRandomInt(8, 16))
+      this.setMinZoom(getRandomInt(-2, 2))
+      this.setMaxZoom(getRandomInt(4, 8))
       this.autoZoom.direction = this.autoZoom.direction === 'in' ? 'out' : 'in'
     },
 
@@ -168,10 +166,6 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       mousePosition: Vector3 | undefined
       startingPosition: Vector3 | undefined
     }) {
-      if (localStorage.getItem('is_playwright_test')) {
-        // Playwright test is running, skipping renderer state tick
-        return
-      }
       this.movementTick(positionData)
       this.autoZoomTick()
       this.beatMatchTick()
@@ -365,7 +359,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
       this.renderer
         .setGetZoom(() => this.zoom.current)
         .setOnRenderTick((_, positionData) => {
-          if (isCardPreview()) {
+          if (isCardPreview() || isPlaywrightTest()) {
             return
           }
           this.tick(positionData)
@@ -373,8 +367,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
         .setOnInit(() => this.syncRotationSpeed())
         .setOnClick(() => this.randomise())
         .setOnKeyDown((_renderer, event) => {
-          console.log(event.key)
-          if (event.key === 'Space') {
+          if (event.code === 'Space') {
             this.tapBpm()
           }
         })

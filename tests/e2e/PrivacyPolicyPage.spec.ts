@@ -17,4 +17,9 @@ test.describe('PrivacyPolicyPage', () => {
     await page.waitForTimeout(1000)
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
+
+  test('contact link has correct email', async ({ page }) => {
+    const link = page.locator('a:has-text("You can contact us here")')
+    await expect(link).toHaveAttribute('href', 'mailto:mark@markmetcalfe.com')
+  })
 })

@@ -116,7 +116,7 @@ test.describe('HomePage', () => {
   test('can navigate to the visuals settings page', async ({ page }) => {
     await page.goto('/')
 
-    const link = page.locator('a[title="Visuals"]')
+    const link = page.locator('a:has-text("Visuals")')
 
     await Promise.all([page.waitForURL('/visuals'), link.click()])
 

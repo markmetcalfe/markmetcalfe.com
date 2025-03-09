@@ -310,7 +310,8 @@
 
       <div v-if="!isMobile()" class="visualspage-footnote">
         <p>Scroll to zoom in and out</p>
-        <p>When fullscreen, press spacebar to beatmatch the randomisation</p>
+        <p>Click to randomise the geometry</p>
+        <p>Press Space to beatmatch the randomisation</p>
       </div>
     </div>
   </PageCard>
