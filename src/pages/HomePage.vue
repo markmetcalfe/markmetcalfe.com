@@ -1,5 +1,6 @@
 <template>
   <PageCard
+    v-show="!isHidden"
     :background-opacity="opaqueBackground ? 1 : 0"
     :show-border="opaqueBackground"
   >
@@ -56,7 +57,7 @@
           />
           <LinkButton
             text="Email"
-            href="mailto:mark@markmetcalfe.com"
+            :href="getMailtoLink()"
             icon="fa-regular fa-envelope"
             color="#fb4c2f"
             external
@@ -89,7 +90,7 @@
         >
           <font-awesome-icon icon="fa-solid fa-dice" />
         </button>
-        <button class="button-icon" title="Dismiss" @click="close">
+        <button class="button-icon" title="Hide" @click="isHidden = true">
           <font-awesome-icon icon="fa-solid fa-xmark" />
         </button>
       </div>
@@ -101,7 +102,12 @@
 import { defineComponent } from 'vue'
 import PageCard from '../components/PageCard.vue'
 import LinkButton from '../components/LinkButton.vue'
-import { isCardPreview, isVizshun } from '../util/site'
+import {
+  getMailtoLink,
+  isCardPreview,
+  isPlaywrightTest,
+  isVizshun,
+} from '../util/site'
 import { Renderer } from '../3d'
 import { getRandomInt } from '../util/random'
 import { getRandomColor } from '../util/color'
@@ -118,6 +124,7 @@ export default defineComponent({
     geometryDefinition: GeometryAttributes[]
     geometryRotationSpeed: number
     opaqueBackground: boolean
+    isHidden: boolean
   } {
     return {
       renderer: undefined,
@@ -150,6 +157,7 @@ export default defineComponent({
       ],
       geometryRotationSpeed: 20,
       opaqueBackground: true,
+      isHidden: false,
     }
   },
 
@@ -161,7 +169,7 @@ export default defineComponent({
           renderer.getGeometry()!.forEach(geometry => geometry.rotate()),
         )
         .setOnInit(renderer => {
-          if (isCardPreview()) {
+          if (isCardPreview() || isPlaywrightTest()) {
             return
           }
           renderer.getGeometry()!.forEach(geometry => {
@@ -184,6 +192,7 @@ export default defineComponent({
     isVizshun,
     isCardPreview,
     isMobile,
+    getMailtoLink,
 
     randomiseProfile() {
       this.renderer?.getGeometry()!.forEach(geometry => {
@@ -199,10 +208,6 @@ export default defineComponent({
     randomiseBackground() {
       const backgroundSettings = useRendererSettingsStore()
       backgroundSettings.randomise()
-    },
-
-    close() {
-      document.querySelector('.pagecard')?.remove()
     },
 
     toggleOpacity() {
@@ -241,7 +246,6 @@ export default defineComponent({
       letter-spacing: -4px;
       margin: 0;
       text-align: left;
-      width: 0;
 
       @include vars.desktop-only {
         font-size: 5rem;

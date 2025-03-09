@@ -21,13 +21,8 @@ test.describe('ServerErrorPage', () => {
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
 
-  test('can navigate to the contact page', async ({ page }) => {
+  test('contact link has correct email', async ({ page }) => {
     const link = page.locator('a:has-text("Contact Me")')
-
-    await Promise.all([page.waitForURL('/contact'), link.click()])
-
-    await page.waitForTimeout(1000)
-    await expect(page.locator('body')).toContainText('Contact')
-    await expect(page.locator('body')).toContainText('Email')
+    await expect(link).toHaveAttribute('href', 'mailto:mark@markmetcalfe.com')
   })
 })

@@ -142,7 +142,7 @@ export class Renderer {
       event => this.onClick(this, event),
       false,
     )
-    this.renderer?.domElement.addEventListener(
+    document.addEventListener(
       'keydown',
       event => this.onKeyDown(this, event),
       false,
@@ -212,7 +212,7 @@ export class Renderer {
     window.removeEventListener('resize', () => this.onWindowResize(this), false)
     document.removeEventListener('mousemove', _ => {}, false)
     this.renderer?.domElement.removeEventListener('mousedown', _ => {}, false)
-    this.renderer?.domElement.removeEventListener('keydown', _ => {}, false)
+    document.removeEventListener('keydown', _ => {}, false)
     document.removeEventListener('wheel', _ => {}, false)
 
     this.container.removeChild(this.container.firstChild!)
