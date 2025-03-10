@@ -1,3 +1,4 @@
+import { takeSnapshot } from '@chromatic-com/playwright'
 import { test, expect } from '@playwright/test'
 
 test.beforeEach(async ({ page }) => {
@@ -5,10 +6,11 @@ test.beforeEach(async ({ page }) => {
 })
 
 test.describe('MinecraftPage', () => {
-  test('can load page', async ({ page }) => {
+  test('can load page', async ({ page }, testInfo) => {
     await expect(page.locator('text="Server IP:"')).toBeVisible()
     await expect(
       page.locator('text="minecraft.markmetcalfe.com"'),
     ).toBeVisible()
+    await takeSnapshot(page, 'Minecraft Page', testInfo)
   })
 })

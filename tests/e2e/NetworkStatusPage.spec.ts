@@ -1,10 +1,10 @@
-import { test, expect } from '@chromatic-com/playwright'
+import { test, expect, takeSnapshot } from '@chromatic-com/playwright'
 
 test.describe('NetworkStatusPage', () => {
-  test('can load page', async ({ page }) => {
+  test('can load page', async ({ page }, testInfo) => {
     await page.goto('/status')
     await expect(page.locator('text="Connection Status"')).toBeVisible()
-    await page.waitForTimeout(1000)
+    await takeSnapshot(page, 'Network Status Page', testInfo)
   })
 
   test('can navigate back home', async ({ page }) => {
@@ -12,7 +12,6 @@ test.describe('NetworkStatusPage', () => {
     const link = page.locator('[aria-label="Back"]')
 
     await Promise.all([page.waitForURL('/'), link.click()])
-    await page.waitForTimeout(1000)
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
 

@@ -1,34 +1,38 @@
-import { test, expect } from '@chromatic-com/playwright'
+import { test, expect, takeSnapshot } from '@chromatic-com/playwright'
 
 test.describe('HomePage', () => {
-  test('can load page', async ({ page }) => {
+  test('can load page for mark metcalfe', async ({ page }, testInfo) => {
     await page.goto('/')
     await expect(page.locator('text="Mark Metcalfe"')).toBeVisible()
     await expect(page.locator('text="Developer"')).toBeVisible()
     await expect(page.locator('text="Digital Wizard"')).toBeVisible()
+    await takeSnapshot(page, 'Home Page - Mark Metcalfe', testInfo)
   })
 
-  test('can load page for vizshun', async ({ page }) => {
+  test('can load page for vizshun', async ({ page }, testInfo) => {
     await page.goto('/?vizshun')
     await expect(page.locator('text="Vizshun"')).toBeVisible()
     await expect(page.locator('text="Visual Artist"')).toBeVisible()
     await expect(page.locator('text="DJ"')).toBeVisible()
     await expect(page.locator('text="Digital Wizard"')).toBeVisible()
+    await takeSnapshot(page, 'Home Page - Vizshun', testInfo)
   })
 
-  test('can load card page', async ({ page }) => {
-    await page.goto('/?card')
+  test('can load card page for mark metcalfe', async ({ page }, testInfo) => {
+    await page.goto('/card')
     await expect(page.locator('text="Mark Metcalfe"')).toBeVisible()
     await expect(page.locator('text="Developer"')).toBeVisible()
     await expect(page.locator('text="Digital Wizard"')).toBeVisible()
+    await takeSnapshot(page, 'Card Page - Mark Metcalfe', testInfo)
   })
 
-  test('can load card page for vizshun', async ({ page }) => {
-    await page.goto('/?vizshun&card')
+  test('can load card page for vizshun', async ({ page }, testInfo) => {
+    await page.goto('/card?vizshun')
     await expect(page.locator('text="Vizshun"')).toBeVisible()
     await expect(page.locator('text="Visual Artist"')).toBeVisible()
     await expect(page.locator('text="DJ"')).toBeVisible()
     await expect(page.locator('text="Digital Wizard"')).toBeVisible()
+    await takeSnapshot(page, 'Card Page - Vizshun', testInfo)
   })
 
   test('email link has valid mailto value', async ({ page }) => {
@@ -120,7 +124,6 @@ test.describe('HomePage', () => {
 
     await Promise.all([page.waitForURL('/visuals'), link.click()])
 
-    await page.waitForTimeout(1000)
     await expect(page.locator('body')).toContainText('3D Visuals')
   })
 })

@@ -1,12 +1,13 @@
-import { test, expect } from '@chromatic-com/playwright'
+import { test, expect, takeSnapshot } from '@chromatic-com/playwright'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/400')
 })
 
 test.describe('NotFoundPage', () => {
-  test('can load page', async ({ page }) => {
+  test('can load page', async ({ page }, testInfo) => {
     await expect(page.locator('text="Not Found"')).toBeVisible()
+    await takeSnapshot(page, 'Not Found Page', testInfo)
   })
 
   test('can navigate back home', async ({ page }) => {
@@ -14,7 +15,6 @@ test.describe('NotFoundPage', () => {
 
     await Promise.all([page.waitForURL('/'), link.click()])
 
-    await page.waitForTimeout(1000)
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
 

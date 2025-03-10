@@ -1,14 +1,15 @@
-import { test, expect } from '@chromatic-com/playwright'
+import { test, expect, takeSnapshot } from '@chromatic-com/playwright'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/terms-of-service')
 })
 
 test.describe('TermsOfServicePage', () => {
-  test('can load page', async ({ page }) => {
+  test('can load page', async ({ page }, testInfo) => {
     await expect(page.locator('.pagecard-title')).toContainText(
       'Terms of Service',
     )
+    await takeSnapshot(page, 'Terms Of Service Page', testInfo)
   })
 
   test('can navigate back home', async ({ page }) => {
@@ -16,7 +17,6 @@ test.describe('TermsOfServicePage', () => {
 
     await Promise.all([page.waitForURL('/'), link.click()])
 
-    await page.waitForTimeout(1000)
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
 
