@@ -1,12 +1,21 @@
 import { RouteRecordRaw } from 'vue-router'
-import HomePage from './pages/HomePage.vue'
 import { isVizshun } from './util/site'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'HomePage',
-    component: HomePage,
+    component: () =>
+      import(/* webpackChunkName: "home" */ './pages/HomePage.vue'),
+  },
+  {
+    path: '/card',
+    name: 'CardPage',
+    meta: {
+      title: 'Social Preview Card',
+    },
+    component: () =>
+      import(/* webpackChunkName: "home" */ './pages/HomePage.vue'),
   },
   {
     path: '/visuals',
