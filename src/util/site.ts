@@ -1,8 +1,9 @@
 export const isVizshun = () =>
   import.meta.env.VITE_SITE_NAME === 'vizshun' ||
-  window.location.search.includes('vizshun')
+  window.location.search.includes('?vizshun')
 
-export const isCardPreview = () => window.location.search.includes('card')
+export const isCardPreview = () =>
+  document.title.startsWith('Social Preview Card')
 
 export const isPlaywrightTest = () => localStorage.getItem('is_playwright_test')
 
