@@ -247,7 +247,7 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
     },
     tapBpm() {
       if (!this.beatMatch.enabled) {
-        return
+        this.beatMatch.enabled = true
       }
 
       const now = new Date()
