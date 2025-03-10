@@ -1,10 +1,10 @@
-import type { PlaywrightTestConfig } from '@playwright/test'
-import { devices } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test'
+import { ChromaticConfig } from '@chromatic-com/playwright'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-const config: PlaywrightTestConfig = {
+export default defineConfig<ChromaticConfig>({
   testDir: './tests/e2e',
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
@@ -46,6 +46,10 @@ const config: PlaywrightTestConfig = {
         },
       ],
     },
+
+    /* Chromatic snapshot settings */
+    disableAutoSnapshot: true,
+    delay: 2000,
   },
 
   /* Configure projects for major browsers */
@@ -70,6 +74,4 @@ const config: PlaywrightTestConfig = {
     port: 3001,
     reuseExistingServer: !process.env.CI,
   },
-}
-
-export default config
+})
