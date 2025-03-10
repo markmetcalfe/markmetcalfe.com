@@ -23,6 +23,12 @@ type RouteWithTransition = RouteLocationNormalized & {
 export default defineComponent({
   name: 'App',
   components: { DynamicBackground },
+  mounted() {
+    this.$nextTick(() => {
+      // An insta link is in the DOM for SEO reasons, but we don't really want to show it
+      document.getElementById('ga-insta-link')?.remove()
+    })
+  },
   methods: {
     getTransition(route: RouteWithTransition): string | undefined {
       return route.meta?.transition ?? undefined
