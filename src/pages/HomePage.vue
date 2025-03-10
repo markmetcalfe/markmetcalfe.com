@@ -15,12 +15,14 @@
         <div class="home-header-right">
           <h1 v-if="isVizshun()" class="vizshun">Vizshun</h1>
           <h1 v-else class="mark">Mark Metcalfe</h1>
-          <div class="home-header-about">
-            <p v-if="isVizshun()"><span>></span> Visual Artist</p>
-            <p v-if="isVizshun()"><span>></span> DJ</p>
-            <p v-else><span>></span> Developer</p>
-            <p><span>></span> Digital Wizard</p>
-          </div>
+          <GridList
+            class="home-header-about"
+            :items="
+              isVizshun()
+                ? ['Visual Artist', 'DJ', 'Digital Wizard']
+                : ['Developer', 'Digital Wizard']
+            "
+          />
         </div>
       </section>
       <section v-if="!isCardPreview()" class="home-links">
@@ -109,14 +111,14 @@ import {
   isVizshun,
 } from '../util/site'
 import { Renderer } from '../3d'
-import { getRandomInt } from '../util/random'
-import { getRandomColor } from '../util/color'
 import { GeometryAttributes, PartialSphere, Sphere } from '../3d/geometry'
 import isMobile from 'is-mobile'
 import { useRendererSettingsStore } from '../stores/renderer-settings'
+import GridList from '../components/GridList.vue'
+
 export default defineComponent({
   name: 'HomePage',
-  components: { PageCard, LinkButton },
+  components: { GridList, LinkButton, PageCard },
 
   data(): {
     renderer: Renderer | undefined
@@ -195,14 +197,8 @@ export default defineComponent({
     getMailtoLink,
 
     randomiseProfile() {
-      this.renderer?.getGeometry()!.forEach(geometry => {
-        geometry.setRotation(
-          getRandomInt(0, 25),
-          getRandomInt(0, 25),
-          getRandomInt(0, 25),
-        )
-        geometry.setColor(...getRandomColor())
-      })
+      this.renderer?.randomiseRotations()
+      this.renderer?.randomiseColors()
     },
 
     randomiseBackground() {
@@ -320,32 +316,6 @@ export default defineComponent({
 
     &-about {
       padding-top: 0.75rem;
-      list-style: inside;
-      display: grid;
-      justify-items: start;
-
-      @include vars.desktop-only {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      & p {
-        padding: 0;
-        margin: 0;
-        font-weight: 300;
-
-        & > span {
-          color: var(--color-highlight);
-        }
-
-        @include vars.desktop-only {
-          padding-top: 0.5rem;
-          font-size: 1.25rem;
-        }
-
-        @include vars.mobile-only {
-          font-size: 1rem;
-        }
-      }
     }
   }
 

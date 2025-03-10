@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import { Geometry, GeometryAttributes } from './geometry'
+import { getRandomColor } from '../util/color'
+import { getRandomInt } from '../util/random'
 
 export class Renderer {
   protected container: HTMLElement
@@ -181,6 +183,24 @@ export class Renderer {
   protected render() {
     requestAnimationFrame(() => this.animate())
     this.renderer!.render(this.scene!, this.camera!)
+  }
+
+  public rotateTick() {
+    this.geometry!.forEach(geometry => geometry.rotate())
+  }
+
+  public randomiseRotations() {
+    this.geometry!.forEach(geometry => {
+      geometry.setRotation(
+        getRandomInt(0, 25),
+        getRandomInt(0, 25),
+        getRandomInt(0, 25),
+      )
+    })
+  }
+
+  public randomiseColors() {
+    this.geometry!.forEach(object => object.setColor(...getRandomColor()))
   }
 
   protected getStartingPosition() {

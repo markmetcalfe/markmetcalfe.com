@@ -366,9 +366,13 @@ export const useRendererSettingsStore = defineStore('renderer-settings', {
         })
         .setOnInit(() => this.syncRotationSpeed())
         .setOnClick(() => this.randomise())
-        .setOnKeyDown((_renderer, event) => {
+        .setOnKeyDown((renderer, event) => {
           if (event.code === 'Space') {
             this.tapBpm()
+          } else if (event.key === 'Shift') {
+            renderer.randomiseColors()
+          } else if (event.key === 'Control') {
+            renderer.randomiseRotations()
           }
         })
         .setOnScroll((_renderer, event) => {
