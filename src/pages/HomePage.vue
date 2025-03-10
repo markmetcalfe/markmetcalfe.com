@@ -239,18 +239,22 @@ export default defineComponent({
       z-index: 100;
       text-transform: lowercase;
       font-weight: 500;
-      letter-spacing: -4px;
+      transform-origin: left center;
       margin: 0;
       text-align: left;
 
       @include vars.desktop-only {
         font-size: 5rem;
         line-height: 3.3rem;
+        letter-spacing: -8px;
+        transform: scale(1.1, 1);
       }
 
       @include vars.mobile-only {
         font-size: 3.25rem;
         line-height: 2.15rem;
+        letter-spacing: -5px;
+        transform: scale(1.05, 1);
       }
 
       &.vizshun {
