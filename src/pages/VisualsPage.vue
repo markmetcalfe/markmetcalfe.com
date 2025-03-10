@@ -308,11 +308,16 @@
         </v-slider>
       </div>
 
-      <div v-if="!isMobile()" class="visualspage-footnote">
-        <p>Scroll to zoom in and out</p>
-        <p>Click to randomise the geometry</p>
-        <p>Press Space to beatmatch the randomisation</p>
-      </div>
+      <GridList
+        v-if="!isMobile()"
+        class="visualspage-footnote"
+        :items="[
+          'Scroll to Zoom In & Out',
+          'Click to Randomise Shapes',
+          'Space to Beatmatch BPM',
+          'Shift to Change Colours',
+        ]"
+      />
     </div>
   </PageCard>
 </template>
@@ -327,10 +332,11 @@ import {
   AutoZoomMode,
   useRendererSettingsStore,
 } from '../stores/renderer-settings'
+import GridList from '../components/GridList.vue'
 
 export default defineComponent({
   name: 'VisualsPage',
-  components: { GeometryConfig, PageCard },
+  components: { GeometryConfig, GridList, PageCard },
 
   data() {
     const store = storeToRefs(useRendererSettingsStore())
