@@ -25,14 +25,14 @@ export default defineComponent({
   },
 
   mounted() {
-    this.$nextTick(() => {
+    setTimeout(() => {
       const renderer = new Renderer(
         document.querySelector('.dynamicbackground-3d')!,
       )
       this.store.setRenderer(renderer)
       renderer.initialise()
       this.renderer = renderer
-    })
+    }, 100)
   },
 
   unmounted() {

@@ -162,7 +162,7 @@ export default defineComponent({
   },
 
   mounted() {
-    this.$nextTick(() => {
+    setTimeout(() => {
       this.renderer = new Renderer(document.querySelector('.photo-of-me-bg')!)
         .setGetDefaultGeometry(() => this.geometryDefinition)
         .setOnRenderTick(renderer =>
@@ -181,7 +181,7 @@ export default defineComponent({
         })
         .setGetZoom(() => this.rendererZoomLevel)
         .initialise()
-    })
+    }, 100)
   },
 
   unmounted() {
