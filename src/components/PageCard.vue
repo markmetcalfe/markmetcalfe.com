@@ -32,7 +32,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useRendererSettingsStore } from '../stores/renderer-settings'
 
 export default defineComponent({
   props: {
@@ -53,27 +52,6 @@ export default defineComponent({
       default: true,
     },
   },
-
-  mounted() {
-    const backgroundClassName = 'pagecard'
-    const rendererSettingsStore = useRendererSettingsStore()
-    document.querySelector(`.${backgroundClassName}`)?.addEventListener(
-      'mousedown',
-      event => {
-        const element = event.target as HTMLElement
-        if (element.classList.contains(backgroundClassName)) {
-          rendererSettingsStore.randomise()
-        }
-      },
-      false,
-    )
-  },
-
-  unmounted() {
-    document
-      .querySelector('.pagecard')
-      ?.removeEventListener('mousedown', () => {}, false)
-  },
 })
 </script>
 
@@ -85,7 +63,7 @@ export default defineComponent({
   justify-content: center;
   width: 100%;
   position: absolute;
-  cursor: pointer;
+  visibility: hidden;
 
   &-inner {
     box-sizing: border-box;
@@ -97,7 +75,7 @@ export default defineComponent({
     z-index: 10;
     background-color: var(--color-dark);
     color: var(--color-light);
-    cursor: auto;
+    visibility: visible;
 
     @include vars.desktop-only {
       padding: 1rem 5rem 2.5rem;

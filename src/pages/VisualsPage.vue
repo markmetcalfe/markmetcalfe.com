@@ -380,14 +380,18 @@ export default defineComponent({
     },
 
     fullscreenEvent() {
+      const dynamicBackground = document.querySelector(
+        '.dynamicbackground',
+      ) as HTMLElement
       if (this.isFullscreen) {
         this.isFullscreen = false
-        document.body.style.cursor = 'auto'
+        document.body.style.cursor = ''
+        dynamicBackground.style.cursor = ''
       } else {
         this.isFullscreen = true
         document.body.style.cursor = 'none'
+        dynamicBackground.style.cursor = 'none'
       }
-      document.getElementById('ga-insta-link')?.remove()
     },
   },
 })
