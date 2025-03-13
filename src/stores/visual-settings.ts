@@ -20,7 +20,7 @@ export enum AutoZoomMode {
   RANDOM = 'Random',
 }
 
-export interface RendererSettings {
+export interface VisualSettings {
   renderer: Renderer | undefined
   geometryConfig: GeometryAttributes[]
   followCursor: boolean
@@ -75,7 +75,7 @@ export const defaultGeometry: GeometryAttributes[] = [
   },
 ]
 
-const defaultSettings: RendererSettings = {
+const defaultSettings: VisualSettings = {
   renderer: undefined,
   geometryConfig: defaultGeometry,
   followCursor: true,
@@ -103,7 +103,7 @@ const defaultSettings: RendererSettings = {
   },
 }
 
-export const useRendererSettingsStore = defineStore('renderer-settings', {
+export const useVisualSettingsStore = defineStore('renderer-settings', {
   state: () => defaultSettings,
   actions: {
     generateGeometry() {

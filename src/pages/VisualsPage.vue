@@ -328,10 +328,7 @@ import GeometryConfig from '../components/GeometryConfig.vue'
 import PageCard from '../components/PageCard.vue'
 import { isMobile } from 'is-mobile'
 import { storeToRefs } from 'pinia'
-import {
-  AutoZoomMode,
-  useRendererSettingsStore,
-} from '../stores/renderer-settings'
+import { AutoZoomMode, useVisualSettingsStore } from '../stores/visual-settings'
 import GridList from '../components/GridList.vue'
 
 export default defineComponent({
@@ -339,7 +336,7 @@ export default defineComponent({
   components: { GeometryConfig, GridList, PageCard },
 
   data() {
-    const store = storeToRefs(useRendererSettingsStore())
+    const store = storeToRefs(useVisualSettingsStore())
 
     return {
       isFullscreen: false,
@@ -349,7 +346,7 @@ export default defineComponent({
 
   computed: {
     store() {
-      return useRendererSettingsStore()
+      return useVisualSettingsStore()
     },
 
     autoZoomOptions() {
