@@ -113,7 +113,7 @@ import {
 import { Renderer } from '../3d'
 import { GeometryAttributes, PartialSphere, Sphere } from '../3d/geometry'
 import isMobile from 'is-mobile'
-import { useRendererSettingsStore } from '../stores/renderer-settings'
+import { useVisualSettingsStore } from '../stores/visual-settings'
 import GridList from '../components/GridList.vue'
 
 export default defineComponent({
@@ -204,7 +204,7 @@ export default defineComponent({
     },
 
     randomiseBackground() {
-      const backgroundSettings = useRendererSettingsStore()
+      const backgroundSettings = useVisualSettingsStore()
       backgroundSettings.randomise()
     },
 

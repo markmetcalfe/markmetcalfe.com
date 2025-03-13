@@ -149,7 +149,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useRendererSettingsStore } from '../stores/renderer-settings'
+import { useVisualSettingsStore } from '../stores/visual-settings'
 import {
   GeometryAttributes,
   geometryClasses,
@@ -170,7 +170,7 @@ export default defineComponent({
 
   computed: {
     store() {
-      return useRendererSettingsStore()
+      return useVisualSettingsStore()
     },
 
     config() {
