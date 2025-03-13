@@ -31,14 +31,12 @@
             text="Instagram"
             href="https://instagram.com/_vizshun"
             icon="fab fa-instagram"
-            color="#e1306c"
             external
           />
           <LinkButton
             text="Soundcloud"
             href="https://soundcloud.com/vizshun"
             icon="fab fa-soundcloud"
-            color="#f26f23"
             external
           />
         </template>
@@ -47,37 +45,28 @@
             text="GitHub"
             href="https://github.com/markmetcalfe"
             icon="fab fa-github"
-            color="#191717"
             external
           />
           <LinkButton
             text="Resume"
             href="/Mark-Metcalfe-Resume.pdf"
             icon="fa-regular fa-file-lines"
-            color="#f6b011"
             external
           />
           <LinkButton
             text="Email"
             :href="getMailtoLink()"
             icon="fa-regular fa-envelope"
-            color="#fb4c2f"
             external
           />
           <LinkButton
             text="LinkedIn"
             href="https://www.linkedin.com/in/mark-metcalfe/"
             icon="fab fa-linkedin"
-            color="#0077b5"
             external
           />
         </template>
-        <LinkButton
-          text="Visuals"
-          href="/visuals"
-          icon="fa-solid fa-eye"
-          color="#0077b5"
-        />
+        <LinkButton text="Visuals" href="/visuals" icon="fa-solid fa-eye" />
       </section>
       <div v-if="!isMobile() && !isCardPreview()" class="home-cornerbuttons">
         <button class="button-icon" title="See through" @click="toggleOpacity">
