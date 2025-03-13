@@ -187,7 +187,9 @@ export default defineComponent({
   },
 
   unmounted() {
-    this.renderer?.cleanUp()
+    setTimeout(() => {
+      this.renderer?.cleanUp()
+    }, 250)
   },
 
   methods: {
