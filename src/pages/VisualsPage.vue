@@ -1,14 +1,10 @@
 <template>
-  <PageCard
-    v-show="!isFullscreen"
-    back-button-page="/"
-    :background-opacity="isMobile() ? 0.5 : 1"
-  >
+  <PageCard v-show="!isFullscreen" back-button-page="/">
     <template #title>3D Visuals</template>
 
     <div class="visualspage">
       <div class="visualspage-buttons">
-        <LinkButton text="Randomise" @click="store.randomise">
+        <LinkButton text="Randomise" @click="visualsStore.randomise">
           <font-awesome-icon icon="fas fa-dice" />
         </LinkButton>
         <LinkButton href="/visuals/shapes" text="Edit Shapes">
@@ -56,7 +52,7 @@
           <ToggleSwitch
             :model-value="settings.beatMatch.enabled"
             label="Beat Matching"
-            @update:model-value="store.setBeatMatchEnabled"
+            @update:model-value="visualsStore.setBeatMatchEnabled"
           />
 
           <ToggleSwitch
@@ -77,7 +73,7 @@
             <button
               class="visualspage-bpmbutton"
               :disabled="disabled"
-              @click="store.tapBpm"
+              @click="visualsStore.tapBpm"
             >
               Tap
             </button>
@@ -113,7 +109,7 @@
           :max="100"
           label="Zoom Speed"
           @update:model-value="
-            (value: number) => (store.autoZoom.speed = value / 1000)
+            (value: number) => (visualsStore.autoZoom.speed = value / 1000)
           "
         />
       </div>
@@ -137,12 +133,13 @@ import { defineComponent } from 'vue'
 import PageCard from '../components/PageCard.vue'
 import { isMobile } from 'is-mobile'
 import { storeToRefs } from 'pinia'
-import { AutoZoomMode, useVisualSettingsStore } from '../stores/visual-settings'
+import { AutoZoomMode, useVisualsStore } from '../stores/visuals'
 import GridList from '../components/GridList.vue'
 import LinkButton from '../components/LinkButton.vue'
 import ToggleSwitch from '../components/ToggleSwitch.vue'
 import Fader from '../components/Fader.vue'
 import DropdownSelect from '../components/DropdownSelect.vue'
+import { useSiteStore } from '../stores/site'
 
 export default defineComponent({
   name: 'VisualsPage',
@@ -156,7 +153,7 @@ export default defineComponent({
   },
 
   data() {
-    const store = storeToRefs(useVisualSettingsStore())
+    const store = storeToRefs(useVisualsStore())
 
     return {
       isFullscreen: false,
@@ -165,12 +162,15 @@ export default defineComponent({
   },
 
   computed: {
-    store() {
-      return useVisualSettingsStore()
+    siteStore() {
+      return useSiteStore()
+    },
+    visualsStore() {
+      return useVisualsStore()
     },
 
     autoZoomOptions() {
-      const options = this.store.beatMatch.enabled
+      const options = this.visualsStore.beatMatch.enabled
         ? Object.values(AutoZoomMode)
         : [AutoZoomMode.DISABLED, AutoZoomMode.SMOOTH]
       return options.map(value => ({
@@ -179,14 +179,15 @@ export default defineComponent({
       }))
     },
     autoZoomDisabled() {
-      return this.store.autoZoom.mode === AutoZoomMode.DISABLED
+      return this.visualsStore.autoZoom.mode === AutoZoomMode.DISABLED
     },
     autoZoomIsSmooth() {
-      return this.store.autoZoom.mode === AutoZoomMode.SMOOTH
+      return this.visualsStore.autoZoom.mode === AutoZoomMode.SMOOTH
     },
   },
 
   mounted() {
+    this.siteStore.hideBackgroundIfMobile()
     document.addEventListener('fullscreenchange', () => this.fullscreenEvent())
   },
 

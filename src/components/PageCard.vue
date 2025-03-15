@@ -6,8 +6,10 @@
     <div
       class="pagecard-inner"
       :style="{
-        backgroundColor: `rgba(0, 0, 0, ${store.backgroundHidden ? 0 : backgroundOpacity})`,
-        border: store.backgroundHidden
+        backgroundColor: siteStore.backgroundHidden
+          ? 'rgba(0,0,0,0)'
+          : 'var(--color-dark)',
+        border: siteStore.backgroundHidden
           ? ''
           : 'var(--color-highlight) 1px solid',
       }"
@@ -31,11 +33,12 @@
         <button
           class="button-icon"
           title="See through"
-          @click="store.toggleBackground"
+          @click="siteStore.toggleBackground"
         >
           <font-awesome-icon
             :icon="
-              (store.backgroundHidden ? 'fa-solid' : 'fa-regular') + ' fa-eye'
+              (siteStore.backgroundHidden ? 'fa-solid' : 'fa-regular') +
+              ' fa-eye'
             "
           />
         </button>
@@ -50,7 +53,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useSiteSettingsStore } from '../stores/site-settings'
+import { useSiteStore } from '../stores/site'
 import { isCardPreview } from '../util/site'
 
 export default defineComponent({
@@ -63,15 +66,11 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    backgroundOpacity: {
-      type: Number,
-      default: 1,
-    },
   },
 
   computed: {
-    store() {
-      return useSiteSettingsStore()
+    siteStore() {
+      return useSiteStore()
     },
   },
 

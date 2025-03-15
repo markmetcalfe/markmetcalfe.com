@@ -20,7 +20,7 @@ export enum AutoZoomMode {
   RANDOM = 'Random',
 }
 
-export interface VisualSettings {
+export interface VisualStore {
   renderer: Renderer | undefined
   geometryConfig: GeometryAttributes[]
   followCursor: boolean
@@ -78,7 +78,7 @@ export const defaultGeometry: GeometryAttributes[] = [
   },
 ]
 
-const defaultSettings: VisualSettings = {
+const initialState: VisualStore = {
   renderer: undefined,
   geometryConfig: defaultGeometry,
   followCursor: true,
@@ -109,8 +109,8 @@ const defaultSettings: VisualSettings = {
   },
 }
 
-export const useVisualSettingsStore = defineStore('renderer-settings', {
-  state: () => defaultSettings,
+export const useVisualsStore = defineStore('visuals', {
+  state: () => initialState,
   actions: {
     generateGeometry() {
       const geometry = this.geometryConfig.map(
@@ -393,10 +393,10 @@ export const useVisualSettingsStore = defineStore('renderer-settings', {
         .setGetDefaultGeometry(() => this.geometryConfig)
     },
 
-    setListener(name: keyof VisualSettings['listeners'], closure: () => void) {
+    setListener(name: keyof VisualStore['listeners'], closure: () => void) {
       this.listeners[name] = closure
     },
-    removeListener(name: keyof VisualSettings['listeners']) {
+    removeListener(name: keyof VisualStore['listeners']) {
       this.listeners[name] = undefined
     },
   },
