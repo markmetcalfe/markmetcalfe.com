@@ -27,6 +27,15 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "visuals" */ './pages/VisualsPage.vue'),
   },
   {
+    path: '/visuals/shapes',
+    name: 'EditShapesPage',
+    meta: {
+      title: 'Edit Shapes',
+    },
+    component: () =>
+      import(/* webpackChunkName: "editshapes" */ './pages/EditShapesPage.vue'),
+  },
+  {
     path: '/privacy-policy',
     name: 'PrivacyPolicyPage',
     meta: {

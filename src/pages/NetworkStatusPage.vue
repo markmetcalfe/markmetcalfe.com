@@ -5,11 +5,14 @@
       <p v-if="isConnected === true" class="networkstatus success">
         Connected To Local Network
       </p>
-      <p v-else-if="isConnected === false" class="networkstatus error">
+      <p
+        v-else-if="isConnected === false"
+        class="networkstatus error no-padding"
+      >
         Not Connected To Local Network
       </p>
       <p v-if="homeIp">Home IP: {{ homeIp }}</p>
-      <p v-if="yourIp">Your IP: {{ yourIp }}</p>
+      <p v-if="yourIp" class="no-padding">Your IP: {{ yourIp }}</p>
     </div>
   </PageCard>
 </template>
@@ -52,7 +55,6 @@ export default defineComponent({
 
 .networkstatus {
   font-weight: 600;
-  padding-bottom: 1rem;
 
   @include vars.desktop-only {
     font-size: 1.75rem;

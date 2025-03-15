@@ -17,6 +17,7 @@
           <h1 v-else class="mark">Mark Metcalfe</h1>
           <GridList
             class="home-header-about"
+            large
             :items="
               isVizshun()
                 ? ['Visual Artist', 'DJ', 'Digital Wizard']
@@ -30,43 +31,66 @@
           <LinkButton
             text="Instagram"
             href="https://instagram.com/_vizshun"
-            icon="fab fa-instagram"
             external
-          />
+            large
+          >
+            <template #icon>
+              <font-awesome-icon icon="fab fa-instagram" />
+            </template>
+          </LinkButton>
           <LinkButton
             text="Soundcloud"
             href="https://soundcloud.com/vizshun"
-            icon="fab fa-soundcloud"
             external
-          />
+            large
+          >
+            <template #icon>
+              <font-awesome-icon icon="fab fa-soundcloud" />
+            </template>
+          </LinkButton>
         </template>
         <template v-else>
           <LinkButton
             text="GitHub"
             href="https://github.com/markmetcalfe"
-            icon="fab fa-github"
             external
-          />
+            large
+          >
+            <template #icon>
+              <font-awesome-icon icon="fab fa-github" />
+            </template>
+          </LinkButton>
           <LinkButton
             text="Resume"
             href="/Mark-Metcalfe-Resume.pdf"
-            icon="fa-regular fa-file-lines"
             external
-          />
-          <LinkButton
-            text="Email"
-            :href="getMailtoLink()"
-            icon="fa-regular fa-envelope"
-            external
-          />
+            large
+          >
+            <template #icon>
+              <font-awesome-icon icon="fa-regular fa-file-lines" />
+            </template>
+          </LinkButton>
+          <LinkButton text="Email" :href="getMailtoLink()" external large>
+            <template #icon>
+              <font-awesome-icon icon="fa-regular fa-envelope" />
+            </template>
+          </LinkButton>
           <LinkButton
             text="LinkedIn"
             href="https://www.linkedin.com/in/mark-metcalfe/"
-            icon="fab fa-linkedin"
             external
-          />
+            large
+          >
+            <template #icon>
+              <font-awesome-icon icon="fab fa-linkedin" />
+            </template>
+          </LinkButton>
         </template>
-        <LinkButton text="Visuals" href="/visuals" icon="fa-solid fa-eye" />
+        <LinkButton text="Visuals" href="/visuals" large>
+          <template #icon>
+            <inline-svg src="/favicon.svg" />
+          </template>
+        </LinkButton>
       </section>
       <div v-if="!isMobile() && !isCardPreview()" class="home-cornerbuttons">
         <button class="button-icon" title="See through" @click="toggleOpacity">
@@ -208,14 +232,19 @@ export default defineComponent({
 @use '../variables' as vars;
 
 .home {
+  @include vars.desktop-only {
+    padding: 1rem 0;
+  }
+
+  &--card {
+    @include vars.desktop-only {
+      padding: 1.5rem 0;
+    }
+  }
+
   &-header {
     display: flex;
     gap: 1rem;
-
-    @include vars.desktop-only {
-      margin-top: 3rem;
-      margin-bottom: 1.5rem;
-    }
 
     &-left,
     &-right {
@@ -310,16 +339,31 @@ export default defineComponent({
     }
 
     &-about {
-      padding-top: 0.75rem;
+      & li {
+        @include vars.desktop-only {
+          padding-top: 0.75rem;
+        }
+
+        @include vars.mobile-only {
+          padding-top: 0.4rem;
+        }
+      }
     }
   }
 
   &-links {
     margin: 0;
-    padding-top: 1rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+
+    @include vars.desktop-only {
+      padding-top: 2.5rem;
+    }
+
+    @include vars.mobile-only {
+      padding-top: 1.5rem;
+    }
   }
 
   &-cornerbuttons {

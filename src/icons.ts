@@ -7,37 +7,39 @@ import {
   faSoundcloud,
 } from '@fortawesome/free-brands-svg-icons'
 import {
-  faMobileScreenButton,
   faChevronLeft,
+  faCaretDown,
   faPlay,
+  faPlus,
   faDice,
-  faShapes,
   faEye as faEyeSolid,
+  faTrash,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons'
 import {
-  faComments,
   faEnvelope,
   faFileLines,
+  faFloppyDisk,
   faEye,
 } from '@fortawesome/free-regular-svg-icons'
 import { App, Plugin } from 'vue'
 
 const icons = [
+  faCaretDown,
   faChevronLeft,
-  faComments,
   faDice,
   faEnvelope,
   faEye,
   faEyeSolid,
   faFileLines,
+  faFloppyDisk,
   faGithub,
   faInstagram,
   faLinkedin,
-  faMobileScreenButton,
   faPlay,
-  faShapes,
+  faPlus,
   faSoundcloud,
+  faTrash,
   faXmark,
 ]
 

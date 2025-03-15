@@ -18,14 +18,11 @@ test.describe('VisualsPage', () => {
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
 
-  test('can open geometry definitions dialog', async ({ page }, testInfo) => {
-    const button = page.locator('text="Edit Shapes"')
+  test('can navigate to the edit shapes page', async ({ page }) => {
+    const link = page.locator('a:has-text("Edit Shapes")')
 
-    await button.click()
+    await Promise.all([page.waitForURL('/visuals/shapes'), link.click()])
 
-    await expect(page.locator('body')).toContainText('Save')
-
-    await page.waitForTimeout(1000)
-    await takeSnapshot(page, 'Visuals Page - Geometry Definitions', testInfo)
+    await expect(page.locator('body')).toContainText('Edit Shapes')
   })
 })
