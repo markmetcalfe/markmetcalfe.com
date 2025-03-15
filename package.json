@@ -27,6 +27,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.6",
     "color-convert": "^2.0.1",
+    "hex-color-to-color-name": "^1.0.2",
     "is-mobile": "^4.0.0",
     "pinia": "^2.1.7",
     "three": "^0.174.0",

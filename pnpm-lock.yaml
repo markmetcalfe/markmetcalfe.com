@@ -26,6 +26,9 @@ importers:
       color-convert:
         specifier: ^2.0.1
         version: 2.0.1
+      hex-color-to-color-name:
+        specifier: ^1.0.2
+        version: 1.0.2
       is-mobile:
         specifier: ^4.0.0
         version: 4.0.0
@@ -1950,6 +1953,9 @@ packages:
   he@1.2.0:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
+
+  hex-color-to-color-name@1.0.2:
+    resolution: {integrity: sha512-YKPBFTSbYIHH8YKcJB4Q5PV+Tr+kvDXpV60BcPMUu5CSZUcc/qOOx7lkr7luk6MSXKd5A82yfPGZTgedIdQ+aA==}
 
   hookified@1.7.1:
     resolution: {integrity: sha512-OXcdHsXeOiD7OJ5zvWj8Oy/6RCdLwntAX+wUrfemNcMGn6sux4xbEHi2QXwqePYhjQ/yvxxq2MvCRirdlHscBw==}
@@ -5047,6 +5053,8 @@ snapshots:
       function-bind: 1.1.2
 
   he@1.2.0: {}
+
+  hex-color-to-color-name@1.0.2: {}
 
   hookified@1.7.1: {}
 
