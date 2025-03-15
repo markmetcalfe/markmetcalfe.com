@@ -7,10 +7,7 @@
       rel="noopener noreferer"
       :class="{ 'linkbutton-large': large }"
     >
-      <span class="linkbutton-icon"
-        ><slot v-if="$slots.icon" name="icon"></slot>
-        <font-awesome-icon v-else :icon="icon"
-      /></span>
+      <span class="linkbutton-icon"><slot /></span>
       <span>{{ text }}</span>
     </a>
     <router-link
@@ -18,10 +15,7 @@
       :to="href"
       :class="{ 'linkbutton-large': large }"
     >
-      <span class="linkbutton-icon"
-        ><slot v-if="$slots.icon" name="icon"></slot>
-        <font-awesome-icon v-else :icon="icon"
-      /></span>
+      <span class="linkbutton-icon"><slot /></span>
       <span>{{ text }}</span>
     </router-link>
     <button
@@ -29,10 +23,7 @@
       :class="{ 'linkbutton-large': large }"
       @click="event => $emit('click', event)"
     >
-      <span class="linkbutton-icon"
-        ><slot v-if="$slots.icon" name="icon"></slot>
-        <font-awesome-icon v-else :icon="icon"
-      /></span>
+      <span class="linkbutton-icon"><slot /></span>
       <span>{{ text }}</span>
     </button>
   </span>
@@ -55,11 +46,6 @@ export default defineComponent({
     text: {
       type: String,
       required: true,
-    },
-    icon: {
-      type: String,
-      required: false,
-      default: '',
     },
     large: {
       type: Boolean,

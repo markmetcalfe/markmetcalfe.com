@@ -39,16 +39,21 @@
     </div>
 
     <div class="editshapes-buttons">
-      <LinkButton text="Add" icon="fa-solid fa-plus" @click="addShape" />
+      <LinkButton text="Add" @click="addShape">
+        <font-awesome-icon icon="fa-solid fa-plus" />
+      </LinkButton>
       <LinkButton
         text="Delete"
-        icon="fa-solid fa-trash"
         :style="{
           visibility: store.geometryConfig.length > 1 ? undefined : 'hidden',
         }"
         @click="deleteShape"
-      />
-      <LinkButton text="Save" icon="fa-regular fa-floppy-disk" @click="save" />
+      >
+        <font-awesome-icon icon="fa-solid fa-trash" style="max-height: 21px" />
+      </LinkButton>
+      <LinkButton text="Save" icon="fa-regular fa-floppy-disk" @click="save">
+        <font-awesome-icon icon="fa-regular fa-floppy-disk" />
+      </LinkButton>
     </div>
   </PageCard>
 </template>
