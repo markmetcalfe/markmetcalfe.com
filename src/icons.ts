@@ -14,7 +14,6 @@ import {
   faDice,
   faEye as faEyeSolid,
   faTrash,
-  faXmark,
 } from '@fortawesome/free-solid-svg-icons'
 import {
   faEnvelope,
@@ -40,7 +39,6 @@ const icons = [
   faPlus,
   faSoundcloud,
   faTrash,
-  faXmark,
 ]
 
 const addIcons: Plugin = (app: App) => {

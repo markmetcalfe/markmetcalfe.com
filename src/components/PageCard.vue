@@ -6,8 +6,10 @@
     <div
       class="pagecard-inner"
       :style="{
-        backgroundColor: `rgba(0, 0, 0, ${backgroundOpacity})`,
-        border: showBorder ? 'var(--color-highlight) 1px solid' : '',
+        backgroundColor: `rgba(0, 0, 0, ${store.backgroundHidden ? 0 : backgroundOpacity})`,
+        border: store.backgroundHidden
+          ? ''
+          : 'var(--color-highlight) 1px solid',
       }"
     >
       <header v-if="$slots.title" class="pagecard-header">
@@ -19,10 +21,26 @@
         >
           <font-awesome-icon icon="fa-solid fa-chevron-left" />
         </router-link>
+
         <h2 class="pagecard-title">
           <slot name="title" />
         </h2>
       </header>
+
+      <div v-if="!isCardPreview()" class="pagecard-cornerbuttons">
+        <button
+          class="button-icon"
+          title="See through"
+          @click="store.toggleBackground"
+        >
+          <font-awesome-icon
+            :icon="
+              (store.backgroundHidden ? 'fa-solid' : 'fa-regular') + ' fa-eye'
+            "
+          />
+        </button>
+      </div>
+
       <main class="pagecard-main">
         <slot />
       </main>
@@ -32,6 +50,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useSiteSettingsStore } from '../stores/site-settings'
+import { isCardPreview } from '../util/site'
 
 export default defineComponent({
   props: {
@@ -47,10 +67,16 @@ export default defineComponent({
       type: Number,
       default: 1,
     },
-    showBorder: {
-      type: Boolean,
-      default: true,
+  },
+
+  computed: {
+    store() {
+      return useSiteSettingsStore()
     },
+  },
+
+  methods: {
+    isCardPreview,
   },
 })
 </script>
@@ -144,6 +170,20 @@ export default defineComponent({
     @include vars.mobile-only {
       font-size: 1.75rem;
       margin-bottom: 1.5rem;
+    }
+  }
+
+  &-cornerbuttons {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 100;
+
+    & button {
+      font-size: 1rem;
     }
   }
 }
