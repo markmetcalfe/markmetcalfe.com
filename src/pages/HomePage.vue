@@ -90,9 +90,9 @@ import {
 } from '../util/site'
 import { Renderer } from '../3d'
 import { GeometryAttributes, PartialSphere, Sphere } from '../3d/geometry'
-import isMobile from 'is-mobile'
-import { useVisualSettingsStore } from '../stores/visual-settings'
+import { useVisualsStore } from '../stores/visuals'
 import GridList from '../components/GridList.vue'
+import { useSiteStore } from '../stores/site'
 
 export default defineComponent({
   name: 'HomePage',
@@ -139,7 +139,15 @@ export default defineComponent({
     }
   },
 
+  computed: {
+    siteStore() {
+      return useSiteStore()
+    },
+  },
+
   mounted() {
+    this.siteStore.showBackground()
+
     setTimeout(() => {
       this.renderer = new Renderer(document.querySelector('.photo-of-me-bg')!)
         .setGetDefaultGeometry(() => this.geometryDefinition)
@@ -171,7 +179,6 @@ export default defineComponent({
   methods: {
     isVizshun,
     isCardPreview,
-    isMobile,
     getMailtoLink,
 
     randomiseProfile() {
@@ -180,7 +187,7 @@ export default defineComponent({
     },
 
     randomiseBackground() {
-      const backgroundSettings = useVisualSettingsStore()
+      const backgroundSettings = useVisualsStore()
       backgroundSettings.randomise()
     },
   },

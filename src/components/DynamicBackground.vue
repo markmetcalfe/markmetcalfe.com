@@ -7,7 +7,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Renderer } from '../3d'
-import { useVisualSettingsStore } from '../stores/visual-settings'
+import { useVisualsStore } from '../stores/visuals'
 
 export default defineComponent({
   name: 'DynamicBackground',
@@ -19,8 +19,8 @@ export default defineComponent({
   },
 
   computed: {
-    store() {
-      return useVisualSettingsStore()
+    visualsStore() {
+      return useVisualsStore()
     },
   },
 
@@ -29,7 +29,7 @@ export default defineComponent({
       const renderer = new Renderer(
         document.querySelector('.dynamicbackground')!,
       )
-      this.store.setRenderer(renderer)
+      this.visualsStore.setRenderer(renderer)
       renderer.initialise()
       this.renderer = renderer
     }, 100)

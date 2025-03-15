@@ -1,8 +1,5 @@
 <template>
-  <PageCard
-    back-button-page="/visuals"
-    :background-opacity="isMobile() ? 0.5 : 1"
-  >
+  <PageCard back-button-page="/visuals">
     <template #title>Edit Shapes</template>
 
     <DropdownSelect v-model="selectedShapeIndex" :options="geometryItems" />
@@ -45,7 +42,8 @@
       <LinkButton
         text="Delete"
         :style="{
-          visibility: store.geometryConfig.length > 1 ? undefined : 'hidden',
+          visibility:
+            visualsStore.geometryConfig.length > 1 ? undefined : 'hidden',
         }"
         @click="deleteShape"
       >
@@ -61,18 +59,18 @@
 <script lang="ts">
 import PageCard from '../components/PageCard.vue'
 import { defineComponent } from 'vue'
-import { useVisualSettingsStore } from '../stores/visual-settings'
+import { useVisualsStore } from '../stores/visuals'
 import {
   GeometryAttributes,
   geometryClasses,
   getGeometryClassFromName,
 } from '../3d/geometry'
 import { getColorName } from '../util/color'
-import { isMobile } from 'is-mobile'
 import LinkButton from '../components/LinkButton.vue'
 import ToggleSwitch from '../components/ToggleSwitch.vue'
 import DropdownSelect from '../components/DropdownSelect.vue'
 import TextField from '../components/TextField.vue'
+import { useSiteStore } from '../stores/site'
 
 export default defineComponent({
   name: 'EditShapesPage',
@@ -86,16 +84,19 @@ export default defineComponent({
   },
 
   computed: {
-    store() {
-      return useVisualSettingsStore()
+    siteStore() {
+      return useSiteStore()
+    },
+    visualsStore() {
+      return useVisualsStore()
     },
 
     selectedShape() {
-      return this.store.geometryConfig[this.selectedShapeIndex]
+      return this.visualsStore.geometryConfig[this.selectedShapeIndex]
     },
 
     geometryItems() {
-      return this.store.geometryConfig.map((geometry, index) => ({
+      return this.visualsStore.geometryConfig.map((geometry, index) => ({
         value: index,
         label: this.getShapeName(geometry),
       }))
@@ -110,18 +111,18 @@ export default defineComponent({
   },
 
   mounted() {
-    this.store.setListener('onRandomise', () => {
+    this.siteStore.hideBackgroundIfMobile()
+
+    this.visualsStore.setListener('onRandomise', () => {
       this.selectedShapeIndex = 0
     })
   },
 
   unmounted() {
-    this.store.removeListener('onRandomise')
+    this.visualsStore.removeListener('onRandomise')
   },
 
   methods: {
-    isMobile,
-
     getShapeName(shape: GeometryAttributes) {
       return `${getColorName(shape.color)} ${shape.type.getName()}`
     },
@@ -131,8 +132,8 @@ export default defineComponent({
     },
 
     addShape() {
-      this.store.addRandomGeometryConfig()
-      this.selectedShapeIndex = this.store.geometryConfig.length - 1
+      this.visualsStore.addRandomGeometryConfig()
+      this.selectedShapeIndex = this.visualsStore.geometryConfig.length - 1
     },
 
     deleteShape() {
@@ -140,7 +141,7 @@ export default defineComponent({
       if (this.selectedShapeIndex > 0) {
         this.selectedShapeIndex = this.selectedShapeIndex - 1
       }
-      this.store.deleteGeometryConfig(shapeToDelete)
+      this.visualsStore.deleteGeometryConfig(shapeToDelete)
     },
 
     save() {
@@ -148,7 +149,7 @@ export default defineComponent({
       setTimeout(() => {
         this.loading = false
       }, 250)
-      this.store.generateGeometry()
+      this.visualsStore.generateGeometry()
     },
   },
 })
