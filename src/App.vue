@@ -45,7 +45,6 @@ export default defineComponent({
   --color-light: #fff;
   --color-highlight: #0f0;
   --color-error: #f00;
-  --color-link: var(--color-highlight);
 }
 
 body {
@@ -60,7 +59,7 @@ body {
   overflow-x: hidden;
 
   @include vars.desktop-only {
-    font-size: 1.15rem;
+    font-size: 1rem;
   }
 
   @include vars.mobile-only {
@@ -68,28 +67,41 @@ body {
   }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-strong,
-b {
-  font-weight: 400;
+a,
+button,
+input,
+span,
+div,
+main,
+section,
+header,
+footer,
+aside {
+  font-weight: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  margin: 0;
+  padding: 0;
 }
 
 a,
 a:visited,
-button.button-icon {
-  color: var(--color-link);
+button {
+  color: var(--color-highlight);
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
   text-decoration: none;
   transition: all 250ms;
 }
 
 a:hover,
 a:focus,
-button.button-icon:hover {
+button:hover:not(:disabled),
+button:focus:not(:disabled) {
   color: inherit;
+  cursor: pointer;
 }
 
 .dark {
@@ -115,6 +127,33 @@ button.button-icon:hover {
 ::selection {
   background: var(--color-highlight);
   color: var(--color-dark);
+}
+
+.no-padding {
+  padding: 0;
+  margin: 0;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: unset;
+}
+
+.disabled .disabled {
+  opacity: 1;
+  cursor: auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* Transition Animations */

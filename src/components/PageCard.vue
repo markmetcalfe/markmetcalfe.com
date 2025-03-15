@@ -78,7 +78,7 @@ export default defineComponent({
     visibility: visible;
 
     @include vars.desktop-only {
-      padding: 1rem 5rem 2.5rem;
+      padding: 2rem 5rem;
     }
 
     @include vars.mobile-only {
@@ -118,7 +118,7 @@ export default defineComponent({
   &-back {
     position: absolute;
     display: inline-block;
-    color: var(--color-link);
+    color: var(--color-highlight);
 
     @include vars.desktop-only {
       font-size: 2.25rem;
@@ -132,8 +132,9 @@ export default defineComponent({
   }
 
   &-title {
-    font-weight: 400;
-    margin-top: 0.5rem;
+    font-weight: inherit;
+    padding: 0;
+    margin-top: 0;
 
     @include vars.desktop-only {
       font-size: 2.25rem;

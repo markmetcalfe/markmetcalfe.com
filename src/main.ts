@@ -8,42 +8,12 @@ import {
 import routes from './routes'
 import addIcons from './icons'
 import { createPinia } from 'pinia'
-import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
-import { aliases, fa } from 'vuetify/iconsets/fa'
 import '@fortawesome/fontawesome-free/css/all.css'
+// @ts-expect-error Is a typescript module
+import InlineSvg from 'vue-inline-svg'
 import { isVizshun } from './util/site'
 
 const pinia = createPinia()
-
-const matrixDarkTheme = {
-  dark: true,
-  colors: {
-    background: '#000000',
-    surface: '#000000',
-    primary: '#00ff00',
-  },
-}
-
-const vuetify = createVuetify({
-  components,
-  directives,
-  theme: {
-    defaultTheme: 'matrixDarkTheme',
-    themes: {
-      matrixDarkTheme,
-    },
-  },
-  icons: {
-    defaultSet: 'fa',
-    aliases,
-    sets: {
-      fa,
-    },
-  },
-})
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,4 +40,9 @@ router.afterEach(
   },
 )
 
-createApp(App).use(pinia).use(vuetify).use(addIcons).use(router).mount('#app')
+createApp(App)
+  .use(pinia)
+  .use(addIcons)
+  .use(router)
+  .component('inline-svg', InlineSvg)
+  .mount('#app')

@@ -21,17 +21,17 @@
     "chromatic": "chromatic --playwright --exit-zero-on-changes"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.5.1",
-    "@fortawesome/free-brands-svg-icons": "^6.5.1",
-    "@fortawesome/free-regular-svg-icons": "^6.5.1",
-    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.6",
     "color-convert": "^2.0.1",
     "is-mobile": "^4.0.0",
     "pinia": "^2.1.7",
     "three": "^0.174.0",
     "vue": "^3.4.21",
-    "vuetify": "^3.7.1"
+    "vue-inline-svg": "^4.0.0"
   },
   "devDependencies": {
     "@babel/types": "^7.24.0",

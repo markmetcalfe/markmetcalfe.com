@@ -9,16 +9,16 @@ importers:
   .:
     dependencies:
       '@fortawesome/fontawesome-svg-core':
-        specifier: ^6.5.1
+        specifier: ^6.7.2
         version: 6.7.2
       '@fortawesome/free-brands-svg-icons':
-        specifier: ^6.5.1
+        specifier: ^6.7.2
         version: 6.7.2
       '@fortawesome/free-regular-svg-icons':
-        specifier: ^6.5.1
+        specifier: ^6.7.2
         version: 6.7.2
       '@fortawesome/free-solid-svg-icons':
-        specifier: ^6.5.1
+        specifier: ^6.7.2
         version: 6.7.2
       '@fortawesome/vue-fontawesome':
         specifier: ^3.0.6
@@ -38,9 +38,9 @@ importers:
       vue:
         specifier: ^3.4.21
         version: 3.5.13(typescript@5.7.3)
-      vuetify:
-        specifier: ^3.7.1
-        version: 3.7.15(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3))
+      vue-inline-svg:
+        specifier: ^4.0.0
+        version: 4.0.0(vue@3.5.13(typescript@5.7.3))
     devDependencies:
       '@babel/types':
         specifier: ^7.24.0
@@ -3045,6 +3045,11 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
+  vue-inline-svg@4.0.0:
+    resolution: {integrity: sha512-6kFnPZXQ5jPgumqhDGyJbpqtR5/hlkF4euXxMPai2tcnd6n7zYrEUhZPjE49blf3dDjdoslCu1oyk4EqX/KwgA==}
+    peerDependencies:
+      vue: ^3
+
   vue-router@4.5.0:
     resolution: {integrity: sha512-HDuk+PuH5monfNuY+ct49mNmkCRK4xJAV9Ts4z9UFc4rzdDnxQLyCMGGc8pKhZhHTVzfanpNwB/lwqevcBwI4w==}
     peerDependencies:
@@ -3062,22 +3067,6 @@ packages:
       typescript: '*'
     peerDependenciesMeta:
       typescript:
-        optional: true
-
-  vuetify@3.7.15:
-    resolution: {integrity: sha512-kBZzwXI5EcAMiW5TRMgK1reXQd0K/PpUt+ekX4Alvm7n09uzJ1my1TLNbX1sQ8/0KYgoxOf17C8qOJzBGkT+PA==}
-    engines: {node: ^12.20 || >=14.13}
-    peerDependencies:
-      typescript: '>=4.7'
-      vite-plugin-vuetify: '>=1.0.0'
-      vue: ^3.3.0
-      webpack-plugin-vuetify: '>=2.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-      vite-plugin-vuetify:
-        optional: true
-      webpack-plugin-vuetify:
         optional: true
 
   watchpack@2.4.2:
@@ -6129,6 +6118,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  vue-inline-svg@4.0.0(vue@3.5.13(typescript@5.7.3)):
+    dependencies:
+      vue: 3.5.13(typescript@5.7.3)
+
   vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)):
     dependencies:
       '@vue/devtools-api': 6.6.4
@@ -6147,12 +6140,6 @@ snapshots:
       '@vue/runtime-dom': 3.5.13
       '@vue/server-renderer': 3.5.13(vue@3.5.13(typescript@5.7.3))
       '@vue/shared': 3.5.13
-    optionalDependencies:
-      typescript: 5.7.3
-
-  vuetify@3.7.15(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3)):
-    dependencies:
-      vue: 3.5.13(typescript@5.7.3)
     optionalDependencies:
       typescript: 5.7.3
 

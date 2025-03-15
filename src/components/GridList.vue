@@ -1,5 +1,5 @@
 <template>
-  <ul class="gridlist">
+  <ul class="gridlist" :class="{ 'gridlist--large': large }">
     <li v-for="(item, index) in items" :key="`${index}-${item}`">{{ item }}</li>
   </ul>
 </template>
@@ -15,6 +15,10 @@ export default defineComponent({
       type: Array,
       default: () => [],
     },
+    large: {
+      type: Boolean,
+      default: false,
+    },
   },
 })
 </script>
@@ -26,6 +30,8 @@ export default defineComponent({
   list-style: inside;
   display: grid;
   justify-items: start;
+  margin: 0;
+  padding: 0;
 
   @include vars.desktop-only {
     grid-template-columns: 1fr 1fr;
@@ -34,7 +40,6 @@ export default defineComponent({
   & li {
     padding: 0;
     margin: 0;
-    font-weight: 300;
 
     /* Workaround for Safari */
     list-style-type: none;
@@ -50,6 +55,18 @@ export default defineComponent({
 
     @include vars.desktop-only {
       padding-top: 0.5rem;
+      font-size: 1rem;
+    }
+
+    @include vars.mobile-only {
+      font-size: 0.9rem;
+    }
+  }
+
+  &--large li {
+    font-weight: 300;
+
+    @include vars.desktop-only {
       font-size: 1.25rem;
     }
 
