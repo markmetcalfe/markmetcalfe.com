@@ -176,9 +176,12 @@ export default defineComponent({
     },
 
     autoZoomOptions() {
-      return Object.entries(AutoZoomMode).map(([value, label]) => ({
+      const options = this.store.beatMatch.enabled
+        ? Object.values(AutoZoomMode)
+        : [AutoZoomMode.DISABLED, AutoZoomMode.SMOOTH]
+      return options.map(value => ({
         value,
-        label,
+        label: value,
       }))
     },
     autoZoomDisabled() {

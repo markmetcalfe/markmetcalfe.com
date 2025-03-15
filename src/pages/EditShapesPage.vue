@@ -5,23 +5,23 @@
   >
     <template #title>Edit Shapes</template>
 
-    <DropdownSelect v-model="selectedShape" :options="geometryItems" />
+    <DropdownSelect v-model="selectedShapeIndex" :options="geometryItems" />
 
     <div class="editshapes-settings">
       <DropdownSelect
         label="Type"
-        :model-value="config[selectedShape].type.getName()"
+        :model-value="selectedShape.type.getName()"
         :options="geometryTypes"
         @change="setShapeType"
       />
 
-      <TextField v-model="config[selectedShape].color" label="Colour" />
+      <TextField v-model="selectedShape.color" label="Colour" />
 
       <div class="editshapes-toggles">
-        <ToggleSwitch v-model="config[selectedShape].solid" label="Solid" />
+        <ToggleSwitch v-model="selectedShape.solid" label="Solid" />
 
         <ToggleSwitch
-          v-model="config[selectedShape].reverseRotation"
+          v-model="selectedShape.reverseRotation"
           label="Reverse Rotation"
         />
       </div>
@@ -29,26 +29,23 @@
       <TextField
         label="Radius"
         type="number"
-        :model-value="config[selectedShape].radius.toFixed(0)"
+        :model-value="selectedShape.radius.toFixed(0)"
         @update:model-value="
-          (radius: string) =>
-            (config[selectedShape].radius = parseFloat(radius))
+          (radius: string) => (selectedShape.radius = parseFloat(radius))
         "
       />
 
-      <TextField
-        v-model="config[selectedShape].detail"
-        label="Detail"
-        type="number"
-      />
+      <TextField v-model="selectedShape.detail" label="Detail" type="number" />
     </div>
 
     <div class="editshapes-buttons">
       <LinkButton text="Add" icon="fa-solid fa-plus" @click="addShape" />
       <LinkButton
-        v-if="store.geometryConfig.length > 1"
         text="Delete"
         icon="fa-solid fa-trash"
+        :style="{
+          visibility: store.geometryConfig.length > 1 ? undefined : 'hidden',
+        }"
         @click="deleteShape"
       />
       <LinkButton text="Save" icon="fa-regular fa-floppy-disk" @click="save" />
@@ -79,7 +76,7 @@ export default defineComponent({
   data() {
     return {
       loading: false,
-      selectedShape: 0,
+      selectedShapeIndex: 0,
     }
   },
 
@@ -88,12 +85,12 @@ export default defineComponent({
       return useVisualSettingsStore()
     },
 
-    config() {
-      return this.store.geometryConfig
+    selectedShape() {
+      return this.store.geometryConfig[this.selectedShapeIndex]
     },
 
     geometryItems() {
-      return this.config.map((geometry, index) => ({
+      return this.store.geometryConfig.map((geometry, index) => ({
         value: index,
         label: this.getShapeName(geometry),
       }))
@@ -107,6 +104,16 @@ export default defineComponent({
     },
   },
 
+  mounted() {
+    this.store.setListener('onRandomise', () => {
+      this.selectedShapeIndex = 0
+    })
+  },
+
+  unmounted() {
+    this.store.removeListener('onRandomise')
+  },
+
   methods: {
     isMobile,
 
@@ -115,24 +122,20 @@ export default defineComponent({
     },
 
     setShapeType(name: string) {
-      this.config[this.selectedShape].type = getGeometryClassFromName(name)
+      this.selectedShape.type = getGeometryClassFromName(name)
     },
 
     addShape() {
       this.store.addRandomGeometryConfig()
-      setTimeout(() => {
-        this.selectedShape = this.store.geometryConfig.length - 1
-      }, 50)
+      this.selectedShapeIndex = this.store.geometryConfig.length - 1
     },
 
     deleteShape() {
-      const shapeToDelete = this.selectedShape
-      if (this.selectedShape > 0) {
-        this.selectedShape = this.selectedShape - 1
+      const shapeToDelete = this.selectedShapeIndex
+      if (this.selectedShapeIndex > 0) {
+        this.selectedShapeIndex = this.selectedShapeIndex - 1
       }
-      setTimeout(() => {
-        this.store.deleteGeometryConfig(shapeToDelete)
-      }, 50)
+      this.store.deleteGeometryConfig(shapeToDelete)
     },
 
     save() {

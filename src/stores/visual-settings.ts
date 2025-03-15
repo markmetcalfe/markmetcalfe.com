@@ -46,6 +46,9 @@ export interface VisualSettings {
     lastTime: Date
     taps: Date[]
   }
+  listeners: {
+    onRandomise: (() => void) | undefined
+  }
 }
 
 export const defaultGeometry: GeometryAttributes[] = [
@@ -101,6 +104,9 @@ const defaultSettings: VisualSettings = {
     lastTime: new Date(0),
     taps: [],
   },
+  listeners: {
+    onRandomise: undefined,
+  },
 }
 
 export const useVisualSettingsStore = defineStore('renderer-settings', {
@@ -136,6 +142,8 @@ export const useVisualSettingsStore = defineStore('renderer-settings', {
 
       this.randomiseGeometry()
       this.setRotationSpeed(getRandomNum(10, 25), getRandomNum(10, 25))
+
+      this.listeners.onRandomise?.()
     },
 
     zoomIn() {
@@ -383,6 +391,13 @@ export const useVisualSettingsStore = defineStore('renderer-settings', {
           }
         })
         .setGetDefaultGeometry(() => this.geometryConfig)
+    },
+
+    setListener(name: keyof VisualSettings['listeners'], closure: () => void) {
+      this.listeners[name] = closure
+    },
+    removeListener(name: keyof VisualSettings['listeners']) {
+      this.listeners[name] = undefined
     },
   },
 })
