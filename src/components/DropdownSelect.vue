@@ -6,7 +6,10 @@
     <div
       :id="id"
       class="dropdownselect-container"
-      :class="{ 'dropdownselect--active': isOpen }"
+      :class="{
+        'dropdownselect--active': isOpen,
+        'dropdownselect--one': options.length < 2,
+      }"
       tabindex="0"
       role="combobox"
       :aria-disabled="disabled"
@@ -84,6 +87,7 @@ export default {
     return {
       isOpen: false,
       selectedOption: null,
+      selectedOptionIndex: 0,
       id: useId(),
       labelId: useId(),
       listboxId: useId(),
@@ -94,24 +98,25 @@ export default {
     modelValue: {
       immediate: true,
       handler(newValue) {
-        if (newValue) {
-          this.selectedOption = this.options.find(
-            option => option.value === newValue,
-          )
-        } else {
-          this.selectedOption = null
-        }
+        const newOption = this.options.find(option => option.value === newValue)
+        const index = newOption
+          ? this.options.indexOf(newOption)
+          : Math.max(this.selectedOptionIndex - 1, 0)
+        this.selectedOption = this.options[index]
+        this.selectedOptionIndex = index
       },
     },
     options: {
       immediate: true,
       handler(newOptions) {
-        const valueExists = newOptions.some(
+        const existingOption = newOptions.find(
           option => option.value === this.selectedOption,
         )
-        if (!valueExists) {
-          this.selectedOption = newOptions[0]
-        }
+        const index = existingOption
+          ? this.options.indexOf(existingOption)
+          : Math.max(this.selectedOptionIndex - 1, 0)
+        this.selectedOption = this.options[index]
+        this.selectedOptionIndex = index
       },
     },
   },
@@ -126,7 +131,9 @@ export default {
 
   methods: {
     toggleDropdown() {
-      this.isOpen = !this.isOpen
+      if (this.options.length > 1) {
+        this.isOpen = !this.isOpen
+      }
     },
 
     selectOption(option) {
@@ -172,6 +179,10 @@ export default {
     user-select: none;
   }
 
+  &--one &-selected-option {
+    cursor: auto;
+  }
+
   &--active &-selected-option {
     border: 1px solid var(--color-highlight);
   }
@@ -179,6 +190,10 @@ export default {
   &-arrow {
     margin: 0 0.25rem;
     transition: all 0.2s ease;
+  }
+
+  &--one &-arrow {
+    display: none;
   }
 
   &--active &-arrow {
