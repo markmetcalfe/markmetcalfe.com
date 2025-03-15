@@ -1,10 +1,6 @@
 <template>
-  <PageCard
-    v-show="!isHidden"
-    :background-opacity="opaqueBackground ? 1 : 0"
-    :show-border="opaqueBackground"
-  >
-    <div class="home">
+  <PageCard v-show="!isHidden">
+    <div class="home" :class="{ 'home--card': isCardPreview() }">
       <section class="home-header">
         <div class="home-header-left">
           <div class="photo-of-me" @click="randomiseProfile">
@@ -92,23 +88,6 @@
           </template>
         </LinkButton>
       </section>
-      <div v-if="!isMobile() && !isCardPreview()" class="home-cornerbuttons">
-        <button class="button-icon" title="See through" @click="toggleOpacity">
-          <font-awesome-icon
-            :icon="'fa-eye ' + (opaqueBackground ? 'fa-regular' : 'fa-solid')"
-          />
-        </button>
-        <button
-          class="button-icon"
-          title="Randomise Background"
-          @click="randomiseBackground"
-        >
-          <font-awesome-icon icon="fa-solid fa-dice" />
-        </button>
-        <button class="button-icon" title="Hide" @click="isHidden = true">
-          <font-awesome-icon icon="fa-solid fa-xmark" />
-        </button>
-      </div>
     </div>
   </PageCard>
 </template>
@@ -138,7 +117,6 @@ export default defineComponent({
     rendererZoomLevel: number
     geometryDefinition: GeometryAttributes[]
     geometryRotationSpeed: number
-    opaqueBackground: boolean
     isHidden: boolean
   } {
     return {
@@ -171,7 +149,6 @@ export default defineComponent({
         },
       ],
       geometryRotationSpeed: 20,
-      opaqueBackground: true,
       isHidden: false,
     }
   },
@@ -219,10 +196,6 @@ export default defineComponent({
     randomiseBackground() {
       const backgroundSettings = useVisualSettingsStore()
       backgroundSettings.randomise()
-    },
-
-    toggleOpacity() {
-      this.opaqueBackground = !this.opaqueBackground
     },
   },
 })
@@ -364,15 +337,6 @@ export default defineComponent({
     @include vars.mobile-only {
       padding-top: 1.5rem;
     }
-  }
-
-  &-cornerbuttons {
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 0.5rem 0.75rem;
-    display: flex;
-    gap: 0.5rem;
   }
 }
 </style>
