@@ -30,9 +30,7 @@
             external
             large
           >
-            <template #icon>
-              <font-awesome-icon icon="fab fa-instagram" />
-            </template>
+            <font-awesome-icon icon="fab fa-instagram" />
           </LinkButton>
           <LinkButton
             text="Soundcloud"
@@ -40,9 +38,7 @@
             external
             large
           >
-            <template #icon>
-              <font-awesome-icon icon="fab fa-soundcloud" />
-            </template>
+            <font-awesome-icon icon="fab fa-soundcloud" />
           </LinkButton>
         </template>
         <template v-else>
@@ -52,9 +48,7 @@
             external
             large
           >
-            <template #icon>
-              <font-awesome-icon icon="fab fa-github" />
-            </template>
+            <font-awesome-icon icon="fab fa-github" />
           </LinkButton>
           <LinkButton
             text="Resume"
@@ -62,14 +56,10 @@
             external
             large
           >
-            <template #icon>
-              <font-awesome-icon icon="fa-regular fa-file-lines" />
-            </template>
+            <font-awesome-icon icon="fa-regular fa-file-lines" />
           </LinkButton>
           <LinkButton text="Email" :href="getMailtoLink()" external large>
-            <template #icon>
-              <font-awesome-icon icon="fa-regular fa-envelope" />
-            </template>
+            <font-awesome-icon icon="fa-regular fa-envelope" />
           </LinkButton>
           <LinkButton
             text="LinkedIn"
@@ -77,15 +67,11 @@
             external
             large
           >
-            <template #icon>
-              <font-awesome-icon icon="fab fa-linkedin" />
-            </template>
+            <font-awesome-icon icon="fab fa-linkedin" />
           </LinkButton>
         </template>
         <LinkButton text="Visuals" href="/visuals" large>
-          <template #icon>
-            <inline-svg src="/favicon.svg" />
-          </template>
+          <inline-svg src="/favicon.svg" />
         </LinkButton>
       </section>
     </div>

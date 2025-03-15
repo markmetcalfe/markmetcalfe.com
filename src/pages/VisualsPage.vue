@@ -9,23 +9,17 @@
     <div class="visualspage">
       <div class="visualspage-buttons">
         <LinkButton text="Randomise" @click="store.randomise">
-          <template #icon>
-            <font-awesome-icon icon="fas fa-dice" />
-          </template>
+          <font-awesome-icon icon="fas fa-dice" />
         </LinkButton>
         <LinkButton href="/visuals/shapes" text="Edit Shapes">
-          <template #icon>
-            <inline-svg src="/favicon.svg" />
-          </template>
+          <inline-svg src="/favicon.svg" />
         </LinkButton>
         <LinkButton
           v-if="!isMobile()"
           text="Fullscreen"
           @click="requestFullscreen"
         >
-          <template #icon>
-            <font-awesome-icon icon="fas fa-play" />
-          </template>
+          <font-awesome-icon icon="fas fa-play" />
         </LinkButton>
       </div>
 
