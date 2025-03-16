@@ -121,6 +121,21 @@ export default {
 <style lang="scss">
 @use '../variables' as vars;
 
+@mixin slider-thumb {
+  appearance: none;
+  width: 0.5rem;
+  height: 1.25rem;
+  border-radius: 0;
+  background: var(--color-dark);
+  border: 1px solid var(--color-light);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+@mixin slider-thumb-hover {
+  border: 1px solid var(--color-highlight);
+}
+
 .fader {
   display: flex;
   align-items: center;
@@ -166,24 +181,16 @@ export default {
       outline: none;
     }
 
-    &::-webkit-slider-thumb,
     &::-moz-range-thumb {
-      appearance: none;
-      height: 100%;
-      width: 0.5rem;
-      border-radius: 0;
-      background: var(--color-dark);
-      border: 1px solid var(--color-light);
-      transition: all 0.2s ease;
+      @include slider-thumb;
     }
   }
 
   &:not(.disabled) &-input:hover {
     cursor: pointer;
 
-    &::-webkit-slider-thumb,
     &::-moz-range-thumb {
-      border: 1px solid var(--color-highlight);
+      @include slider-thumb-hover;
     }
   }
 
@@ -196,5 +203,16 @@ export default {
       max-width: 4rem;
     }
   }
+}
+
+// Webkit one has to go down here for some reason
+.fader-input::-webkit-slider-thumb {
+  @include slider-thumb;
+
+  transform: translateY(-1px);
+}
+
+.fader:not(.disabled) .fader-input:hover::-webkit-slider-thumb {
+  @include slider-thumb-hover;
 }
 </style>
