@@ -35,9 +35,7 @@
         tabindex="-1"
       >
         <li
-          v-for="option in options.filter(
-            o => o.value !== selectedOption?.value,
-          )"
+          v-for="option in options"
           :key="option.value"
           class="dropdownselect-option"
           role="option"
@@ -87,7 +85,6 @@ export default {
     return {
       isOpen: false,
       selectedOption: null,
-      selectedOptionIndex: 0,
       id: useId(),
       labelId: useId(),
       listboxId: useId(),
@@ -98,25 +95,18 @@ export default {
     modelValue: {
       immediate: true,
       handler(newValue) {
-        const newOption = this.options.find(option => option.value === newValue)
-        const index = newOption
-          ? this.options.indexOf(newOption)
-          : Math.max(this.selectedOptionIndex - 1, 0)
-        this.selectedOption = this.options[index]
-        this.selectedOptionIndex = index
+        this.selectedOption =
+          this.options.find(option => option.value === newValue) ??
+          this.options[0]
       },
     },
     options: {
       immediate: true,
       handler(newOptions) {
-        const existingOption = newOptions.find(
-          option => option.value === this.selectedOption,
-        )
-        const index = existingOption
-          ? this.options.indexOf(existingOption)
-          : Math.max(this.selectedOptionIndex - 1, 0)
-        this.selectedOption = this.options[index]
-        this.selectedOptionIndex = index
+        this.selectedOption =
+          newOptions.find(
+            option => option.value === this.selectedOption.value,
+          ) ?? newOptions[0]
       },
     },
   },
