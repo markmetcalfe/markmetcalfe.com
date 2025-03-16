@@ -30,8 +30,8 @@ export class Renderer {
   protected onInit = (_renderer: this) => {}
 
   protected getZoom = () => 1
-  protected getWidth = () => this.container.clientWidth
-  protected getHeight = () => this.container.clientHeight
+  protected getWidth = () => this.container.clientWidth * 2
+  protected getHeight = () => this.container.clientHeight * 2
   protected getDefaultGeometry = (): GeometryAttributes[] => []
 
   constructor(container: HTMLElement) {
