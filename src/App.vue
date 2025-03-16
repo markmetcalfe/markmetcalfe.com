@@ -104,6 +104,10 @@ button:focus:not(:disabled) {
   cursor: pointer;
 }
 
+canvas[data-engine^='three.js'] {
+  transform: scale(0.5) translateX(-50%) translateY(-50%);
+}
+
 .dark {
   color: var(--color-dark);
 }
