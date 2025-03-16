@@ -113,6 +113,11 @@ export default defineComponent({
       margin-right: 0.75rem;
       margin-left: 0.25rem;
       font-size: 1.5rem;
+
+      & svg {
+        height: 1.5rem;
+        width: 1.5rem;
+      }
     }
 
     @include vars.mobile-only {
@@ -121,6 +126,11 @@ export default defineComponent({
       margin-right: 0.5rem;
       margin-left: 0.1rem;
       font-size: 1rem;
+
+      & svg {
+        height: 1rem;
+        width: 1rem;
+      }
     }
   }
 
@@ -131,6 +141,11 @@ export default defineComponent({
       margin-right: 0.75rem;
       margin-left: 0.25rem;
       font-size: 1.75rem;
+
+      & svg {
+        height: 1.75rem;
+        width: 1.75rem;
+      }
     }
 
     @include vars.mobile-only {
@@ -139,6 +154,11 @@ export default defineComponent({
       margin-right: 0.4rem;
       margin-left: 0.2rem;
       font-size: 1.25rem;
+
+      & svg {
+        height: 1.25rem;
+        width: 1.25rem;
+      }
     }
   }
 }
