@@ -29,7 +29,7 @@
           :style="{ width: `${progressPercentage}%` }"
         ></div>
       </div>
-      <slot name="append" :disabled="disabled" />
+      <slot name="append" />
       <TextField
         :model-value="roundedValue"
         :disabled="disabled"

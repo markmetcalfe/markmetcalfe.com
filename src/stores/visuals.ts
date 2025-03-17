@@ -12,6 +12,7 @@ import {
 } from '../util/random'
 import { getRandomColor } from '../util/color'
 import { isCardPreview, isPlaywrightTest } from '../util/site'
+import { useSiteStore } from './site'
 
 export enum AutoZoomMode {
   DISABLED = 'Disabled',
@@ -43,9 +44,6 @@ export interface VisualStore {
     enabled: boolean
     randomizeColors: boolean
     syncToBar: boolean
-    bpm: number
-    lastTime: Date
-    taps: Date[]
   }
   listeners: {
     onRandomise: (() => void) | undefined
@@ -102,9 +100,6 @@ const initialState: VisualStore = {
     enabled: true,
     randomizeColors: false,
     syncToBar: true,
-    bpm: 138,
-    lastTime: new Date(0),
-    taps: [],
   },
   listeners: {
     onRandomise: undefined,
@@ -136,10 +131,14 @@ export const useVisualsStore = defineStore('visuals', {
     },
 
     randomise() {
+      const siteStore = useSiteStore()
+
       this.randomiseZoom()
 
       this.setBeatMatchEnabled(getRandomBool())
-      this.setBeatMatchBpm(getRandomInt(20, 140))
+      if (this.beatMatch.enabled) {
+        siteStore.updateBpm(getRandomInt(90, 190))
+      }
       this.beatMatch.syncToBar = this.beatMatch.enabled
         ? getRandomBool()
         : false
@@ -222,17 +221,19 @@ export const useVisualsStore = defineStore('visuals', {
     },
 
     beatMatchTick() {
+      const siteStore = useSiteStore()
+
       if (!this.beatMatch.enabled) {
         return
       }
 
       const bpm = this.beatMatch.syncToBar
-        ? this.beatMatch.bpm / 4
-        : this.beatMatch.bpm
+        ? siteStore.beatMatch.bpm / siteStore.beatMatch.beatsPerBar
+        : siteStore.beatMatch.bpm
       const intervalMs = (60 / bpm) * 1000
       if (
         new Date().getTime() <=
-        this.beatMatch.lastTime.getTime() + intervalMs
+        siteStore.beatMatch.lastTime.getTime() + intervalMs
       ) {
         return
       }
@@ -254,55 +255,16 @@ export const useVisualsStore = defineStore('visuals', {
         const zoomIncrement = (this.zoom.max - this.zoom.min) / 3
         this.zoom.current = this.zoom.max - zoomIncrement * this.autoZoom.beat
         this.autoZoom.beat++
-        if (this.autoZoom.beat >= 4) {
+        if (this.autoZoom.beat >= siteStore.beatMatch.beatsPerBar) {
           this.autoZoom.beat = 0
         }
       }
 
-      this.beatMatch.lastTime = new Date()
-    },
-    tapBpm() {
-      if (!this.beatMatch.enabled) {
-        this.beatMatch.enabled = true
-      }
-
-      const now = new Date()
-
-      // We only care about the latest 4 taps
-      if (this.beatMatch.taps.length >= 4) {
-        this.beatMatch.taps.shift()
-      }
-
-      // If the last tap was over 2 seconds ago we ignore all previous taps
-      const lastTap = this.beatMatch.taps[this.beatMatch.taps.length - 1]
-      if (lastTap && now.getTime() - lastTap.getTime() > 2000) {
-        this.beatMatch.taps = []
-      }
-
-      this.beatMatch.taps.push(now)
-      this.beatMatch.lastTime = new Date(0) // Set last time to 0 to force randomisation
-
-      if (this.autoZoom.mode === AutoZoomMode.JUMP) {
-        this.autoZoom.beat = 0
-        this.zoom.current = this.zoom.max
-      }
-
-      if (this.beatMatch.taps.length < 2) {
-        return
-      }
-
-      const timesBetween = []
-      for (let i = 1; i < this.beatMatch.taps.length; i++) {
-        const a = this.beatMatch.taps[i - 1].getTime()
-        const b = this.beatMatch.taps[i].getTime()
-        timesBetween.push(b - a)
-      }
-
-      const averageTimeBetween =
-        timesBetween.reduce((a, b) => a + b) / timesBetween.length
-      this.beatMatch.bpm = (60 / averageTimeBetween) * 1000
+      siteStore.updateLastBeatTime()
     },
     setBeatMatchEnabled(enabled: boolean | null) {
+      const siteStore = useSiteStore()
+
       this.beatMatch.enabled = enabled ?? false
       if (
         !enabled &&
@@ -312,10 +274,22 @@ export const useVisualsStore = defineStore('visuals', {
       ) {
         this.autoZoom.mode = AutoZoomMode.SMOOTH
       }
-    },
-    setBeatMatchBpm(bpm: number) {
-      if (this.beatMatch.enabled) {
-        this.beatMatch.bpm = bpm
+
+      if (enabled) {
+        siteStore.addBpmListener({
+          consumer: 'visuals',
+          onTap: () => {
+            if (!this.beatMatch.enabled) {
+              this.beatMatch.enabled = true
+            }
+          },
+          onUpdate: () => {
+            if (this.autoZoom.mode === AutoZoomMode.JUMP) {
+              this.autoZoom.beat = 0
+              this.zoom.current = this.zoom.max
+            }
+          },
+        })
       }
     },
 
@@ -371,6 +345,7 @@ export const useVisualsStore = defineStore('visuals', {
     },
 
     setRenderer(renderer: Renderer) {
+      const siteStore = useSiteStore()
       this.renderer = renderer
       this.renderer
         .setGetZoom(() => this.zoom.current)
@@ -384,7 +359,7 @@ export const useVisualsStore = defineStore('visuals', {
         .setOnClick(() => this.randomise())
         .setOnKeyDown((renderer, event) => {
           if (event.code === 'Space') {
-            this.tapBpm()
+            siteStore.tapBpm()
           } else if (event.key === 'Shift') {
             renderer.randomiseColors()
           } else if (event.key === 'Control') {

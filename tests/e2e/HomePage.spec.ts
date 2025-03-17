@@ -117,7 +117,7 @@ test.describe('HomePage', () => {
     expect(page1.url()).toContain('/Mark-Metcalfe-Resume.pdf')
   })
 
-  test('can navigate to the visuals settings page', async ({ page }) => {
+  test('can navigate to the visuals page', async ({ page }) => {
     await page.goto('/')
 
     const link = page.locator('a:has-text("Visuals")')
@@ -125,5 +125,15 @@ test.describe('HomePage', () => {
     await Promise.all([page.waitForURL('/visuals'), link.click()])
 
     await expect(page.locator('body')).toContainText('3D Visuals')
+  })
+
+  test('can navigate to the sequencer page', async ({ page }) => {
+    await page.goto('/')
+
+    const link = page.locator('a:has-text("Sequencer")')
+
+    await Promise.all([page.waitForURL('/sequencer'), link.click()])
+
+    await expect(page.locator('body')).toContainText('Step Sequencer')
   })
 })

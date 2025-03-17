@@ -148,6 +148,7 @@ export default {
 .dropdownselect {
   display: flex;
   align-items: center;
+  flex: auto;
 
   &-container {
     position: relative;
@@ -167,6 +168,8 @@ export default {
     border: 1px solid var(--color-light);
     cursor: pointer;
     user-select: none;
+    white-space: nowrap;
+    overflow-x: hidden;
   }
 
   &--one &-selected-option {
@@ -180,6 +183,15 @@ export default {
   &-arrow {
     margin: 0 0.25rem;
     transition: all 0.2s ease;
+    position: absolute;
+
+    @include vars.desktop-only {
+      right: 0.5rem;
+    }
+
+    @include vars.mobile-only {
+      right: 0.25rem;
+    }
   }
 
   &--one &-arrow {
@@ -211,6 +223,9 @@ export default {
   &-option {
     padding: 0.5rem;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &:hover {
       color: var(--color-dark);
