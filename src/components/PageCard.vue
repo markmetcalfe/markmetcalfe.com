@@ -31,6 +31,19 @@
 
       <div v-if="!isCardPreview()" class="pagecard-cornerbuttons">
         <button
+          v-if="sequencerStore.gridHasEntry"
+          class="button-icon"
+          :title="sequencerStore.isPlaying ? 'Pause' : 'Play'"
+          @click="sequencerStore.togglePlay"
+        >
+          <font-awesome-icon
+            :icon="
+              'fa-solid ' + (sequencerStore.isPlaying ? 'fa-pause' : 'fa-play')
+            "
+          />
+        </button>
+
+        <button
           class="button-icon"
           title="See through"
           @click="siteStore.toggleBackground"
@@ -51,33 +64,25 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { defineProps } from 'vue'
 import { useSiteStore } from '../stores/site'
 import { isCardPreview } from '../util/site'
+import { useSequencerStore } from '../stores/sequencer'
 
-export default defineComponent({
-  props: {
-    backButtonPage: {
-      type: String,
-      default: null,
-    },
-    longform: {
-      type: Boolean,
-      default: false,
-    },
+defineProps({
+  backButtonPage: {
+    type: String,
+    default: null,
   },
-
-  computed: {
-    siteStore() {
-      return useSiteStore()
-    },
-  },
-
-  methods: {
-    isCardPreview,
+  longform: {
+    type: Boolean,
+    default: false,
   },
 })
+
+const siteStore = useSiteStore()
+const sequencerStore = useSequencerStore()
 </script>
 
 <style lang="scss">

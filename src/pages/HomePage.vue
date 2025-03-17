@@ -73,6 +73,9 @@
         <LinkButton text="Visuals" href="/visuals" large>
           <inline-svg src="/favicon.svg" />
         </LinkButton>
+        <LinkButton text="Sequencer" href="/sequencer" large>
+          <font-awesome-icon icon="fa-solid fa-music" />
+        </LinkButton>
       </section>
     </div>
   </PageCard>

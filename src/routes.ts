@@ -36,6 +36,24 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "editshapes" */ './pages/EditShapesPage.vue'),
   },
   {
+    path: '/sequencer',
+    name: 'SequencerPage',
+    meta: {
+      title: 'Sequencer',
+    },
+    component: () =>
+      import(/* webpackChunkName: "sequencer" */ './pages/SequencerPage.vue'),
+  },
+  {
+    path: '/sequencer/synths',
+    name: 'EditSynthsPage',
+    meta: {
+      title: 'Edit Synths',
+    },
+    component: () =>
+      import(/* webpackChunkName: "editsynths" */ './pages/EditSynthsPage.vue'),
+  },
+  {
     path: '/privacy-policy',
     name: 'PrivacyPolicyPage',
     meta: {

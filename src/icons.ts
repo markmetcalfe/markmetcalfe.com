@@ -9,13 +9,17 @@ import {
 import {
   faChevronLeft,
   faCaretDown,
+  faPause,
+  faPen,
   faPlay,
   faPlus,
   faDice,
   faEye as faEyeSolid,
+  faMusic,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
 import {
+  faCopy,
   faEnvelope,
   faFileLines,
   faFloppyDisk,
@@ -26,6 +30,7 @@ import { App, Plugin } from 'vue'
 const icons = [
   faCaretDown,
   faChevronLeft,
+  faCopy,
   faDice,
   faEnvelope,
   faEye,
@@ -35,6 +40,9 @@ const icons = [
   faGithub,
   faInstagram,
   faLinkedin,
+  faMusic,
+  faPause,
+  faPen,
   faPlay,
   faPlus,
   faSoundcloud,

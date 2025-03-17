@@ -48,23 +48,7 @@
           />
         </div>
 
-        <Fader
-          v-model="settings.beatMatch.bpm"
-          :disabled="!settings.beatMatch.enabled"
-          :min="0"
-          :max="200"
-          label="BPM"
-        >
-          <template #append="{ disabled }">
-            <button
-              class="visualspage-bpmbutton"
-              :disabled="disabled"
-              @click="visualsStore.tapBpm"
-            >
-              Tap
-            </button>
-          </template>
-        </Fader>
+        <BpmFader :disabled="!settings.beatMatch.enabled" />
 
         <DropdownSelect
           v-model="settings.autoZoom.mode"
@@ -146,6 +130,7 @@ import GridList from '../components/GridList.vue'
 import LinkButton from '../components/LinkButton.vue'
 import ToggleSwitch from '../components/ToggleSwitch.vue'
 import Fader from '../components/Fader.vue'
+import BpmFader from '../components/BpmFader.vue'
 import DropdownSelect from '../components/DropdownSelect.vue'
 import { useSiteStore } from '../stores/site'
 
@@ -157,6 +142,7 @@ export default defineComponent({
     LinkButton,
     ToggleSwitch,
     Fader,
+    BpmFader,
     DropdownSelect,
   },
 
@@ -250,18 +236,6 @@ export default defineComponent({
   &-settings {
     & > * {
       padding: 0.5rem 0;
-    }
-  }
-
-  &-bpmbutton {
-    color: var(--color-light);
-    border: var(--color-light) 1px solid;
-    padding: 0.25rem 0.4rem;
-    margin-right: 0.5rem;
-
-    &:hover:not(:disabled) {
-      color: var(--color-highlight);
-      border: var(--color-highlight) 1px solid;
     }
   }
 
