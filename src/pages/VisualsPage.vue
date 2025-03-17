@@ -19,40 +19,26 @@
         </LinkButton>
       </div>
 
-      <div class="visualspage-faders">
-        <ToggleSwitch
-          v-if="!isMobile()"
-          v-model="settings.followCursor"
-          label="Follow Cursor"
-        />
-
-        <Fader
-          v-model="settings.zoom.current"
-          :min="-10"
-          :max="20"
-          :decimal-places="2"
-          label="Current Zoom"
-        />
-
-        <Fader
-          v-model="settings.rotationSpeed.x"
-          :min="0"
-          :max="100"
-          :label="isMobile() ? 'X Rotation' : 'X-Axis Rotation Speed'"
-        />
-
-        <Fader
-          v-model="settings.rotationSpeed.y"
-          :min="0"
-          :max="100"
-          :label="isMobile() ? 'Y Rotation' : 'Y-Axis Rotation Speed'"
-        />
-
+      <div class="visualspage-settings">
         <div class="visualspage-toggles">
           <ToggleSwitch
             :model-value="settings.beatMatch.enabled"
             label="Beat Matching"
             @update:model-value="visualsStore.setBeatMatchEnabled"
+          />
+
+          <ToggleSwitch
+            v-if="!isMobile()"
+            v-model="settings.followCursor"
+            label="Follow Cursor"
+          />
+        </div>
+
+        <div class="visualspage-toggles">
+          <ToggleSwitch
+            v-model="settings.beatMatch.syncToBar"
+            :disabled="!settings.beatMatch.enabled"
+            label="Sync To Bar"
           />
 
           <ToggleSwitch
@@ -87,6 +73,14 @@
         />
 
         <Fader
+          v-model="settings.zoom.current"
+          :min="-10"
+          :max="20"
+          :decimal-places="2"
+          label="Current Zoom"
+        />
+
+        <Fader
           v-model="settings.zoom.min"
           :disabled="autoZoomDisabled"
           :min="-10"
@@ -111,6 +105,20 @@
           @update:model-value="
             (value: number) => (visualsStore.autoZoom.speed = value / 1000)
           "
+        />
+
+        <Fader
+          v-model="settings.rotationSpeed.x"
+          :min="0"
+          :max="100"
+          :label="isMobile() ? 'X Rotation' : 'X-Axis Rotation Speed'"
+        />
+
+        <Fader
+          v-model="settings.rotationSpeed.y"
+          :min="0"
+          :max="100"
+          :label="isMobile() ? 'Y Rotation' : 'Y-Axis Rotation Speed'"
         />
       </div>
 
@@ -239,7 +247,7 @@ export default defineComponent({
     margin-bottom: 1rem;
   }
 
-  &-faders {
+  &-settings {
     & > * {
       padding: 0.5rem 0;
     }

@@ -42,6 +42,7 @@ export interface VisualStore {
   beatMatch: {
     enabled: boolean
     randomizeColors: boolean
+    syncToBar: boolean
     bpm: number
     lastTime: Date
     taps: Date[]
@@ -100,7 +101,8 @@ const initialState: VisualStore = {
   beatMatch: {
     enabled: true,
     randomizeColors: false,
-    bpm: 140 / 4, // 1 bar of 140s dub
+    syncToBar: true,
+    bpm: 138,
     lastTime: new Date(0),
     taps: [],
   },
@@ -138,6 +140,9 @@ export const useVisualsStore = defineStore('visuals', {
 
       this.setBeatMatchEnabled(getRandomBool())
       this.setBeatMatchBpm(getRandomInt(20, 140))
+      this.beatMatch.syncToBar = this.beatMatch.enabled
+        ? getRandomBool()
+        : false
       this.beatMatch.randomizeColors = this.beatMatch.enabled
 
       this.randomiseGeometry()
@@ -221,7 +226,10 @@ export const useVisualsStore = defineStore('visuals', {
         return
       }
 
-      const intervalMs = (60 / this.beatMatch.bpm) * 1000
+      const bpm = this.beatMatch.syncToBar
+        ? this.beatMatch.bpm / 4
+        : this.beatMatch.bpm
+      const intervalMs = (60 / bpm) * 1000
       if (
         new Date().getTime() <=
         this.beatMatch.lastTime.getTime() + intervalMs
