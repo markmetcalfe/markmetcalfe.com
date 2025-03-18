@@ -30,15 +30,6 @@
             style="max-height: 21px"
           />
         </LinkButton>
-
-        <LinkButton
-          v-if="!isMobile()"
-          text="Add Row"
-          hide-text
-          @click="sequencerStore.addGridRow"
-        >
-          <font-awesome-icon icon="fa-solid fa-plus" />
-        </LinkButton>
       </div>
 
       <div class="sequencerpage-options">
@@ -46,105 +37,144 @@
       </div>
 
       <div
-        v-if="sequencerStore.allInstruments && sequencerStore.usedInstruments"
-        class="sequencerpage-grid"
+        v-if="sequencerStore.allSynths && sequencerStore.usedSynths"
+        class="sequencerpage-sequences"
       >
-        <div
-          v-for="(row, rowIndex) in sequencerStore.grid"
-          :key="'row-' + rowIndex"
-          class="sequencerpage-row"
-        >
-          <div class="sequencerpage-row-select">
-            <DropdownSelect
-              :model-value="sequencerStore.usedInstruments[rowIndex].getId()"
-              :options="
-                sequencerStore.allInstruments.map(instrument => ({
-                  value: instrument.getId(),
-                  label: instrument.name,
-                }))
-              "
-              @update:model-value="
-                (id: string) => sequencerStore.useInstrument(rowIndex, id)
-              "
-            />
-          </div>
-
+        <div class="sequencerpage-rowoptions">
           <div
-            v-for="(beat, beatIndex) in row"
-            :key="'beat-' + beatIndex + '-' + beatIndex"
-            :class="[
-              'sequencerpage-beat',
-              {
-                'sequencerpage-beat-on': beat,
-                'sequencerpage-beat-off': !beat,
-                'sequencerpage-beat-barstart':
-                  sequencerStore.isBarStart(beatIndex),
-                'sequencerpage-beat-playing':
-                  sequencerStore.isBeatPlaying(beatIndex),
-              },
-            ]"
+            v-for="(_, rowIndex) in sequencerStore.grid"
+            :key="'rowoptions-' + rowIndex"
+            class="sequencerpage-rowoptions-wrapper"
           >
-            <button
-              @click="sequencerStore.toggleBeat(rowIndex, beatIndex)"
-            ></button>
-          </div>
+            <div class="sequencerpage-rowoptions-select">
+              <DropdownSelect
+                :model-value="sequencerStore.usedSynths[rowIndex].getId()"
+                :options="synthOptions"
+                @update:model-value="
+                  (id: string) => sequencerStore.useSynth(rowIndex, id)
+                "
+              />
+            </div>
 
-          <div v-if="!isMobile()" class="sequencerpage-row-delete">
             <LinkButton
               text="Delete Row"
               hide-text
-              :style="
-                sequencerStore.gridRowCount > 1
-                  ? undefined
-                  : 'visibility: hidden'
-              "
+              class="sequencerpage-rowoptions-button"
+              :disabled="sequencerStore.gridRowCount < 2"
               @click="sequencerStore.deleteGridRow(rowIndex)"
             >
               <font-awesome-icon icon="fa-solid fa-trash" />
             </LinkButton>
           </div>
+
+          <div class="sequencerpage-rowoptions-wrapper">
+            <div class="sequencerpage-rowoptions-select">
+              <DropdownSelect v-model="synthToAddId" :options="synthOptions" />
+            </div>
+
+            <LinkButton
+              text="Add Row"
+              hide-text
+              class="sequencerpage-rowoptions-button"
+              @click="sequencerStore.addGridRow(synthToAddId)"
+            >
+              <font-awesome-icon icon="fa-solid fa-plus" />
+            </LinkButton>
+          </div>
+        </div>
+
+        <div class="sequencerpage-grid">
+          <div
+            v-for="(row, rowIndex) in sequencerStore.grid"
+            :key="'row-' + rowIndex"
+            class="sequencerpage-row"
+          >
+            <div
+              v-for="(beat, beatIndex) in row"
+              :key="'beat-' + beatIndex + '-' + beatIndex"
+              :class="[
+                'sequencerpage-beat',
+                {
+                  'sequencerpage-beat-on': beat,
+                  'sequencerpage-beat-off': !beat,
+                  'sequencerpage-beat-barstart':
+                    sequencerStore.isBarStart(beatIndex),
+                  'sequencerpage-beat-playing':
+                    sequencerStore.isBeatPlaying(beatIndex),
+                },
+              ]"
+            >
+              <button
+                @click="sequencerStore.toggleBeat(rowIndex, beatIndex)"
+              ></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sequencerpage-columnoptions">
+          <LinkButton
+            text="Add Bar"
+            hide-text
+            @click="sequencerStore.addBars()"
+          >
+            <font-awesome-icon icon="fa-solid fa-plus" />
+          </LinkButton>
+
+          <LinkButton
+            text="Delete Bar"
+            :disabled="sequencerStore.barCount < 2"
+            hide-text
+            @click="sequencerStore.deleteBars()"
+          >
+            <font-awesome-icon icon="fa-solid fa-trash" />
+          </LinkButton>
         </div>
       </div>
-
-      <p v-if="isNarrow()" class="sequencerpage-info">
-        Rotate your device for a longer sequence grid
-      </p>
     </div>
   </PageCard>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
 import { useSequencerStore } from '../stores/sequencer'
 import PageCard from '../components/PageCard.vue'
 import LinkButton from '../components/LinkButton.vue'
 import BpmFader from '../components/BpmFader.vue'
 import DropdownSelect from '../components/DropdownSelect.vue'
-import isMobile from 'is-mobile'
-
-const breakpoint = 650
-const isNarrow = () => window.innerWidth < breakpoint
-const getBarCount = () => (isNarrow() ? 2 : 4)
 
 const sequencerStore = useSequencerStore()
-sequencerStore.init(getBarCount())
+sequencerStore.init()
 
-const resizeListener = () => {
-  sequencerStore.updateBarCount(getBarCount())
-}
-onMounted(() => {
-  window.addEventListener('resize', resizeListener)
-})
+const synthToAddId = ref(sequencerStore.allSynths![0].getId())
+
+const synthOptions = computed(() =>
+  sequencerStore.allSynths!.map(synth => ({
+    value: synth.getId(),
+    label: synth.name,
+  })),
+)
+
 onUnmounted(() => {
   if (sequencerStore.isPlaying && !sequencerStore.gridHasEntry) {
     sequencerStore.stop()
   }
-  window.removeEventListener('resize', resizeListener)
 })
 </script>
 
 <style lang="scss">
 @use '../variables' as vars;
+
+@mixin sequencer-row {
+  @include vars.desktop-only {
+    height: 2.25rem;
+    padding: 0.5rem 0.25rem;
+  }
+
+  @include vars.mobile-only {
+    height: 1.25rem;
+    padding: 0.25rem 0.15rem;
+  }
+}
 
 .sequencerpage {
   &-buttons {
@@ -178,53 +208,95 @@ onUnmounted(() => {
     }
   }
 
-  &-grid {
+  &-sequences {
     display: flex;
-    flex-direction: column;
+    overflow-y: auto;
+
+    @include vars.mobile-only {
+      max-height: 40vh;
+    }
   }
 
-  &-row {
+  &-rowoptions {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+
+    @include vars.desktop-only {
+      padding-right: 0.25rem;
+    }
+
+    &-wrapper {
+      display: flex;
+
+      @include sequencer-row;
+    }
 
     &-select {
       @include vars.desktop-only {
-        width: 6rem;
+        min-width: 6rem;
         padding-right: 0.5rem;
       }
 
       @include vars.mobile-only {
         font-size: 0.75rem;
-        width: 4.5rem;
+        min-width: 4.5rem;
         padding-right: 0.25rem;
+
+        & .dropdownselect-selected-option {
+          padding: 0.1rem 0.5rem;
+        }
       }
     }
 
-    & .dropdownselect-selected-option {
+    &-button {
       @include vars.mobile-only {
-        padding: 0.1rem 0.5rem;
+        & button {
+          padding: 0.45rem;
+        }
+
+        & .linkbutton-icon {
+          font-size: 0.25rem;
+          height: 0.25rem;
+          width: 0.25rem;
+
+          & svg {
+            height: 0.75rem;
+            width: 0.75rem;
+          }
+        }
       }
     }
+  }
 
-    &-delete {
-      padding-left: 1rem;
+  &-grid {
+    display: flex;
+    flex-direction: column;
+    overflow-x: scroll;
+
+    @include vars.desktop-only {
+      max-width: 75vw;
     }
+
+    @include vars.mobile-only {
+      max-width: calc(100vw - 225px);
+    }
+  }
+
+  &-row {
+    display: flex;
   }
 
   &-beat {
     display: flex;
 
+    @include sequencer-row;
+
     @include vars.desktop-only {
-      width: 2.75rem;
-      height: 2.25rem;
-      padding: 0.5rem 0.25rem;
+      min-width: 2.75rem;
     }
 
     @include vars.mobile-only {
-      width: 1.75rem;
-      height: 1.25rem;
-      padding: 0.25rem 0.15rem;
+      min-width: 1.75rem;
     }
 
     & button {
@@ -254,6 +326,21 @@ onUnmounted(() => {
       @include vars.mobile-only {
         margin-left: 0.25rem;
       }
+    }
+  }
+
+  &-columnoptions {
+    display: flex;
+    place-content: center center;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    @include vars.desktop-only {
+      padding-left: 1rem;
+    }
+
+    @include vars.mobile-only {
+      padding-left: 0.5rem;
     }
   }
 

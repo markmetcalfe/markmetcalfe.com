@@ -3,10 +3,15 @@
     <a
       v-if="external"
       :href="href"
+      :disabled="disabled"
       :title="hideText ? text : undefined"
       target="_blank"
       rel="noopener noreferer"
-      :class="{ 'linkbutton-large': large, 'linkbutton-hidetext': hideText }"
+      :class="{
+        'linkbutton-large': large,
+        'linkbutton-hidetext': hideText,
+        disabled: disabled,
+      }"
     >
       <span class="linkbutton-icon"><slot /></span>
       <span v-if="!hideText">{{ text }}</span>
@@ -14,16 +19,26 @@
     <router-link
       v-else-if="href"
       :to="href"
+      :disabled="disabled"
       :title="hideText ? text : undefined"
-      :class="{ 'linkbutton-large': large, 'linkbutton-hidetext': hideText }"
+      :class="{
+        'linkbutton-large': large,
+        'linkbutton-hidetext': hideText,
+        disabled: disabled,
+      }"
     >
       <span class="linkbutton-icon"><slot /></span>
       <span v-if="!hideText">{{ text }}</span>
     </router-link>
     <button
       v-else
+      :disabled="disabled"
       :title="hideText ? text : undefined"
-      :class="{ 'linkbutton-large': large, 'linkbutton-hidetext': hideText }"
+      :class="{
+        'linkbutton-large': large,
+        'linkbutton-hidetext': hideText,
+        disabled: disabled,
+      }"
       @click="event => $emit('click', event)"
     >
       <span class="linkbutton-icon"><slot /></span>
@@ -48,6 +63,10 @@ defineProps({
   text: {
     type: String,
     required: true,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
   large: {
     type: Boolean,
@@ -108,8 +127,8 @@ defineEmits(['click'])
       transition: stroke 0.4s;
     }
 
-    &:hover,
-    &:focus {
+    &:hover:not(.disabled),
+    &:focus:not(.disabled) {
       color: var(--color-highlight);
       border: var(--color-highlight) 1px solid;
 
