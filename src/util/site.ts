@@ -1,3 +1,16 @@
+export const isIOS = () =>
+  /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase())
+
+export const isSafari = () => {
+  const userAgent = navigator.userAgent.toLowerCase()
+  return (
+    isIOS() ||
+    (userAgent.includes('safari') &&
+      !userAgent.includes('chrome') &&
+      !userAgent.includes('crios'))
+  )
+}
+
 export const isVizshun = () =>
   import.meta.env.VITE_SITE_NAME === 'vizshun' ||
   window.location.search.includes('?vizshun')

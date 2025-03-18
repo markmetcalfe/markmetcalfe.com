@@ -8,6 +8,7 @@
 import { defineComponent } from 'vue'
 import { Renderer } from '../3d'
 import { useVisualsStore } from '../stores/visuals'
+import { isSafari } from '../util/site'
 
 export default defineComponent({
   name: 'DynamicBackground',
@@ -25,14 +26,17 @@ export default defineComponent({
   },
 
   mounted() {
-    setTimeout(() => {
-      const renderer = new Renderer(
-        document.querySelector('.dynamicbackground')!,
-      )
-      this.visualsStore.setRenderer(renderer)
-      renderer.initialise()
-      this.renderer = renderer
-    }, 100)
+    setTimeout(
+      () => {
+        const renderer = new Renderer(
+          document.querySelector('.dynamicbackground')!,
+        )
+        this.visualsStore.setRenderer(renderer)
+        renderer.initialise()
+        this.renderer = renderer
+      },
+      isSafari() ? 300 : 100, // Give Safari more time to init
+    )
   },
 
   unmounted() {

@@ -50,6 +50,7 @@ export abstract class Synth {
   public getSynth(): Tone.Synth | Tone.NoiseSynth | Tone.MetalSynth {
     if (!this.synth || this.hasChanges) {
       this.synth = this.initSynth()
+      this.synth.context.resume()
       this.hasChanges = false
     }
     return this.synth
