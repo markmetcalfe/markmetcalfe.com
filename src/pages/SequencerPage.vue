@@ -130,12 +130,17 @@
           </LinkButton>
         </div>
       </div>
+
+      <p v-if="isIOS() && sequencerStore.isPlaying" class="sequencerpage-info">
+        Nothing playing? Take your phone off silent
+      </p>
     </div>
   </PageCard>
 </template>
 
 <script setup lang="ts">
 import { computed, onUnmounted, ref } from 'vue'
+import { isIOS } from '../util/site'
 import { useSequencerStore } from '../stores/sequencer'
 import PageCard from '../components/PageCard.vue'
 import LinkButton from '../components/LinkButton.vue'
