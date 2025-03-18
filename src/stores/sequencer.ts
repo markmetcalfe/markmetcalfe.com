@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import * as Tone from 'tone'
-import { Synth, allInstruments } from '../tone/synths'
+import { Synth, allSynths } from '../tone/synths'
 import { useSiteStore } from './site'
 
 export interface SequencerStore {
-  allInstruments: Synth[] | undefined
-  usedInstruments: Synth[] | undefined
+  allSynths: Synth[] | undefined
+  usedSynths: Synth[] | undefined
   grid: boolean[][] | undefined
   gridRowCount: number
   barCount: number
@@ -14,8 +14,8 @@ export interface SequencerStore {
 }
 
 const initialState: SequencerStore = {
-  allInstruments: undefined,
-  usedInstruments: undefined,
+  allSynths: undefined,
+  usedSynths: undefined,
   grid: undefined,
   gridRowCount: 4,
   barCount: 4,
@@ -41,29 +41,27 @@ export const useSequencerStore = defineStore('sequencer', {
     },
   },
   actions: {
-    init(barCount = 4) {
-      if (this.allInstruments !== undefined) {
-        this.updateBarCount(barCount)
+    init() {
+      if (this.allSynths !== undefined) {
+        this.updateBarCount(4)
         return
       }
 
       const siteStore = useSiteStore()
 
-      const localInstruments = Object.values(allInstruments).map(
-        instrument => new instrument(),
-      )
-      this.allInstruments = localInstruments
-      this.usedInstruments = localInstruments
+      const localSynths = allSynths.map(synth => new synth())
+      this.usedSynths = localSynths
+      this.allSynths = [...localSynths]
 
       this.resetGrid()
-      if (barCount) {
-        this.updateBarCount(barCount)
-      }
+      this.updateBarCount(4)
+
+      Tone.setContext(new Tone.Context({ latencyHint: 'playback' }))
 
       Tone.getTransport().scheduleRepeat(time => {
-        this.grid!.forEach((instrument, instrumentIndex) => {
-          if (instrument[this.currentBeat]) {
-            localInstruments[instrumentIndex].triggerSound(time)
+        this.grid!.forEach((synth, index) => {
+          if (synth[this.currentBeat]) {
+            localSynths[index].triggerSound(time)
           }
         })
         this.nextBeat()
@@ -76,9 +74,8 @@ export const useSequencerStore = defineStore('sequencer', {
       })
     },
 
-    toggleBeat(instrumentIndex: number, beatIndex: number) {
-      this.grid![instrumentIndex][beatIndex] =
-        !this.grid![instrumentIndex][beatIndex]
+    toggleBeat(synthIndex: number, beatIndex: number) {
+      this.grid![synthIndex][beatIndex] = !this.grid![synthIndex][beatIndex]
     },
 
     nextBeat() {
@@ -94,7 +91,7 @@ export const useSequencerStore = defineStore('sequencer', {
       this.currentBeat = 0
       Tone.start()
       this.syncBpm()
-      Tone.getTransport().start()
+      Tone.getTransport().start('+0.1')
     },
 
     stop() {
@@ -109,20 +106,26 @@ export const useSequencerStore = defineStore('sequencer', {
     },
 
     resetGrid() {
+      this.stop()
       this.grid = Array(this.gridRowCount)
         .fill(false)
         .map(() => Array(this.beatCount).fill(false))
     },
 
-    addGridRow() {
+    addGridRow(synthId?: string) {
+      const synth = synthId ? this.getSynth(synthId) : this.allSynths![0]
+      if (!synth) {
+        throw new Error('No valid synth found')
+      }
+
       this.grid!.push(Array(this.beatCount).fill(false))
-      this.usedInstruments!.push(this.allInstruments![0])
+      this.usedSynths!.push(synth)
       this.gridRowCount++
     },
 
     deleteGridRow(rowIndex: number) {
       this.grid!.splice(rowIndex, 1)
-      this.usedInstruments!.splice(rowIndex, 1)
+      this.usedSynths!.splice(rowIndex, 1)
       this.gridRowCount--
     },
 
@@ -130,7 +133,9 @@ export const useSequencerStore = defineStore('sequencer', {
       if (!this.isPlaying) {
         return false
       }
-      return beat === this.currentBeat
+
+      const currentBeatOffset = (this.currentBeat + 1) % this.beatCount
+      return beat === currentBeatOffset
     },
 
     isBarStart(beat: number) {
@@ -162,29 +167,37 @@ export const useSequencerStore = defineStore('sequencer', {
       }
     },
 
-    getInstrument(id: string) {
-      return this.allInstruments!.find(instrument => instrument.getId() === id)
+    addBars() {
+      this.updateBarCount(this.barCount + 1)
     },
 
-    useInstrument(index: number, instrumentId: string) {
-      this.usedInstruments![index] = this.getInstrument(instrumentId)!
+    deleteBars() {
+      this.updateBarCount(this.barCount - 1)
     },
 
-    copyInstrument(instrumentId: string) {
-      const copy = this.getInstrument(instrumentId)!.clone()
-      this.allInstruments!.push(copy)
+    getSynth(id: string) {
+      return this.allSynths!.find(synth => synth.getId() === id)
+    },
+
+    useSynth(index: number, synthId: string) {
+      this.usedSynths![index] = this.getSynth(synthId)!
+    },
+
+    copySynth(synthId: string) {
+      const copy = this.getSynth(synthId)!.clone()
+      this.allSynths!.push(copy)
       return copy
     },
 
-    deleteInstrument(instrumentId: string) {
-      this.allInstruments = this.allInstruments!.filter(
-        instrument => instrument.getId() !== instrumentId,
+    deleteSynth(synthId: string) {
+      this.allSynths = this.allSynths!.filter(
+        synth => synth.getId() !== synthId,
       )
-      this.usedInstruments = this.usedInstruments!.map(instrument => {
-        if (instrument.getId() === instrumentId) {
-          return this.allInstruments![0]
+      this.usedSynths = this.usedSynths!.map(synth => {
+        if (synth.getId() === synthId) {
+          return this.allSynths![0]
         }
-        return instrument
+        return synth
       })
     },
   },

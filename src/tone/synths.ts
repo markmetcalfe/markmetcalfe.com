@@ -183,9 +183,4 @@ class MembraneSynth2 extends Synth {
   }
 }
 
-export const allInstruments = [
-  MembraneSynth,
-  NoiseSynth,
-  MetalSynth,
-  MembraneSynth2,
-]
+export const allSynths = [MembraneSynth, NoiseSynth, MetalSynth, MembraneSynth2]

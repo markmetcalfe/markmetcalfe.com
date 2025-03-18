@@ -2,23 +2,15 @@
   <PageCard back-button-page="/sequencer">
     <template #title>Edit Synths</template>
 
-    <div v-if="sequencerStore.allInstruments" class="editsynths">
+    <div v-if="sequencerStore.allSynths" class="editsynths">
       <div class="editsynths-select">
-        <DropdownSelect
-          v-model="selectedSynthId"
-          :options="
-            sequencerStore.allInstruments.map(instrument => ({
-              value: instrument.getId(),
-              label: instrument.name,
-            }))
-          "
-        />
+        <DropdownSelect v-model="selectedSynthId" :options="synthOptions" />
 
         <LinkButton
           v-if="selectedSynthId"
           text="Copy"
           hide-text
-          @click="copyInstrument"
+          @click="copySynth"
         >
           <font-awesome-icon icon="fa-regular fa-copy" />
         </LinkButton>
@@ -27,7 +19,7 @@
           v-if="selectedSynth?.canDelete()"
           text="Delete"
           hide-text
-          @click="deleteInstrument"
+          @click="deleteSynth"
         >
           <font-awesome-icon icon="fa-solid fa-trash" />
         </LinkButton>
@@ -102,20 +94,27 @@ import LinkButton from '../components/LinkButton.vue'
 const sequencerStore = useSequencerStore()
 sequencerStore.init()
 
-const selectedSynthId = ref(sequencerStore.allInstruments![0].getId())
-const selectedSynth = computed(() =>
-  sequencerStore.getInstrument(selectedSynthId.value),
+const synthOptions = computed(() =>
+  sequencerStore.allSynths!.map(synth => ({
+    value: synth.getId(),
+    label: synth.name,
+  })),
 )
 
-const copyInstrument = () => {
-  const copy = sequencerStore.copyInstrument(selectedSynthId.value)
+const selectedSynthId = ref(sequencerStore.allSynths![0].getId())
+const selectedSynth = computed(() =>
+  sequencerStore.getSynth(selectedSynthId.value),
+)
+
+const copySynth = () => {
+  const copy = sequencerStore.copySynth(selectedSynthId.value)
   selectedSynthId.value = copy.getId()
 }
 
-const deleteInstrument = () => {
-  sequencerStore.deleteInstrument(selectedSynthId.value)
-  const lastIndex = sequencerStore.allInstruments!.length - 1
-  selectedSynthId.value = sequencerStore.allInstruments![lastIndex].getId()
+const deleteSynth = () => {
+  sequencerStore.deleteSynth(selectedSynthId.value)
+  const lastIndex = sequencerStore.allSynths!.length - 1
+  selectedSynthId.value = sequencerStore.allSynths![lastIndex].getId()
 }
 </script>
 
