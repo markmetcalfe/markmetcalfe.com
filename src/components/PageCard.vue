@@ -119,7 +119,6 @@ const sequencerStore = useSequencerStore()
 
   &-simple {
     height: 100%;
-    overflow: hidden;
     align-items: center;
   }
 
