@@ -5,6 +5,7 @@
     }}</label>
     <div
       :id="id"
+      ref="dropdownContainer"
       class="dropdownselect-container"
       :class="{
         'dropdownselect--active': isOpen,
@@ -29,7 +30,9 @@
       <ul
         v-if="isOpen"
         :id="listboxId"
+        ref="optionsList"
         class="dropdownselect-options-list"
+        :class="{ 'dropdownselect-options-list--up': showAbove }"
         role="listbox"
         :aria-labelledby="labelId"
         tabindex="-1"
@@ -77,6 +80,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    maxHeight: {
+      type: Number,
+      default: 300,
+    },
   },
 
   emits: ['update:modelValue', 'change'],
@@ -88,6 +95,7 @@ export default {
       id: useId(),
       labelId: useId(),
       listboxId: useId(),
+      showAbove: false,
     }
   },
 
@@ -103,11 +111,27 @@ export default {
     options: {
       immediate: true,
       handler(newOptions) {
-        this.selectedOption =
-          newOptions.find(
-            option => option.value === this.selectedOption.value,
-          ) ?? newOptions[0]
+        if (this.selectedOption) {
+          this.selectedOption =
+            newOptions.find(
+              option => option.value === this.selectedOption.value,
+            ) ?? newOptions[0]
+        } else {
+          this.selectedOption = newOptions[0]
+        }
       },
+    },
+    isOpen(newVal) {
+      if (newVal) {
+        this.$nextTick(() => {
+          this.checkPosition()
+          window.addEventListener('scroll', this.checkPosition)
+          window.addEventListener('resize', this.checkPosition)
+        })
+      } else {
+        window.removeEventListener('scroll', this.checkPosition)
+        window.removeEventListener('resize', this.checkPosition)
+      }
     },
   },
 
@@ -117,13 +141,17 @@ export default {
 
   unmounted() {
     document.removeEventListener('click', this.handleClickOutside)
+    window.removeEventListener('scroll', this.checkPosition)
+    window.removeEventListener('resize', this.checkPosition)
   },
 
   methods: {
     toggleDropdown() {
-      if (this.options.length > 1) {
-        this.isOpen = !this.isOpen
+      if (this.disabled || this.options.length < 2) {
+        return
       }
+
+      this.isOpen = !this.isOpen
     },
 
     selectOption(option) {
@@ -136,6 +164,42 @@ export default {
     handleClickOutside(event) {
       if (!this.$el.contains(event.target)) {
         this.isOpen = false
+      }
+    },
+
+    checkPosition() {
+      if (!this.$refs.optionsList || !this.$refs.dropdownContainer) return
+
+      const optionsList = this.$refs.optionsList
+      const container = this.$refs.dropdownContainer
+      const rect = container.getBoundingClientRect()
+
+      // Calculate available space
+      const spaceBelow = window.innerHeight - rect.bottom
+      const spaceAbove = rect.top
+
+      // Get the current height of the options list
+      const listHeight = optionsList.scrollHeight
+
+      // Limit the height to maxHeight
+      const effectiveHeight = Math.min(listHeight, this.maxHeight)
+
+      // Determine if we should show above or below
+      if (spaceBelow < effectiveHeight && spaceAbove > spaceBelow) {
+        this.showAbove = true
+        optionsList.style.maxHeight = `${Math.min(spaceAbove, this.maxHeight)}px`
+      } else {
+        this.showAbove = false
+        optionsList.style.maxHeight = `${Math.min(spaceBelow, this.maxHeight)}px`
+      }
+
+      // Check if we need horizontal adjustment
+      const rightEdge = rect.left + optionsList.offsetWidth
+      if (rightEdge > window.innerWidth) {
+        const overflow = rightEdge - window.innerWidth
+        optionsList.style.left = `-${overflow}px`
+      } else {
+        optionsList.style.left = '0'
       }
     },
   },
@@ -214,10 +278,16 @@ export default {
     text-align: left;
     border: 1px solid var(--color-highlight);
     border-top: none;
-    max-height: 40vh;
     overflow-y: auto;
     background: var(--color-dark);
     z-index: 10;
+
+    &--up {
+      top: auto;
+      bottom: 100%;
+      border-top: 1px solid var(--color-highlight);
+      border-bottom: none;
+    }
   }
 
   &-option {

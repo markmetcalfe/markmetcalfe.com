@@ -210,11 +210,6 @@ onUnmounted(() => {
 
   &-sequences {
     display: flex;
-    overflow-y: auto;
-
-    @include vars.mobile-only {
-      max-height: 40vh;
-    }
   }
 
   &-rowoptions {
@@ -244,6 +239,10 @@ onUnmounted(() => {
 
         & .dropdownselect-selected-option {
           padding: 0.1rem 0.5rem;
+        }
+
+        & .dropdownselect-option {
+          padding: 0.2rem 0.5rem;
         }
       }
     }
