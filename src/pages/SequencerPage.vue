@@ -275,7 +275,7 @@ onUnmounted(() => {
   &-grid {
     display: flex;
     flex-direction: column;
-    overflow-x: scroll;
+    overflow-x: auto;
 
     @include vars.desktop-only {
       max-width: 75vw;
