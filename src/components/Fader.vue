@@ -11,7 +11,7 @@
           class="fader-input"
           :min="min"
           :max="max"
-          step="0.001"
+          :step="1 / 10 ** decimalPlaces"
           :value="roundedValue"
           role="slider"
           :aria-valuemin="min"
