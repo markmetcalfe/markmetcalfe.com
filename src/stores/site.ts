@@ -22,7 +22,7 @@ const initialState: SiteStore = {
   backgroundHidden: false,
   beatMatch: {
     beatsPerBar: 4,
-    bpm: 138,
+    bpm: 108,
     lastTime: new Date(0),
     taps: [],
     tapListeners: [],
