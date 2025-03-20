@@ -4,22 +4,15 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+interface Props {
+  items?: string[]
+  large?: boolean
+}
 
-export default defineComponent({
-  name: 'GridList',
-
-  props: {
-    items: {
-      type: Array,
-      default: () => [],
-    },
-    large: {
-      type: Boolean,
-      default: false,
-    },
-  },
+withDefaults(defineProps<Props>(), {
+  items: () => [],
+  large: false,
 })
 </script>
 

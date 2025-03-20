@@ -81,8 +81,8 @@
   </PageCard>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import PageCard from '../components/PageCard.vue'
 import LinkButton from '../components/LinkButton.vue'
 import {
@@ -92,108 +92,83 @@ import {
   isVizshun,
 } from '../util/site'
 import { Renderer } from '../3d'
-import { GeometryAttributes, PartialSphere, Sphere } from '../3d/geometry'
-import { useVisualsStore } from '../stores/visuals'
+import { PartialSphere, Sphere } from '../3d/geometry'
 import GridList from '../components/GridList.vue'
 import { useSiteStore } from '../stores/site'
 
-export default defineComponent({
-  name: 'HomePage',
-  components: { GridList, LinkButton, PageCard },
-
-  data(): {
-    renderer: Renderer | undefined
-    rendererZoomLevel: number
-    geometryDefinition: GeometryAttributes[]
-    geometryRotationSpeed: number
-    isHidden: boolean
-  } {
-    return {
-      renderer: undefined,
-      rendererZoomLevel: 11,
-      geometryDefinition: [
-        {
-          type: Sphere,
-          color: 'rgb(0, 128, 0)',
-          solid: false,
-          radius: 5,
-          detail: 80,
-          reverseRotation: false,
-        },
-        {
-          type: PartialSphere,
-          color: 'rgb(0, 0, 255)',
-          solid: false,
-          radius: 5,
-          detail: 90,
-          reverseRotation: false,
-        },
-        {
-          type: PartialSphere,
-          color: 'rgb(255, 0, 0)',
-          solid: false,
-          radius: 5,
-          detail: 100,
-          reverseRotation: false,
-        },
-      ],
-      geometryRotationSpeed: 20,
-      isHidden: false,
-    }
+const rendererZoomLevel = 11
+const geometryDefinition = [
+  {
+    type: Sphere,
+    color: 'rgb(0, 128, 0)',
+    solid: false,
+    radius: 5,
+    detail: 80,
+    reverseRotation: false,
   },
-
-  computed: {
-    siteStore() {
-      return useSiteStore()
-    },
+  {
+    type: PartialSphere,
+    color: 'rgb(0, 0, 255)',
+    solid: false,
+    radius: 5,
+    detail: 90,
+    reverseRotation: false,
   },
+  {
+    type: PartialSphere,
+    color: 'rgb(255, 0, 0)',
+    solid: false,
+    radius: 5,
+    detail: 100,
+    reverseRotation: false,
+  },
+]
+const geometryRotationSpeed = 20
 
-  mounted() {
-    this.siteStore.showBackground()
+const renderer = ref<Renderer | undefined>(undefined)
+const isHidden = ref(false)
 
-    setTimeout(() => {
-      this.renderer = new Renderer(document.querySelector('.photo-of-me-bg')!)
-        .setGetDefaultGeometry(() => this.geometryDefinition)
+const siteStore = useSiteStore()
+
+const randomiseProfile = (): void => {
+  renderer.value?.randomiseRotations()
+  renderer.value?.randomiseColors()
+}
+
+onMounted(() => {
+  siteStore.showBackground()
+
+  setTimeout(() => {
+    const photoBgElement = document.querySelector(
+      '.photo-of-me-bg',
+    ) as HTMLElement
+    if (photoBgElement) {
+      renderer.value = new Renderer(photoBgElement)
+        .setGetDefaultGeometry(() => geometryDefinition)
         .setOnRenderTick(renderer =>
-          renderer.getGeometry()!.forEach(geometry => geometry.rotate()),
+          renderer.getGeometry()?.forEach(geometry => geometry.rotate()),
         )
         .setOnInit(renderer => {
           if (isCardPreview() || isPlaywrightTest()) {
             return
           }
-          renderer.getGeometry()!.forEach(geometry => {
+          renderer.getGeometry()?.forEach(geometry => {
             geometry.setRotationSpeed({
-              x: this.geometryRotationSpeed,
-              y: this.geometryRotationSpeed,
+              x: geometryRotationSpeed,
+              y: geometryRotationSpeed,
             })
           })
         })
-        .setGetZoom(() => this.rendererZoomLevel)
+        .setGetZoom(() => rendererZoomLevel)
         .initialise()
-    }, 100)
-  },
+    }
+  }, 100)
+})
 
-  unmounted() {
-    setTimeout(() => {
-      this.renderer?.cleanUp()
-    }, 250)
-  },
-
-  methods: {
-    isVizshun,
-    isCardPreview,
-    getMailtoLink,
-
-    randomiseProfile() {
-      this.renderer?.randomiseRotations()
-      this.renderer?.randomiseColors()
-    },
-
-    randomiseBackground() {
-      const backgroundSettings = useVisualsStore()
-      backgroundSettings.randomise()
-    },
-  },
+onUnmounted(() => {
+  setTimeout(() => {
+    renderer.value?.cleanUp()
+  }, 250)
 })
 </script>
 

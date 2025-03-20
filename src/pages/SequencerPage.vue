@@ -48,7 +48,8 @@
                 :model-value="row.synthId"
                 :options="synthOptions"
                 @update:model-value="
-                  (id: string) => (sequencerStore.grid![rowIndex].synthId = id)
+                  (id: string | number) =>
+                    (sequencerStore.grid![rowIndex].synthId = id.toString())
                 "
               />
             </div>

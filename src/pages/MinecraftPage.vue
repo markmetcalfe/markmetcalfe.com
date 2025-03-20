@@ -12,11 +12,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-  name: 'MinecraftPage',
-})
+<script setup lang="ts">
+// This component is simple and doesn't require any additional state or logic
 </script>
 
 <style lang="scss">

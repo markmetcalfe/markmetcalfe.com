@@ -23,60 +23,42 @@
   </div>
 </template>
 
-<script>
-import { useId } from 'vue'
+<script setup lang="ts">
+import { ref, useId } from 'vue'
 
-export default {
-  name: 'TextInput',
+type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url'
 
-  props: {
-    modelValue: {
-      type: [String, Number],
-      default: '',
-    },
-    label: {
-      type: String,
-      default: null,
-    },
-    placeholder: {
-      type: String,
-      default: 'Enter text...',
-    },
-    type: {
-      type: String,
-      default: 'text',
-      validator: value => {
-        return ['text', 'email', 'password', 'number', 'tel', 'url'].includes(
-          value,
-        )
-      },
-    },
-    small: {
-      type: Boolean,
-      default: false,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
+interface Props {
+  modelValue?: string | number
+  label?: string | null
+  placeholder?: string
+  type?: InputType
+  small?: boolean
+  disabled?: boolean
+}
 
-  emits: ['update:modelValue', 'change'],
+withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  label: null,
+  placeholder: 'Enter text...',
+  type: 'text',
+  small: false,
+  disabled: false,
+})
 
-  data() {
-    return {
-      isFocused: false,
-      id: useId(),
-      labelId: useId(),
-    }
-  },
+const emit = defineEmits<{
+  'update:modelValue': [value: string | number]
+  change: [value: string | number]
+}>()
 
-  methods: {
-    onInput(event) {
-      this.$emit('update:modelValue', event.target.value)
-      this.$emit('change', event.target.value)
-    },
-  },
+const isFocused = ref(false)
+const id = useId()
+const labelId = useId()
+
+const onInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  emit('update:modelValue', target.value)
+  emit('change', target.value)
 }
 </script>
 

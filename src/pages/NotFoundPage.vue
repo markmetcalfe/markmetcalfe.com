@@ -9,14 +9,7 @@
   </PageCard>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import PageCard from '../components/PageCard.vue'
 import { getMailtoLink } from '../util/site'
-
-export default defineComponent({
-  name: 'NotFoundPage',
-  components: { PageCard },
-  methods: { getMailtoLink },
-})
 </script>

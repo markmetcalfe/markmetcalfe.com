@@ -1,5 +1,5 @@
 <template>
-  <Fader
+  <FaderInput
     :model-value="siteStore.beatMatch.bpm"
     :disabled="disabled"
     :min="0"
@@ -16,18 +16,20 @@
         Tap
       </button>
     </template>
-  </Fader>
+  </FaderInput>
 </template>
 
 <script setup lang="ts">
 import { useSiteStore } from '../stores/site'
-import Fader from './Fader.vue'
+import FaderInput from './FaderInput.vue'
 
 const siteStore = useSiteStore()
 
-defineProps({
-  disabled: Boolean,
-})
+interface Props {
+  disabled?: boolean
+}
+
+defineProps<Props>()
 </script>
 
 <style lang="scss">

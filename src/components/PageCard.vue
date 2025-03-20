@@ -65,20 +65,18 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
 import { useSiteStore } from '../stores/site'
 import { isCardPreview } from '../util/site'
 import { useSequencerStore } from '../stores/sequencer'
 
-defineProps({
-  backButtonPage: {
-    type: String,
-    default: null,
-  },
-  longform: {
-    type: Boolean,
-    default: false,
-  },
+interface Props {
+  backButtonPage?: string | null
+  longform?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  backButtonPage: null,
+  longform: false,
 })
 
 const siteStore = useSiteStore()

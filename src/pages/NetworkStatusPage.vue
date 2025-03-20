@@ -17,36 +17,24 @@
   </PageCard>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import PageCard from '../components/PageCard.vue'
-export default defineComponent({
-  name: 'NetworkStatusPage',
-  components: { PageCard },
 
-  data(): {
-    isConnected: boolean | undefined
-    homeIp: string | undefined
-    yourIp: string | undefined
-  } {
-    return {
-      isConnected: undefined,
-      homeIp: undefined,
-      yourIp: undefined,
-    }
-  },
+const isConnected = ref<boolean | undefined>(undefined)
+const homeIp = ref<string | undefined>(undefined)
+const yourIp = ref<string | undefined>(undefined)
 
-  async mounted() {
-    try {
-      const response = await fetch('/api/get-network-status')
-      const responseBody = await response.json()
-      this.isConnected = responseBody.isConnected
-      this.homeIp = responseBody.homeIp
-      this.yourIp = responseBody.yourIp
-    } catch (error) {
-      this.isConnected = false
-    }
-  },
+onMounted(async () => {
+  try {
+    const response = await fetch('/api/get-network-status')
+    const responseBody = await response.json()
+    isConnected.value = responseBody.isConnected
+    homeIp.value = responseBody.homeIp
+    yourIp.value = responseBody.yourIp
+  } catch (error) {
+    isConnected.value = false
+  }
 })
 </script>
 
