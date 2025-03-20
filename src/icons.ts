@@ -17,6 +17,8 @@ import {
   faEye as faEyeSolid,
   faMusic,
   faTrash,
+  faVolumeMute,
+  faVolumeUp,
 } from '@fortawesome/free-solid-svg-icons'
 import {
   faCopy,
@@ -47,6 +49,8 @@ const icons = [
   faPlus,
   faSoundcloud,
   faTrash,
+  faVolumeMute,
+  faVolumeUp,
 ]
 
 const addIcons: Plugin = (app: App) => {

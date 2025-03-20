@@ -3,10 +3,15 @@ import * as Tone from 'tone'
 import { Synth, allSynths } from '../tone/synths'
 import { useSiteStore } from './site'
 
+interface SequencerRow {
+  synthId: string
+  beats: boolean[]
+  muted: boolean
+}
+
 export interface SequencerStore {
   allSynths: Synth[] | undefined
-  usedSynths: Synth[] | undefined
-  grid: boolean[][] | undefined
+  grid: SequencerRow[] | undefined
   gridRowCount: number
   barCount: number
   currentBeat: number
@@ -15,7 +20,6 @@ export interface SequencerStore {
 
 const initialState: SequencerStore = {
   allSynths: undefined,
-  usedSynths: undefined,
   grid: undefined,
   gridRowCount: 4,
   barCount: 4,
@@ -36,32 +40,33 @@ export const useSequencerStore = defineStore('sequencer', {
     gridHasEntry(): boolean {
       return (
         this.grid !== undefined &&
-        this.grid.some(row => row.some(col => col !== false))
+        this.grid.some(row => row.beats.some(beats => beats !== false))
       )
     },
   },
   actions: {
     init() {
       if (this.allSynths !== undefined) {
-        this.updateBarCount(4)
         return
       }
 
       const siteStore = useSiteStore()
 
-      const localSynths = allSynths.map(synth => new synth())
-      this.usedSynths = localSynths
-      this.allSynths = [...localSynths]
+      const localSynths: Record<string, Synth> = {}
+      allSynths.forEach(synthClass => {
+        const synth = new synthClass()
+        localSynths[synth.getId()] = synth
+      })
+      this.allSynths = Object.values(localSynths)
 
-      this.resetGrid()
-      this.updateBarCount(4)
+      this.initGrid(Object.values(localSynths))
 
       Tone.setContext(new Tone.Context({ latencyHint: 'playback' }))
 
       Tone.getTransport().scheduleRepeat(time => {
-        this.grid!.forEach((synth, index) => {
-          if (synth[this.currentBeat]) {
-            localSynths[index].triggerSound(time)
+        this.grid!.forEach(row => {
+          if (!row.muted && row.beats[this.currentBeat]) {
+            localSynths[row.synthId].triggerSound(time)
           }
         })
         this.nextBeat()
@@ -72,10 +77,6 @@ export const useSequencerStore = defineStore('sequencer', {
         onTap: () => this.syncBpm(),
         onUpdate: () => this.syncBpm(),
       })
-    },
-
-    toggleBeat(synthIndex: number, beatIndex: number) {
-      this.grid![synthIndex][beatIndex] = !this.grid![synthIndex][beatIndex]
     },
 
     nextBeat() {
@@ -105,11 +106,20 @@ export const useSequencerStore = defineStore('sequencer', {
       Tone.getTransport().bpm.value = siteStore.beatMatch.bpm
     },
 
+    initGrid(synths: Synth[]) {
+      this.grid = synths.map(synth => ({
+        synthId: synth.getId(),
+        beats: Array(this.beatCount).fill(false),
+        muted: false,
+      }))
+    },
+
     resetGrid() {
       this.stop()
-      this.grid = Array(this.gridRowCount)
-        .fill(false)
-        .map(() => Array(this.beatCount).fill(false))
+      this.grid = this.grid!.map(row => ({
+        ...row,
+        beats: Array(this.beatCount).fill(false),
+      }))
     },
 
     addGridRow(synthId?: string) {
@@ -117,15 +127,16 @@ export const useSequencerStore = defineStore('sequencer', {
       if (!synth) {
         throw new Error('No valid synth found')
       }
-
-      this.grid!.push(Array(this.beatCount).fill(false))
-      this.usedSynths!.push(synth)
+      this.grid!.push({
+        synthId: synth.getId(),
+        beats: Array(this.beatCount).fill(false),
+        muted: false,
+      })
       this.gridRowCount++
     },
 
     deleteGridRow(rowIndex: number) {
       this.grid!.splice(rowIndex, 1)
-      this.usedSynths!.splice(rowIndex, 1)
       this.gridRowCount--
     },
 
@@ -151,14 +162,20 @@ export const useSequencerStore = defineStore('sequencer', {
 
       this.barCount = barCount
 
-      this.grid = this.grid?.map(row => {
-        const currentColumns = row.length
-        if (currentColumns < this.beatCount) {
-          return [...row, ...Array(this.beatCount - currentColumns).fill(false)]
-        } else if (currentColumns > this.beatCount) {
-          return row.slice(0, this.beatCount)
-        } else {
-          return row
+      this.grid = this.grid!.map(row => {
+        const currentBeats = row.beats.length
+        let beats = row.beats
+        if (currentBeats < this.beatCount) {
+          beats = [
+            ...beats,
+            ...Array(this.beatCount - currentBeats).fill(false),
+          ]
+        } else if (currentBeats > this.beatCount) {
+          beats = beats.slice(0, this.beatCount)
+        }
+        return {
+          ...row,
+          beats,
         }
       })
 
@@ -167,20 +184,16 @@ export const useSequencerStore = defineStore('sequencer', {
       }
     },
 
-    addBars() {
+    addBar() {
       this.updateBarCount(this.barCount + 1)
     },
 
-    deleteBars() {
+    deleteBar() {
       this.updateBarCount(this.barCount - 1)
     },
 
     getSynth(id: string) {
       return this.allSynths!.find(synth => synth.getId() === id)
-    },
-
-    useSynth(index: number, synthId: string) {
-      this.usedSynths![index] = this.getSynth(synthId)!
     },
 
     copySynth(synthId: string) {
@@ -193,12 +206,11 @@ export const useSequencerStore = defineStore('sequencer', {
       this.allSynths = this.allSynths!.filter(
         synth => synth.getId() !== synthId,
       )
-      this.usedSynths = this.usedSynths!.map(synth => {
-        if (synth.getId() === synthId) {
-          return this.allSynths![0]
-        }
-        return synth
-      })
+      this.grid = this.grid!.map(row => ({
+        ...row,
+        synthId:
+          row.synthId === synthId ? this.allSynths![0].getId() : row.synthId,
+      }))
     },
   },
 })
