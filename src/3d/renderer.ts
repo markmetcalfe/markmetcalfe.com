@@ -30,8 +30,9 @@ export class Renderer {
   protected onInit = (_renderer: this) => {}
 
   protected getZoom = () => 1
-  protected getWidth = () => this.container.clientWidth * 2
-  protected getHeight = () => this.container.clientHeight * 2
+  protected getPixelRatio = () => (window.devicePixelRatio > 1 ? 2 : 1)
+  protected getWidth = () => this.container.clientWidth * this.getPixelRatio()
+  protected getHeight = () => this.container.clientHeight * this.getPixelRatio()
   protected getDefaultGeometry = (): GeometryAttributes[] => []
 
   constructor(container: HTMLElement) {
@@ -89,11 +90,6 @@ export class Renderer {
     return this
   }
 
-  public setGetWidth(getWidth: () => number): this {
-    this.getWidth = getWidth
-    return this
-  }
-
   public setGetHeight(getHeight: () => number): this {
     this.getHeight = getHeight
     return this
@@ -119,6 +115,11 @@ export class Renderer {
     this.initialiseEventListeners()
 
     this.container.appendChild(this.renderer.domElement)
+
+    if (this.getPixelRatio() > 1) {
+      this.renderer.domElement.style.transform =
+        'scale(0.5) translateX(-50%) translateY(-50%)'
+    }
 
     const geometry = this.getDefaultGeometry().map(
       geometry => new geometry.type(geometry),
@@ -249,6 +250,10 @@ export class Renderer {
     this.camera.aspect = renderer.getWidth() / renderer.getHeight()
     this.camera.updateProjectionMatrix()
     this.renderer!.setSize(renderer.getWidth(), renderer.getHeight())
+    if (this.getPixelRatio() > 1) {
+      this.renderer!.domElement.style.transform =
+        'scale(0.5) translateX(-50%) translateY(-50%)'
+    }
   }
 
   public getGeometry() {
