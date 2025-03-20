@@ -36,35 +36,46 @@
         <BpmFader />
       </div>
 
-      <div
-        v-if="sequencerStore.allSynths && sequencerStore.usedSynths"
-        class="sequencerpage-sequences"
-      >
+      <div v-if="sequencerStore.grid" class="sequencerpage-sequences">
         <div class="sequencerpage-rowoptions">
           <div
-            v-for="(_, rowIndex) in sequencerStore.grid"
+            v-for="(row, rowIndex) in sequencerStore.grid"
             :key="'rowoptions-' + rowIndex"
             class="sequencerpage-rowoptions-wrapper"
           >
             <div class="sequencerpage-rowoptions-select">
               <DropdownSelect
-                :model-value="sequencerStore.usedSynths[rowIndex].getId()"
+                :model-value="row.synthId"
                 :options="synthOptions"
                 @update:model-value="
-                  (id: string) => sequencerStore.useSynth(rowIndex, id)
+                  (id: string) => (sequencerStore.grid![rowIndex].synthId = id)
                 "
               />
             </div>
 
-            <LinkButton
-              text="Delete Row"
-              hide-text
-              class="sequencerpage-rowoptions-button"
-              :disabled="sequencerStore.gridRowCount < 2"
-              @click="sequencerStore.deleteGridRow(rowIndex)"
-            >
-              <font-awesome-icon icon="fa-solid fa-trash" />
-            </LinkButton>
+            <div class="sequencerpage-rowoptions-buttons">
+              <LinkButton
+                text="Delete Row"
+                hide-text
+                :disabled="sequencerStore.gridRowCount < 2"
+                @click="sequencerStore.deleteGridRow(rowIndex)"
+              >
+                <font-awesome-icon icon="fa-solid fa-trash" />
+              </LinkButton>
+
+              <LinkButton
+                :text="row.muted ? 'Unmute' : 'Mute'"
+                hide-text
+                @click="row.muted = !row.muted"
+              >
+                <font-awesome-icon
+                  :icon="
+                    'fa-solid ' +
+                    (row.muted ? 'fa-volume-mute' : 'fa-volume-up')
+                  "
+                />
+              </LinkButton>
+            </div>
           </div>
 
           <div class="sequencerpage-rowoptions-wrapper">
@@ -72,14 +83,15 @@
               <DropdownSelect v-model="synthToAddId" :options="synthOptions" />
             </div>
 
-            <LinkButton
-              text="Add Row"
-              hide-text
-              class="sequencerpage-rowoptions-button"
-              @click="sequencerStore.addGridRow(synthToAddId)"
-            >
-              <font-awesome-icon icon="fa-solid fa-plus" />
-            </LinkButton>
+            <div class="sequencerpage-rowoptions-buttons">
+              <LinkButton
+                text="Add Row"
+                hide-text
+                @click="sequencerStore.addGridRow(synthToAddId)"
+              >
+                <font-awesome-icon icon="fa-solid fa-plus" />
+              </LinkButton>
+            </div>
           </div>
         </div>
 
@@ -90,7 +102,7 @@
             class="sequencerpage-row"
           >
             <div
-              v-for="(beat, beatIndex) in row"
+              v-for="(beat, beatIndex) in row.beats"
               :key="'beat-' + beatIndex + '-' + beatIndex"
               :class="[
                 'sequencerpage-beat',
@@ -101,22 +113,17 @@
                     sequencerStore.isBarStart(beatIndex),
                   'sequencerpage-beat-playing':
                     sequencerStore.isBeatPlaying(beatIndex),
+                  'sequencerpage-beat-muted': row.muted,
                 },
               ]"
             >
-              <button
-                @click="sequencerStore.toggleBeat(rowIndex, beatIndex)"
-              ></button>
+              <button @click="row.beats[beatIndex] = !row.beats[beatIndex]" />
             </div>
           </div>
         </div>
 
         <div class="sequencerpage-columnoptions">
-          <LinkButton
-            text="Add Bar"
-            hide-text
-            @click="sequencerStore.addBars()"
-          >
+          <LinkButton text="Add Bar" hide-text @click="sequencerStore.addBar()">
             <font-awesome-icon icon="fa-solid fa-plus" />
           </LinkButton>
 
@@ -124,7 +131,7 @@
             text="Delete Bar"
             :disabled="sequencerStore.barCount < 2"
             hide-text
-            @click="sequencerStore.deleteBars()"
+            @click="sequencerStore.deleteBar()"
           >
             <font-awesome-icon icon="fa-solid fa-trash" />
           </LinkButton>
@@ -252,8 +259,16 @@ onUnmounted(() => {
       }
     }
 
-    &-button {
+    &-buttons {
+      display: flex;
+
+      @include vars.desktop-only {
+        gap: 0.5rem;
+      }
+
       @include vars.mobile-only {
+        gap: 0.25rem;
+
         & button {
           padding: 0.45rem;
         }
@@ -312,6 +327,10 @@ onUnmounted(() => {
 
     &-on button {
       background-color: var(--color-highlight);
+    }
+
+    &-on.sequencerpage-beat-muted button {
+      background-color: gray;
     }
 
     &-off.sequencerpage-beat-playing button {
