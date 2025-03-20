@@ -444,14 +444,7 @@
   </PageCard>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import PageCard from '../components/PageCard.vue'
-import { getSiteDomain, getMailtoLink } from '../util/site'
-
-export default defineComponent({
-  name: 'PrivacyPolicyPage',
-  components: { PageCard },
-  methods: { getSiteDomain, getMailtoLink },
-})
+import { getMailtoLink, getSiteDomain } from '../util/site'
 </script>

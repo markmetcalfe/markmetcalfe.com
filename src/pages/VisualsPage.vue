@@ -22,66 +22,66 @@
       <div class="visualspage-settings">
         <div class="visualspage-toggles">
           <ToggleSwitch
-            :model-value="settings.beatMatch.enabled"
+            :model-value="visualsStore.beatMatch.enabled"
             label="Beat Matching"
             @update:model-value="visualsStore.setBeatMatchEnabled"
           />
 
           <ToggleSwitch
             v-if="!isMobile()"
-            v-model="settings.followCursor"
+            v-model="visualsStore.followCursor"
             label="Follow Cursor"
           />
         </div>
 
         <div class="visualspage-toggles">
           <ToggleSwitch
-            v-model="settings.beatMatch.syncToBar"
-            :disabled="!settings.beatMatch.enabled"
+            v-model="visualsStore.beatMatch.syncToBar"
+            :disabled="!visualsStore.beatMatch.enabled"
             label="Sync To Bar"
           />
 
           <ToggleSwitch
-            v-model="settings.beatMatch.randomizeColors"
-            :disabled="!settings.beatMatch.enabled"
+            v-model="visualsStore.beatMatch.randomizeColors"
+            :disabled="!visualsStore.beatMatch.enabled"
             label="Colour Changes"
           />
         </div>
 
-        <BpmFader :disabled="!settings.beatMatch.enabled" />
+        <BpmFader :disabled="!visualsStore.beatMatch.enabled" />
 
         <DropdownSelect
-          v-model="settings.autoZoom.mode"
+          v-model="visualsStore.autoZoom.mode"
           :options="autoZoomOptions"
           label="Auto Zoom Mode"
         />
 
-        <Fader
-          v-model="settings.zoom.current"
+        <FaderInput
+          v-model="visualsStore.zoom.current"
           :min="-10"
           :max="20"
           :decimal-places="2"
           label="Current Zoom"
         />
 
-        <Fader
-          v-model="settings.zoom.min"
+        <FaderInput
+          v-model="visualsStore.zoom.min"
           :disabled="autoZoomDisabled"
           :min="-10"
           :max="20"
           label="Min Zoom"
         />
 
-        <Fader
-          v-model="settings.zoom.max"
+        <FaderInput
+          v-model="visualsStore.zoom.max"
           :disabled="autoZoomDisabled"
           :min="-10"
           :max="20"
           label="Max Zoom"
         />
 
-        <Fader
-          :model-value="settings.autoZoom.speed * 1000"
+        <FaderInput
+          :model-value="visualsStore.autoZoom.speed * 1000"
           :disabled="!autoZoomIsSmooth"
           :min="0"
           :max="100"
@@ -91,15 +91,15 @@
           "
         />
 
-        <Fader
-          v-model="settings.rotationSpeed.x"
+        <FaderInput
+          v-model="visualsStore.rotationSpeed.x"
           :min="0"
           :max="100"
           :label="isMobile() ? 'X Rotation' : 'X-Axis Rotation Speed'"
         />
 
-        <Fader
-          v-model="settings.rotationSpeed.y"
+        <FaderInput
+          v-model="visualsStore.rotationSpeed.y"
           :min="0"
           :max="100"
           :label="isMobile() ? 'Y Rotation' : 'Y-Axis Rotation Speed'"
@@ -120,100 +120,70 @@
   </PageCard>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import PageCard from '../components/PageCard.vue'
 import { isMobile } from 'is-mobile'
-import { storeToRefs } from 'pinia'
 import { AutoZoomMode, useVisualsStore } from '../stores/visuals'
 import GridList from '../components/GridList.vue'
 import LinkButton from '../components/LinkButton.vue'
 import ToggleSwitch from '../components/ToggleSwitch.vue'
-import Fader from '../components/Fader.vue'
+import FaderInput from '../components/FaderInput.vue'
 import BpmFader from '../components/BpmFader.vue'
 import DropdownSelect from '../components/DropdownSelect.vue'
 import { useSiteStore } from '../stores/site'
 
-export default defineComponent({
-  name: 'VisualsPage',
-  components: {
-    GridList,
-    PageCard,
-    LinkButton,
-    ToggleSwitch,
-    Fader,
-    BpmFader,
-    DropdownSelect,
-  },
+const siteStore = useSiteStore()
+const visualsStore = useVisualsStore()
 
-  data() {
-    const store = storeToRefs(useVisualsStore())
+const isFullscreen = ref(false)
 
-    return {
-      isFullscreen: false,
-      settings: store,
-    }
-  },
+const autoZoomOptions = computed(() => {
+  const options = visualsStore.beatMatch.enabled
+    ? Object.values(AutoZoomMode)
+    : [AutoZoomMode.DISABLED, AutoZoomMode.SMOOTH]
+  return options.map(value => ({
+    value,
+    label: value,
+  }))
+})
 
-  computed: {
-    siteStore() {
-      return useSiteStore()
-    },
-    visualsStore() {
-      return useVisualsStore()
-    },
+const autoZoomDisabled = computed(() => {
+  return visualsStore.autoZoom.mode === AutoZoomMode.DISABLED
+})
 
-    autoZoomOptions() {
-      const options = this.visualsStore.beatMatch.enabled
-        ? Object.values(AutoZoomMode)
-        : [AutoZoomMode.DISABLED, AutoZoomMode.SMOOTH]
-      return options.map(value => ({
-        value,
-        label: value,
-      }))
-    },
-    autoZoomDisabled() {
-      return this.visualsStore.autoZoom.mode === AutoZoomMode.DISABLED
-    },
-    autoZoomIsSmooth() {
-      return this.visualsStore.autoZoom.mode === AutoZoomMode.SMOOTH
-    },
-  },
+const autoZoomIsSmooth = computed(() => {
+  return visualsStore.autoZoom.mode === AutoZoomMode.SMOOTH
+})
 
-  mounted() {
-    this.siteStore.hideBackgroundIfMobile()
-    document.addEventListener('fullscreenchange', () => this.fullscreenEvent())
-  },
+const requestFullscreen = (): void => {
+  document.body.requestFullscreen()
+}
 
-  unmounted() {
-    document.removeEventListener('fullscreenchange', () =>
-      this.fullscreenEvent(),
-    )
-    document.body.style.cursor = 'auto'
-  },
+const fullscreenEvent = (): void => {
+  const dynamicBackground = document.querySelector(
+    '.dynamicbackground',
+  ) as HTMLElement
 
-  methods: {
-    isMobile,
+  if (isFullscreen.value) {
+    isFullscreen.value = false
+    document.body.style.cursor = ''
+    dynamicBackground.style.cursor = ''
+  } else {
+    isFullscreen.value = true
+    document.body.style.cursor = 'none'
+    dynamicBackground.style.cursor = 'none'
+  }
+}
 
-    requestFullscreen() {
-      document.body.requestFullscreen()
-    },
+onMounted(() => {
+  siteStore.hideBackgroundIfMobile()
+  document.addEventListener('fullscreenchange', fullscreenEvent)
+})
 
-    fullscreenEvent() {
-      const dynamicBackground = document.querySelector(
-        '.dynamicbackground',
-      ) as HTMLElement
-      if (this.isFullscreen) {
-        this.isFullscreen = false
-        document.body.style.cursor = ''
-        dynamicBackground.style.cursor = ''
-      } else {
-        this.isFullscreen = true
-        document.body.style.cursor = 'none'
-        dynamicBackground.style.cursor = 'none'
-      }
-    },
-  },
+onUnmounted(() => {
+  document.removeEventListener('fullscreenchange', fullscreenEvent)
+  document.body.style.cursor = 'auto'
 })
 </script>
 

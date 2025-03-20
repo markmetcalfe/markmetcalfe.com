@@ -39,7 +39,7 @@
         'linkbutton-hidetext': hideText,
         disabled: disabled,
       }"
-      @click="event => $emit('click', event)"
+      @click="handleClick"
     >
       <span class="linkbutton-icon"><slot /></span>
       <span v-if="!hideText">{{ text }}</span>
@@ -48,37 +48,30 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits, defineProps } from 'vue'
+interface Props {
+  external?: boolean
+  href?: string
+  text: string
+  disabled?: boolean
+  large?: boolean
+  hideText?: boolean
+}
 
-defineProps({
-  external: {
-    type: Boolean,
-    default: false,
-  },
-  href: {
-    type: String,
-    required: false,
-    default: '',
-  },
-  text: {
-    type: String,
-    required: true,
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  large: {
-    type: Boolean,
-    default: false,
-  },
-  hideText: {
-    type: Boolean,
-    default: false,
-  },
+withDefaults(defineProps<Props>(), {
+  external: false,
+  href: '',
+  disabled: false,
+  large: false,
+  hideText: false,
 })
 
-defineEmits(['click'])
+const emit = defineEmits<{
+  click: [event: MouseEvent]
+}>()
+
+const handleClick = (event: MouseEvent) => {
+  emit('click', event)
+}
 </script>
 
 <style lang="scss">

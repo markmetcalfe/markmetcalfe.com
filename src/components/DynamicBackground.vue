@@ -4,44 +4,31 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import { Renderer } from '../3d'
 import { useVisualsStore } from '../stores/visuals'
 import { isSafari } from '../util/site'
 
-export default defineComponent({
-  name: 'DynamicBackground',
+const visualsStore = useVisualsStore()
+const renderer = ref<Renderer | undefined>(undefined)
 
-  data(): { renderer: Renderer | undefined } {
-    return {
-      renderer: undefined,
-    }
-  },
-
-  computed: {
-    visualsStore() {
-      return useVisualsStore()
+onMounted(() => {
+  setTimeout(
+    () => {
+      const rendererInstance = new Renderer(
+        document.querySelector('.dynamicbackground')!,
+      )
+      visualsStore.setRenderer(rendererInstance)
+      rendererInstance.initialise()
+      renderer.value = rendererInstance
     },
-  },
+    isSafari() ? 300 : 100, // Give Safari more time to init
+  )
+})
 
-  mounted() {
-    setTimeout(
-      () => {
-        const renderer = new Renderer(
-          document.querySelector('.dynamicbackground')!,
-        )
-        this.visualsStore.setRenderer(renderer)
-        renderer.initialise()
-        this.renderer = renderer
-      },
-      isSafari() ? 300 : 100, // Give Safari more time to init
-    )
-  },
-
-  unmounted() {
-    this.renderer?.cleanUp()
-  },
+onUnmounted(() => {
+  renderer.value?.cleanUp()
 })
 </script>
 

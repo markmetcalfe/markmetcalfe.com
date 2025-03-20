@@ -37,22 +37,22 @@
           label="Note"
         />
 
-        <Fader
-          v-if="selectedSynth.canSetNote()"
+        <FaderInput
+          v-if="selectedSynth.canSetNote() && selectedSynth.octave"
           v-model="selectedSynth.octave"
           :min="1"
           :max="8"
           label="Octave"
         />
 
-        <Fader
+        <FaderInput
           v-model="selectedSynth.duration"
           :min="1"
           :max="64"
           label="Duration"
         />
 
-        <Fader
+        <FaderInput
           v-for="[key, label] in Object.entries({
             attack: 'Attack',
             decay: 'Decay',
@@ -81,40 +81,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useSequencerStore } from '../stores/sequencer'
 import PageCard from '../components/PageCard.vue'
 import DropdownSelect from '../components/DropdownSelect.vue'
 import TextField from '../components/TextField.vue'
-import Fader from '../components/Fader.vue'
+import FaderInput from '../components/FaderInput.vue'
 import { Synth } from '../tone/synths'
 import { notes } from '../tone'
 import LinkButton from '../components/LinkButton.vue'
 
 const sequencerStore = useSequencerStore()
-sequencerStore.init()
+
+onMounted(() => {
+  sequencerStore.init()
+})
 
 const synthOptions = computed(() =>
-  sequencerStore.allSynths!.map(synth => ({
-    value: synth.getId(),
-    label: synth.name,
-  })),
+  sequencerStore.allSynths
+    ? sequencerStore.allSynths.map(synth => ({
+        value: synth.getId(),
+        label: synth.name,
+      }))
+    : [],
 )
 
-const selectedSynthId = ref(sequencerStore.allSynths![0].getId())
+const selectedSynthId = ref<string>('')
+
+onMounted(() => {
+  if (sequencerStore.allSynths && sequencerStore.allSynths.length > 0) {
+    selectedSynthId.value = sequencerStore.allSynths[0].getId()
+  }
+})
+
 const selectedSynth = computed(() =>
   sequencerStore.getSynth(selectedSynthId.value),
 )
 
-const copySynth = () => {
+const copySynth = (): void => {
   const copy = sequencerStore.copySynth(selectedSynthId.value)
   selectedSynthId.value = copy.getId()
 }
 
-const deleteSynth = () => {
+const deleteSynth = (): void => {
   sequencerStore.deleteSynth(selectedSynthId.value)
-  const lastIndex = sequencerStore.allSynths!.length - 1
-  selectedSynthId.value = sequencerStore.allSynths![lastIndex].getId()
+  if (sequencerStore.allSynths && sequencerStore.allSynths.length > 0) {
+    const lastIndex = sequencerStore.allSynths.length - 1
+    selectedSynthId.value = sequencerStore.allSynths[lastIndex].getId()
+  }
 }
 </script>
 

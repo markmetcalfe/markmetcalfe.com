@@ -9,31 +9,26 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { nextTick, onMounted } from 'vue'
 import { RouteLocationNormalized } from 'vue-router'
 import DynamicBackground from './components/DynamicBackground.vue'
 
-type RouteWithTransition = RouteLocationNormalized & {
+interface RouteWithTransition extends RouteLocationNormalized {
   meta: {
     transition?: string
   }
 }
 
-export default defineComponent({
-  name: 'App',
-  components: { DynamicBackground },
-  mounted() {
-    this.$nextTick(() => {
-      // An insta link is in the DOM for SEO reasons, but we don't really want to show it
-      document.getElementById('ga-insta-link')?.remove()
-    })
-  },
-  methods: {
-    getTransition(route: RouteWithTransition): string | undefined {
-      return route.meta?.transition ?? undefined
-    },
-  },
+const getTransition = (route: RouteWithTransition): string | undefined => {
+  return route.meta?.transition ?? undefined
+}
+
+onMounted(() => {
+  nextTick(() => {
+    // An insta link is in the DOM for SEO reasons, but we don't really want to show it
+    document.getElementById('ga-insta-link')?.remove()
+  })
 })
 </script>
 

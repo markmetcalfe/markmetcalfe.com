@@ -26,46 +26,35 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, useId } from 'vue'
+<script setup lang="ts">
+import { useId } from 'vue'
 
-export default defineComponent({
-  name: 'ToggleSwitch',
+interface Props {
+  modelValue?: boolean
+  disabled?: boolean
+  label?: string
+}
 
-  props: {
-    modelValue: {
-      type: Boolean,
-      default: false,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    label: {
-      type: String,
-      default: '',
-    },
-  },
-
-  emits: ['update:modelValue', 'change'],
-
-  data() {
-    return {
-      id: useId(),
-      labelId: useId(),
-    }
-  },
-
-  methods: {
-    toggle() {
-      if (this.disabled) return
-
-      const newValue = !this.modelValue
-      this.$emit('update:modelValue', newValue)
-      this.$emit('change', newValue)
-    },
-  },
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: false,
+  disabled: false,
+  label: '',
 })
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+  change: [value: boolean]
+}>()
+
+const id = useId()
+const labelId = useId()
+
+const toggle = () => {
+  if (props.disabled) return
+  const newValue = !props.modelValue
+  emit('update:modelValue', newValue)
+  emit('change', newValue)
+}
 </script>
 
 <style lang="scss">

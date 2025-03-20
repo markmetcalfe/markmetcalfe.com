@@ -42,79 +42,63 @@
   </div>
 </template>
 
-<script>
-import { useId } from 'vue'
+<script setup lang="ts">
+import { ref, computed, useId } from 'vue'
 import TextField from './TextField.vue'
 
-export default {
-  name: 'SliderSelect',
+interface Props {
+  label?: string | null
+  modelValue: number
+  disabled?: boolean
+  min?: number
+  max?: number
+  decimalPlaces?: number
+}
 
-  components: { TextField },
+const props = withDefaults(defineProps<Props>(), {
+  label: null,
+  disabled: false,
+  min: 0,
+  max: 100,
+  decimalPlaces: 0,
+})
 
-  props: {
-    label: {
-      type: String,
-      default: null,
-    },
-    modelValue: {
-      type: Number,
-      required: true,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    min: {
-      type: Number,
-      default: 0,
-    },
-    max: {
-      type: Number,
-      default: 100,
-    },
-    decimalPlaces: {
-      type: Number,
-      default: 0,
-    },
-  },
+const emit = defineEmits<{
+  'update:modelValue': [value: number]
+  change: [value: number]
+}>()
 
-  emits: ['update:modelValue', 'change'],
+const isFocused = ref(false)
+const id = useId()
+const labelId = useId()
 
-  data() {
-    return {
-      isFocused: false,
-      id: useId(),
-      labelId: useId(),
-    }
-  },
+const progressPercentage = computed((): number => {
+  return ((props.modelValue - props.min) / (props.max - props.min)) * 100
+})
 
-  computed: {
-    progressPercentage() {
-      return ((this.modelValue - this.min) / (this.max - this.min)) * 100
-    },
-    roundedValue() {
-      return this.modelValue.toFixed(this.decimalPlaces)
-    },
-  },
+const roundedValue = computed((): string => {
+  return props.modelValue.toFixed(props.decimalPlaces)
+})
 
-  methods: {
-    updateValue(event) {
-      const value = Number(event.target.value)
-      this.$emit('update:modelValue', value)
-      this.$emit('change', value)
-    },
-    updateTextValue(textValue) {
-      const value = Number(textValue)
-      this.$emit('update:modelValue', value)
-      this.$emit('change', value)
-    },
-    handleFocus() {
-      this.isFocused = true
-    },
-    handleBlur() {
-      this.isFocused = false
-    },
-  },
+const updateValue = (event: Event): void => {
+  const target = event.target as HTMLInputElement
+  const value = Number(target.value)
+  emit('update:modelValue', value)
+  emit('change', value)
+}
+
+const updateTextValue = (textValue: string | number): void => {
+  const value = Number(textValue)
+  emit('update:modelValue', value)
+  emit('change', value)
+}
+
+const handleFocus = (): void => {
+  isFocused.value = true
+}
+
+const handleBlur = (): void => {
+  isFocused.value = false
 }
 </script>
 

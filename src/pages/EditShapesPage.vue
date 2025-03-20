@@ -28,7 +28,8 @@
         type="number"
         :model-value="selectedShape.radius.toFixed(0)"
         @update:model-value="
-          (radius: string) => (selectedShape.radius = parseFloat(radius))
+          (radius: string | number) =>
+            (selectedShape.radius = parseFloat(radius.toString()))
         "
       />
 
@@ -49,16 +50,16 @@
       >
         <font-awesome-icon icon="fa-solid fa-trash" style="max-height: 21px" />
       </LinkButton>
-      <LinkButton text="Save" icon="fa-regular fa-floppy-disk" @click="save">
+      <LinkButton text="Save" @click="save">
         <font-awesome-icon icon="fa-regular fa-floppy-disk" />
       </LinkButton>
     </div>
   </PageCard>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import PageCard from '../components/PageCard.vue'
-import { defineComponent } from 'vue'
 import { useVisualsStore } from '../stores/visuals'
 import {
   GeometryAttributes,
@@ -72,86 +73,69 @@ import DropdownSelect from '../components/DropdownSelect.vue'
 import TextField from '../components/TextField.vue'
 import { useSiteStore } from '../stores/site'
 
-export default defineComponent({
-  name: 'EditShapesPage',
-  components: { PageCard, LinkButton, ToggleSwitch, TextField, DropdownSelect },
+const siteStore = useSiteStore()
+const visualsStore = useVisualsStore()
 
-  data() {
-    return {
-      loading: false,
-      selectedShapeIndex: 0,
-    }
-  },
+const loading = ref(false)
+const selectedShapeIndex = ref(0)
 
-  computed: {
-    siteStore() {
-      return useSiteStore()
-    },
-    visualsStore() {
-      return useVisualsStore()
-    },
+const selectedShape = computed(() => {
+  return visualsStore.geometryConfig[selectedShapeIndex.value]
+})
 
-    selectedShape() {
-      return this.visualsStore.geometryConfig[this.selectedShapeIndex]
-    },
+const geometryItems = computed(() => {
+  return visualsStore.geometryConfig.map((geometry, index) => ({
+    value: index,
+    label: getShapeName(geometry),
+  }))
+})
 
-    geometryItems() {
-      return this.visualsStore.geometryConfig.map((geometry, index) => ({
-        value: index,
-        label: this.getShapeName(geometry),
-      }))
-    },
+const geometryTypes = computed(() => {
+  return geometryClasses.map(geometryClass => ({
+    value: geometryClass.getName(),
+    label: geometryClass.getName(),
+  }))
+})
 
-    geometryTypes() {
-      return geometryClasses.map(geometryClass => ({
-        value: geometryClass.getName(),
-        label: geometryClass.getName(),
-      }))
-    },
-  },
+const getShapeName = (shape: GeometryAttributes): string => {
+  return `${getColorName(shape.color)} ${shape.type.getName()}`
+}
 
-  mounted() {
-    this.siteStore.hideBackgroundIfMobile()
+const setShapeType = (name: string | number): void => {
+  selectedShape.value.type = getGeometryClassFromName(name.toString())
+}
 
-    this.visualsStore.setListener('onRandomise', () => {
-      this.selectedShapeIndex = 0
-    })
-  },
+const addShape = (): void => {
+  visualsStore.addRandomGeometryConfig()
+  selectedShapeIndex.value = visualsStore.geometryConfig.length - 1
+}
 
-  unmounted() {
-    this.visualsStore.removeListener('onRandomise')
-  },
+const deleteShape = (): void => {
+  const shapeToDelete = selectedShapeIndex.value
+  if (selectedShapeIndex.value > 0) {
+    selectedShapeIndex.value = selectedShapeIndex.value - 1
+  }
+  visualsStore.deleteGeometryConfig(shapeToDelete)
+}
 
-  methods: {
-    getShapeName(shape: GeometryAttributes) {
-      return `${getColorName(shape.color)} ${shape.type.getName()}`
-    },
+const save = (): void => {
+  loading.value = true
+  setTimeout(() => {
+    loading.value = false
+  }, 250)
+  visualsStore.generateGeometry()
+}
 
-    setShapeType(name: string) {
-      this.selectedShape.type = getGeometryClassFromName(name)
-    },
+onMounted(() => {
+  siteStore.hideBackgroundIfMobile()
 
-    addShape() {
-      this.visualsStore.addRandomGeometryConfig()
-      this.selectedShapeIndex = this.visualsStore.geometryConfig.length - 1
-    },
+  visualsStore.setListener('onRandomise', () => {
+    selectedShapeIndex.value = 0
+  })
+})
 
-    deleteShape() {
-      const shapeToDelete = this.selectedShapeIndex
-      if (this.selectedShapeIndex > 0) {
-        this.selectedShapeIndex = this.selectedShapeIndex - 1
-      }
-      this.visualsStore.deleteGeometryConfig(shapeToDelete)
-    },
-
-    save() {
-      this.loading = true
-      setTimeout(() => {
-        this.loading = false
-      }, 250)
-      this.visualsStore.generateGeometry()
-    },
-  },
+onUnmounted(() => {
+  visualsStore.removeListener('onRandomise')
 })
 </script>
 
