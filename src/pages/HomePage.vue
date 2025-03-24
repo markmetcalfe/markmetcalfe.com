@@ -1,6 +1,9 @@
 <template>
-  <PageCard v-show="!isHidden">
-    <div class="home" :class="{ 'home--card': isCardPreview() }">
+  <PageCard class="home">
+    <div
+      class="home-container"
+      :class="{ 'home-container-card': isCardPreview() }"
+    >
       <section class="home-header">
         <div class="home-header-left">
           <div class="photo-of-me" @click="randomiseProfile">
@@ -8,76 +11,95 @@
             <div class="photo-of-me-bg" />
           </div>
         </div>
-        <div class="home-header-right">
-          <h1 v-if="isVizshun()" class="vizshun">Vizshun</h1>
-          <h1 v-else class="mark">Mark Metcalfe</h1>
-          <GridList
-            class="home-header-about"
-            large
-            :items="
-              isVizshun()
-                ? ['Visual Artist', 'DJ', 'Digital Wizard']
-                : ['Developer', 'Digital Wizard']
-            "
-          />
+        <div
+          class="home-header-right"
+          :class="{
+            'home-header-vizshun': isVizshun(),
+            'home-header-mark': !isVizshun(),
+          }"
+        >
+          <h1>{{ isVizshun() ? 'Vizshun' : 'Mark Metcalfe' }}</h1>
+          <ul>
+            <li v-if="isVizshun()">Visual Artist</li>
+            <li v-if="isVizshun()">DJ</li>
+            <li v-else>Developer</li>
+            <li>Digital Wizard</li>
+          </ul>
         </div>
       </section>
-      <section v-if="!isCardPreview()" class="home-links">
-        <template v-if="isVizshun()">
-          <LinkButton
-            text="Instagram"
-            href="https://instagram.com/_vizshun"
-            external
-            large
-          >
-            <font-awesome-icon icon="fab fa-instagram" />
-          </LinkButton>
-          <LinkButton
-            text="Soundcloud"
-            href="https://soundcloud.com/vizshun"
-            external
-            large
-          >
-            <font-awesome-icon icon="fab fa-soundcloud" />
-          </LinkButton>
-        </template>
-        <template v-else>
-          <LinkButton
-            text="GitHub"
-            href="https://github.com/markmetcalfe"
-            external
-            large
-          >
-            <font-awesome-icon icon="fab fa-github" />
-          </LinkButton>
-          <LinkButton
-            text="Resume"
-            href="/Mark-Metcalfe-Resume.pdf"
-            external
-            large
-          >
-            <font-awesome-icon icon="fa-regular fa-file-lines" />
-          </LinkButton>
-          <LinkButton text="Email" :href="getMailtoLink()" external large>
-            <font-awesome-icon icon="fa-regular fa-envelope" />
-          </LinkButton>
-          <LinkButton
-            text="LinkedIn"
-            href="https://www.linkedin.com/in/mark-metcalfe/"
-            external
-            large
-          >
-            <font-awesome-icon icon="fab fa-linkedin" />
-          </LinkButton>
-        </template>
+    </div>
+
+    <template v-if="!isCardPreview()">
+      <SectionBlock title="Projects">
         <LinkButton text="Visuals" href="/visuals" large>
           <inline-svg src="/favicon.svg" />
         </LinkButton>
         <LinkButton text="Sequencer" href="/sequencer" large>
           <font-awesome-icon icon="fa-solid fa-music" />
         </LinkButton>
-      </section>
-    </div>
+      </SectionBlock>
+
+      <SectionBlock v-if="isVizshun()" title="Links">
+        <LinkButton
+          text="Instagram"
+          href="https://instagram.com/_vizshun"
+          external
+          large
+        >
+          <font-awesome-icon icon="fab fa-instagram" />
+        </LinkButton>
+        <LinkButton
+          text="Soundcloud"
+          href="https://soundcloud.com/vizshun"
+          external
+          large
+        >
+          <font-awesome-icon icon="fab fa-soundcloud" />
+        </LinkButton>
+      </SectionBlock>
+
+      <SectionBlock v-else title="Links">
+        <LinkButton
+          text="GitHub"
+          href="https://github.com/markmetcalfe"
+          external
+          large
+          hide-text
+        >
+          <font-awesome-icon icon="fab fa-github" />
+        </LinkButton>
+        <LinkButton
+          text="LinkedIn"
+          href="https://www.linkedin.com/in/mark-metcalfe/"
+          external
+          large
+          hide-text
+        >
+          <font-awesome-icon icon="fab fa-linkedin" />
+        </LinkButton>
+        <LinkButton
+          text="Email"
+          :href="getMailtoLink()"
+          external
+          large
+          hide-text
+        >
+          <font-awesome-icon icon="fa-regular fa-envelope" />
+        </LinkButton>
+        <LinkButton
+          text="Resume"
+          href="/Mark-Metcalfe-Resume.pdf"
+          external
+          large
+        >
+          <font-awesome-icon icon="fa-regular fa-file-lines" />
+        </LinkButton>
+      </SectionBlock>
+
+      <SectionBlock title="Recently Played">
+        <RecentlyPlayed />
+      </SectionBlock>
+    </template>
   </PageCard>
 </template>
 
@@ -93,8 +115,8 @@ import {
 } from '../util/site'
 import { Renderer } from '../3d'
 import { PartialSphere, Sphere } from '../3d/geometry'
-import GridList from '../components/GridList.vue'
-import { useSiteStore } from '../stores/site'
+import SectionBlock from '../components/SectionBlock.vue'
+import RecentlyPlayed from '../components/RecentlyPlayed.vue'
 
 const rendererZoomLevel = 11
 const geometryDefinition = [
@@ -126,9 +148,6 @@ const geometryDefinition = [
 const geometryRotationSpeed = 20
 
 const renderer = ref<Renderer | undefined>(undefined)
-const isHidden = ref(false)
-
-const siteStore = useSiteStore()
 
 const randomiseProfile = (): void => {
   renderer.value?.randomiseRotations()
@@ -136,8 +155,6 @@ const randomiseProfile = (): void => {
 }
 
 onMounted(() => {
-  siteStore.showBackground()
-
   setTimeout(() => {
     const photoBgElement = document.querySelector(
       '.photo-of-me-bg',
@@ -176,13 +193,24 @@ onUnmounted(() => {
 @use '../variables' as vars;
 
 .home {
-  @include vars.desktop-only {
-    padding: 1rem 0;
+  & .pagecard-inner {
+    padding: 0;
+    margin: 1rem;
   }
 
-  &--card {
+  &-container {
     @include vars.desktop-only {
-      padding: 1.5rem 0;
+      padding: 1rem 0;
+    }
+
+    @include vars.mobile-only {
+      padding-bottom: 0.5rem;
+    }
+
+    &-card {
+      @include vars.desktop-only {
+        padding: 1.5rem 0;
+      }
     }
   }
 
@@ -197,7 +225,7 @@ onUnmounted(() => {
       justify-content: space-between;
     }
 
-    h1 {
+    & h1 {
       display: block;
       position: relative;
       z-index: 100;
@@ -220,21 +248,81 @@ onUnmounted(() => {
         letter-spacing: -5px;
         transform: scale(1.05, 1);
       }
+    }
 
-      &.vizshun {
-        padding-top: 0.5rem;
+    & ul {
+      display: flex;
+      flex-wrap: wrap;
+      list-style: inside;
+      align-items: start;
+      margin: 0;
+      padding: 0;
+
+      @include vars.desktop-only {
+        gap: 1rem;
       }
 
-      &.mark {
+      @include vars.mobile-only {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    & li {
+      padding: 0;
+      margin: 0;
+      font-weight: 300;
+
+      /* Workaround for Safari */
+      list-style-type: none;
+
+      &::marker {
+        display: none;
+      }
+
+      &::before {
+        content: '> ';
+        color: var(--color-highlight);
+      }
+
+      @include vars.desktop-only {
+        font-size: 1.25rem;
+      }
+
+      @include vars.mobile-only {
+        font-size: 1rem;
+      }
+    }
+
+    &-vizshun {
+      @include vars.desktop-only {
+        width: 243px;
+      }
+
+      @include vars.mobile-only {
+        width: 152px;
+      }
+
+      & h1 {
+        padding-top: 0.5rem;
+      }
+    }
+
+    &-mark {
+      & ul {
+        justify-content: space-between;
+      }
+
+      @include vars.desktop-only {
+        width: 280px;
+      }
+
+      @include vars.mobile-only {
+        width: 170px;
+      }
+
+      & h1 {
         word-spacing: 1px;
-
-        @include vars.desktop-only {
-          width: 280px;
-        }
-
-        @include vars.mobile-only {
-          width: 170px;
-        }
       }
     }
 

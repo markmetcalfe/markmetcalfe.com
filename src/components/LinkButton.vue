@@ -132,13 +132,13 @@ const handleClick = (event: MouseEvent) => {
 
     &.linkbutton-large {
       @include vars.desktop-only {
-        font-size: 1.5rem;
-        padding: 0.7rem 0.5rem;
+        font-size: 1.4rem;
+        padding: 0.75rem;
       }
 
       @include vars.mobile-only {
-        font-size: 1.25rem;
-        padding: 0.4rem;
+        font-size: 1rem;
+        padding: 0.5rem;
       }
     }
   }
@@ -149,10 +149,9 @@ const handleClick = (event: MouseEvent) => {
     justify-content: center;
 
     @include vars.desktop-only {
-      @include desktop-icon-size;
+      margin-right: 0.5rem;
 
-      margin-right: 0.75rem;
-      margin-left: 0.25rem;
+      @include desktop-icon-size;
 
       & svg {
         @include desktop-icon-size;
@@ -160,11 +159,10 @@ const handleClick = (event: MouseEvent) => {
     }
 
     @include vars.mobile-only {
-      @include mobile-icon-size;
-
-      margin-right: 0.5rem;
-      margin-left: 0.1rem;
       font-size: 1rem;
+      margin-right: 0.25rem;
+
+      @include mobile-icon-size;
 
       & svg {
         @include mobile-icon-size;
@@ -177,7 +175,6 @@ const handleClick = (event: MouseEvent) => {
       @include desktop-icon-size-large;
 
       margin-right: 0.75rem;
-      margin-left: 0.25rem;
 
       & svg {
         @include desktop-icon-size-large;
@@ -188,7 +185,6 @@ const handleClick = (event: MouseEvent) => {
       @include mobile-icon-size-large;
 
       margin-right: 0.4rem;
-      margin-left: 0.2rem;
       font-size: 1.25rem;
 
       & svg {
@@ -198,23 +194,7 @@ const handleClick = (event: MouseEvent) => {
   }
 
   &-hidetext &-icon {
-    @include vars.desktop-only {
-      margin-right: 0.25rem;
-    }
-
-    @include vars.mobile-only {
-      margin-right: 0.1rem;
-    }
-  }
-
-  &-hidetext.linkbutton-large &-icon {
-    @include vars.desktop-only {
-      margin-right: 0.25rem;
-    }
-
-    @include vars.mobile-only {
-      margin-right: 0.2rem;
-    }
+    margin: 0;
   }
 }
 </style>
