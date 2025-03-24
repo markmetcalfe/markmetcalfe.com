@@ -5,13 +5,8 @@
   >
     <div
       class="pagecard-inner"
-      :style="{
-        backgroundColor: siteStore.backgroundHidden
-          ? 'rgba(0,0,0,0)'
-          : 'var(--color-dark)',
-        border: siteStore.backgroundHidden
-          ? ''
-          : 'var(--color-highlight) 1px solid',
+      :class="{
+        'pagecard-inner-backgroundvisible': backgroundVisible,
       }"
     >
       <header v-if="$slots.title" class="pagecard-header">
@@ -42,19 +37,6 @@
             "
           />
         </button>
-
-        <button
-          class="button-icon"
-          title="See through"
-          @click="siteStore.toggleBackground"
-        >
-          <font-awesome-icon
-            :icon="
-              (siteStore.backgroundHidden ? 'fa-solid' : 'fa-regular') +
-              ' fa-eye'
-            "
-          />
-        </button>
       </div>
 
       <main class="pagecard-main">
@@ -65,22 +47,27 @@
 </template>
 
 <script setup lang="ts">
-import { useSiteStore } from '../stores/site'
+import { computed } from 'vue'
 import { isCardPreview } from '../util/site'
 import { useSequencerStore } from '../stores/sequencer'
 
 interface Props {
   backButtonPage?: string | null
   longform?: boolean
+  backgroundHidden?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   backButtonPage: null,
   longform: false,
+  backgroundHidden: true,
 })
 
-const siteStore = useSiteStore()
 const sequencerStore = useSequencerStore()
+
+const backgroundVisible = computed(
+  () => !props.backgroundHidden || props.longform,
+)
 </script>
 
 <style lang="scss">
@@ -101,17 +88,22 @@ const sequencerStore = useSequencerStore()
     position: relative;
     text-align: center;
     z-index: 10;
-    background-color: var(--color-dark);
     color: var(--color-light);
     visibility: visible;
+    margin: 1rem;
 
-    @include vars.desktop-only {
-      padding: 2rem 5rem;
-    }
+    &-backgroundvisible {
+      background-color: var(--color-dark);
+      border: var(--color-highlight) 1px solid;
 
-    @include vars.mobile-only {
-      padding: 1rem;
-      margin: 1rem;
+      @include vars.desktop-only {
+        margin: 0;
+        padding: 2rem 5rem;
+      }
+
+      @include vars.mobile-only {
+        padding: 1rem;
+      }
     }
   }
 
@@ -128,6 +120,7 @@ const sequencerStore = useSequencerStore()
   &-longform {
     & .pagecard-inner {
       @include vars.desktop-only {
+        max-width: 1000px;
         margin: 2rem;
       }
 
@@ -144,16 +137,25 @@ const sequencerStore = useSequencerStore()
 
   &-back {
     position: absolute;
+    left: 0;
     display: inline-block;
     color: var(--color-highlight);
 
     @include vars.desktop-only {
       font-size: 2.25rem;
-      left: 1.5rem;
     }
 
     @include vars.mobile-only {
       font-size: 1.75rem;
+    }
+  }
+
+  &-inner-backgroundvisible &-back {
+    @include vars.desktop-only {
+      left: 5rem;
+    }
+
+    @include vars.mobile-only {
       left: 1rem;
     }
   }

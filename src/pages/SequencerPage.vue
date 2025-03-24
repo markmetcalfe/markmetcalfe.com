@@ -294,11 +294,11 @@ onUnmounted(() => {
     overflow-x: auto;
 
     @include vars.desktop-only {
-      max-width: 75vw;
+      max-width: calc(100vw - 285px);
     }
 
     @include vars.mobile-only {
-      max-width: calc(100vw - 225px);
+      max-width: calc(100vw - 200px);
     }
   }
 
@@ -330,12 +330,12 @@ onUnmounted(() => {
       background-color: var(--color-highlight);
     }
 
-    &-on.sequencerpage-beat-muted button {
-      background-color: gray;
+    &-off button {
+      background-color: var(--color-dark);
     }
 
-    &-off.sequencerpage-beat-playing button {
-      background-color: var(--color-dark);
+    &-on.sequencerpage-beat-muted button {
+      background-color: var(--color-disabled);
     }
 
     &-playing {

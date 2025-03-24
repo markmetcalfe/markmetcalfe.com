@@ -1,5 +1,9 @@
 <template>
-  <PageCard class="home">
+  <PageCard
+    class="home"
+    :class="{ 'home-cardpreview': isCardPreview() }"
+    :background-hidden="!isCardPreview()"
+  >
     <div
       class="home-container"
       :class="{ 'home-container-card': isCardPreview() }"
@@ -196,6 +200,12 @@ onUnmounted(() => {
   & .pagecard-inner {
     padding: 0;
     margin: 1rem;
+  }
+
+  &-cardpreview {
+    & .pagecard-inner {
+      padding: 2rem 4rem;
+    }
   }
 
   &-container {

@@ -219,6 +219,7 @@ onUnmounted(() => {
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem;
+    background: var(--color-dark);
     border: 1px solid var(--color-light);
     cursor: pointer;
     user-select: none;

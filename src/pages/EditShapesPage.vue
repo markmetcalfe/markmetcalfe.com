@@ -71,9 +71,7 @@ import LinkButton from '../components/LinkButton.vue'
 import ToggleSwitch from '../components/ToggleSwitch.vue'
 import DropdownSelect from '../components/DropdownSelect.vue'
 import TextField from '../components/TextField.vue'
-import { useSiteStore } from '../stores/site'
 
-const siteStore = useSiteStore()
 const visualsStore = useVisualsStore()
 
 const loading = ref(false)
@@ -127,8 +125,6 @@ const save = (): void => {
 }
 
 onMounted(() => {
-  siteStore.hideBackgroundIfMobile()
-
   visualsStore.setListener('onRandomise', () => {
     selectedShapeIndex.value = 0
   })

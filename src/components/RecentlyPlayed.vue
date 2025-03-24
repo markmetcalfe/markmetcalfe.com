@@ -85,6 +85,7 @@ $height-mobile: 3.5rem;
   align-items: center;
   text-align: left;
   color: var(--color-light);
+  background-color: var(--color-dark);
   border: var(--color-light) 1px solid;
 
   @include vars.desktop-only {
@@ -140,7 +141,7 @@ $height-mobile: 3.5rem;
       }
 
       & .svg-light {
-        fill: var(--color-light);
+        fill: var(--color-disabled);
       }
     }
   }
@@ -181,12 +182,13 @@ $height-mobile: 3.5rem;
 
   &-loading {
     cursor: inherit;
-    opacity: 0.5;
-  }
+    color: var(--color-disabled);
+    border: var(--color-disabled) 1px solid;
 
-  &-loading h3 {
-    font-weight: 100;
-    font-style: italic;
+    & h3 {
+      font-weight: 300;
+      font-style: italic;
+    }
   }
 
   &-time {
