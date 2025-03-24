@@ -88,7 +88,9 @@ button {
   padding: 0;
   margin: 0;
   text-decoration: none;
-  transition: all 250ms;
+  transition:
+    color 250ms,
+    border 250ms;
 }
 
 a:hover,

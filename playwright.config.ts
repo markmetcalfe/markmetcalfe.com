@@ -31,6 +31,11 @@ export default defineConfig<ChromaticConfig>({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
 
+    /* Set locale to Wellington, NZ */
+    geolocation: { longitude: 174.77623, latitude: -41.286461 },
+    locale: 'en-NZ',
+    timezoneId: 'Pacific/Auckland',
+
     /* Put playwright var in local storage so we can hide the background video */
     storageState: {
       cookies: [],
@@ -70,7 +75,7 @@ export default defineConfig<ChromaticConfig>({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'pnpm run build && pnpm run preview --port 3001',
+    command: 'pnpm run build && NO_PROXY=1 pnpm run preview --port 3001',
     port: 3001,
     reuseExistingServer: !process.env.CI,
   },
