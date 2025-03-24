@@ -6,6 +6,11 @@ test.describe('HomePage', () => {
     await expect(page.locator('text="Mark Metcalfe"')).toBeVisible()
     await expect(page.locator('text="Developer"')).toBeVisible()
     await expect(page.locator('text="Digital Wizard"')).toBeVisible()
+
+    await expect(page.locator('text="Projects"')).toBeVisible()
+    await expect(page.locator('text="Links"')).toBeVisible()
+    await expect(page.locator('text="Recently Played"')).toBeVisible()
+
     await takeSnapshot(page, 'Home Page - Mark Metcalfe', testInfo)
   })
 
@@ -15,6 +20,11 @@ test.describe('HomePage', () => {
     await expect(page.locator('text="Visual Artist"')).toBeVisible()
     await expect(page.locator('text="DJ"')).toBeVisible()
     await expect(page.locator('text="Digital Wizard"')).toBeVisible()
+
+    await expect(page.locator('text="Projects"')).toBeVisible()
+    await expect(page.locator('text="Links"')).toBeVisible()
+    await expect(page.locator('text="Recently Played"')).toBeVisible()
+
     await takeSnapshot(page, 'Home Page - Vizshun', testInfo)
   })
 
@@ -38,7 +48,7 @@ test.describe('HomePage', () => {
   test('email link has valid mailto value', async ({ page }) => {
     await page.goto('/')
 
-    const link = page.locator('a:has-text("Email")')
+    const link = page.getByTitle('Email')
 
     await expect(link).toHaveAttribute('href', 'mailto:mark@markmetcalfe.com')
   })
@@ -46,7 +56,7 @@ test.describe('HomePage', () => {
   test('can navigate to github', async ({ page }) => {
     await page.goto('/')
 
-    const link = page.locator('a:has-text("GitHub")')
+    const link = page.getByTitle('GitHub')
 
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
@@ -61,7 +71,7 @@ test.describe('HomePage', () => {
   test('can navigate to linkedin', async ({ page }) => {
     await page.goto('/')
 
-    const link = page.locator('a:has-text("LinkedIn")')
+    const link = page.getByTitle('LinkedIn')
 
     const [page1] = await Promise.all([
       page.waitForEvent('popup'),
