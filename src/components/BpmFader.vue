@@ -38,6 +38,7 @@ defineProps<Props>()
 .bpmfader {
   &-tap {
     color: var(--color-light);
+    background-color: var(--color-dark);
     border: var(--color-light) 1px solid;
     padding: 0.25rem 0.4rem;
     margin-right: 0.5rem;

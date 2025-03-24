@@ -40,6 +40,7 @@ onMounted(() => {
   --color-light: #fff;
   --color-highlight: #0f0;
   --color-error: #f00;
+  --color-disabled: #aaa;
 }
 
 body {

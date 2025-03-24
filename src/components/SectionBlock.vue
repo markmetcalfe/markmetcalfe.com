@@ -26,10 +26,6 @@ withDefaults(defineProps<Props>(), {
 .sectionblock {
   margin-top: 1rem;
 
-  & a {
-    background-color: var(--color-dark);
-  }
-
   &-heading {
     display: flex;
     text-align: left;

@@ -19,8 +19,8 @@
       @keydown.enter.prevent="toggle"
     >
       <span :id="labelId" class="sr-only">{{ label }}</span>
-      <div class="toggleswitch__track">
-        <div class="toggleswitch__thumb"></div>
+      <div class="toggleswitch-track">
+        <div class="toggleswitch-thumb"></div>
       </div>
     </div>
   </div>
@@ -74,16 +74,16 @@ const toggle = () => {
     white-space: nowrap;
   }
 
-  &__track {
+  &-track {
     position: relative;
     width: 3rem;
     height: 1.5rem;
-    background: none;
+    background-color: var(--color-dark);
     border: var(--color-light) 1px solid;
     transition: background-color 0.3s;
   }
 
-  &__thumb {
+  &-thumb {
     position: absolute;
     top: 0.25rem;
     left: 0.25rem;
@@ -93,11 +93,11 @@ const toggle = () => {
     transition: transform 0.3s;
   }
 
-  &--active &__track {
+  &--active &-track {
     background-color: var(--color-highlight);
   }
 
-  &--active &__thumb {
+  &--active &-thumb {
     transform: translateX(1.5rem);
   }
 }

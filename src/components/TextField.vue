@@ -84,7 +84,7 @@ const onInput = (event: Event) => {
     width: 100%;
     padding: 0.5rem;
     border: 1px solid var(--color-light);
-    background: transparent;
+    background: var(--color-dark);
     color: inherit;
     border-radius: 0;
     font-size: inherit;

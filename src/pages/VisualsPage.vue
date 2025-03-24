@@ -131,9 +131,7 @@ import ToggleSwitch from '../components/ToggleSwitch.vue'
 import FaderInput from '../components/FaderInput.vue'
 import BpmFader from '../components/BpmFader.vue'
 import DropdownSelect from '../components/DropdownSelect.vue'
-import { useSiteStore } from '../stores/site'
 
-const siteStore = useSiteStore()
 const visualsStore = useVisualsStore()
 
 const isFullscreen = ref(false)
@@ -177,7 +175,6 @@ const fullscreenEvent = (): void => {
 }
 
 onMounted(() => {
-  siteStore.hideBackgroundIfMobile()
   document.addEventListener('fullscreenchange', fullscreenEvent)
 })
 

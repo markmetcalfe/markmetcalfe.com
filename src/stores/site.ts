@@ -1,4 +1,3 @@
-import isMobile from 'is-mobile'
 import { defineStore } from 'pinia'
 
 interface TapListener {
@@ -8,7 +7,6 @@ interface TapListener {
 }
 
 export interface SiteStore {
-  backgroundHidden: boolean
   beatMatch: {
     beatsPerBar: number
     bpm: number
@@ -19,7 +17,6 @@ export interface SiteStore {
 }
 
 const initialState: SiteStore = {
-  backgroundHidden: false,
   beatMatch: {
     beatsPerBar: 4,
     bpm: 108,
@@ -32,21 +29,6 @@ const initialState: SiteStore = {
 export const useSiteStore = defineStore('site', {
   state: () => initialState,
   actions: {
-    showBackground() {
-      this.backgroundHidden = false
-    },
-    hideBackground() {
-      this.backgroundHidden = true
-    },
-    hideBackgroundIfMobile() {
-      if (isMobile()) {
-        this.hideBackground()
-      }
-    },
-    toggleBackground() {
-      this.backgroundHidden = !this.backgroundHidden
-    },
-
     tapBpm() {
       this.beatMatch.tapListeners.forEach(listener => listener.onTap?.())
 

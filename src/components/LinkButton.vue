@@ -108,10 +108,10 @@ const handleClick = (event: MouseEvent) => {
     align-items: center;
     transition:
       border 0.4s,
-      color 0.4s,
-      background-color 0.4s;
+      color 0.4s;
     padding: 0.5rem;
     color: var(--color-light);
+    background-color: var(--color-dark);
     border: var(--color-light) 1px solid;
     text-decoration: none;
 

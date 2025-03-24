@@ -14,7 +14,6 @@ import {
   faPlay,
   faPlus,
   faDice,
-  faEye as faEyeSolid,
   faMusic,
   faTrash,
   faVolumeMute,
@@ -25,7 +24,6 @@ import {
   faEnvelope,
   faFileLines,
   faFloppyDisk,
-  faEye,
 } from '@fortawesome/free-regular-svg-icons'
 import { App, Plugin } from 'vue'
 
@@ -35,8 +33,6 @@ const icons = [
   faCopy,
   faDice,
   faEnvelope,
-  faEye,
-  faEyeSolid,
   faFileLines,
   faFloppyDisk,
   faGithub,
