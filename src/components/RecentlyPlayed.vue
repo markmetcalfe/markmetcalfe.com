@@ -40,26 +40,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed } from 'vue'
+import { useGetLastPlayedTrack } from '../queries/recently-played'
 
-interface Track {
-  name: string
-  artist: string
-  album: string
-  image: string
-  timestamp: string
-  url: string
-}
-
-const track = ref<Track | null>(null)
-
-const fetchLastPlayedTrack = async () => {
-  const response = await fetch('/api/get-last-played')
-  if (!response.ok) {
-    throw new Error(`Failed to fetch data: ${response.status}`)
-  }
-  track.value = await response.json()
-}
+const { data: track } = useGetLastPlayedTrack()
 
 const formattedTime = computed(() => {
   if (!track.value) return ''
@@ -67,10 +51,6 @@ const formattedTime = computed(() => {
     dateStyle: 'short',
     timeStyle: 'short',
   }).format(new Date(track.value.timestamp))
-})
-
-onMounted(() => {
-  fetchLastPlayedTrack()
 })
 </script>
 

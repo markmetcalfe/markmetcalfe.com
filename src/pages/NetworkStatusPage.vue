@@ -1,55 +1,82 @@
 <template>
   <PageCard back-button-page="/">
     <template #title>Connection Status</template>
-    <div>
-      <p v-if="isConnected === true" class="networkstatus success">
-        Connected To Local Network
+    <div class="networkstatus">
+      <p v-if="isLoading" class="networkstatus-status networkstatus-loading">
+        Loading...
       </p>
-      <p
-        v-else-if="isConnected === false"
-        class="networkstatus error no-padding"
-      >
+
+      <template v-else-if="networkStatus?.isConnected === true">
+        <p class="networkstatus-status networkstatus-success">
+          Connected To Local Network
+        </p>
+        <p>Home IP: {{ networkStatus.homeIp }}</p>
+        <p>Your IP: {{ networkStatus.yourIp }}</p>
+      </template>
+
+      <p v-else class="networkstatus-status networkstatus-error">
         Not Connected To Local Network
       </p>
-      <p v-if="homeIp">Home IP: {{ homeIp }}</p>
-      <p v-if="yourIp" class="no-padding">Your IP: {{ yourIp }}</p>
+
+      <LinkButton v-if="!isLoading" text="Refresh" hide-text @click="refetch()">
+        <font-awesome-icon icon="fa-solid fa-rotate" />
+      </LinkButton>
     </div>
   </PageCard>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import LinkButton from '../components/LinkButton.vue'
 import PageCard from '../components/PageCard.vue'
+import { useGetNetworkStatus } from '../queries/network-status'
 
-const isConnected = ref<boolean | undefined>(undefined)
-const homeIp = ref<string | undefined>(undefined)
-const yourIp = ref<string | undefined>(undefined)
-
-onMounted(async () => {
-  try {
-    const response = await fetch('/api/get-network-status')
-    const responseBody = await response.json()
-    isConnected.value = responseBody.isConnected
-    homeIp.value = responseBody.homeIp
-    yourIp.value = responseBody.yourIp
-  } catch (error) {
-    isConnected.value = false
-  }
-})
+const { data: networkStatus, isLoading, refetch } = useGetNetworkStatus()
 </script>
 
 <style lang="scss">
 @use '../variables' as vars;
 
 .networkstatus {
-  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  & p {
+    margin: 0;
+    padding: 0;
+  }
 
   @include vars.desktop-only {
-    font-size: 1.75rem;
+    min-width: 425px;
   }
 
   @include vars.mobile-only {
-    font-size: 1.25rem;
+    min-width: 312px;
+  }
+
+  &-status {
+    font-weight: 600;
+
+    @include vars.desktop-only {
+      font-size: 1.75rem;
+    }
+
+    @include vars.mobile-only {
+      font-size: 1.25rem;
+    }
+  }
+
+  &-success {
+    color: var(--color-highlight);
+  }
+
+  &-error {
+    color: var(--color-error);
+  }
+
+  &-loading {
+    color: var(--color-disabled);
   }
 }
 </style>

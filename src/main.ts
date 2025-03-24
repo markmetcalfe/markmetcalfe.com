@@ -12,6 +12,7 @@ import '@fortawesome/fontawesome-free/css/all.css'
 // @ts-expect-error Is a typescript module
 import InlineSvg from 'vue-inline-svg'
 import { isVizshun } from './util/site'
+import { VueQueryPlugin } from '@tanstack/vue-query'
 
 const pinia = createPinia()
 
@@ -40,9 +41,26 @@ router.afterEach(
   },
 )
 
-createApp(App)
-  .use(pinia)
-  .use(addIcons)
-  .use(router)
-  .component('inline-svg', InlineSvg)
-  .mount('#app')
+const app = createApp(App)
+
+app.use(pinia)
+
+app.use(addIcons)
+
+app.use(router)
+
+app.use(VueQueryPlugin, {
+  queryClientConfig: {
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 30, // 30 minutes
+        refetchOnWindowFocus: false,
+        retry: 1,
+      },
+    },
+  },
+})
+
+app.component('InlineSvg', InlineSvg)
+
+app.mount('#app')
