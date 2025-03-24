@@ -106,16 +106,12 @@
         />
       </div>
 
-      <GridList
-        v-if="!isMobile()"
-        class="visualspage-footnote"
-        :items="[
-          'Scroll to Zoom In & Out',
-          'Click to Randomise Shapes',
-          'Space to Beatmatch BPM',
-          'Shift to Change Colours',
-        ]"
-      />
+      <ul class="visualspage-footnote">
+        <li>Scroll to Zoom In & Out</li>
+        <li>Click to Randomise Shapes</li>
+        <li>Space to Beatmatch BPM</li>
+        <li>Shift to Change Colours</li>
+      </ul>
     </div>
   </PageCard>
 </template>
@@ -125,7 +121,6 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import PageCard from '../components/PageCard.vue'
 import { isMobile } from 'is-mobile'
 import { AutoZoomMode, useVisualsStore } from '../stores/visuals'
-import GridList from '../components/GridList.vue'
 import LinkButton from '../components/LinkButton.vue'
 import ToggleSwitch from '../components/ToggleSwitch.vue'
 import FaderInput from '../components/FaderInput.vue'
@@ -207,7 +202,36 @@ onUnmounted(() => {
   }
 
   &-footnote {
-    padding-top: 1.5rem;
+    list-style: inside;
+    display: grid;
+    justify-items: start;
+    margin: 0;
+    padding: 0;
+    padding-top: 1rem;
+    grid-template-columns: 1fr 1fr;
+
+    @include vars.mobile-only {
+      display: none;
+    }
+
+    & li {
+      padding: 0;
+      margin: 0;
+      padding-top: 0.5rem;
+      font-size: 1rem;
+
+      /* Workaround for Safari */
+      list-style-type: none;
+
+      &::marker {
+        display: none;
+      }
+
+      &::before {
+        content: '> ';
+        color: var(--color-highlight);
+      }
+    }
   }
 }
 </style>
