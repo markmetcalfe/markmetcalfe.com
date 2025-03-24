@@ -35,4 +35,19 @@ export default defineConfig({
       failOnWarning: false,
     }),
   ],
+  ...(process.env.NO_PROXY
+    ? {}
+    : {
+        server: {
+          proxy: {
+            '/api': {
+              target:
+                process.env.VITE_SITE_NAME === 'vizshun'
+                  ? 'https://vizshun.art'
+                  : 'https://markmetcalfe.com',
+              changeOrigin: true,
+            },
+          },
+        },
+      }),
 })

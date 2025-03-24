@@ -136,4 +136,59 @@ test.describe('HomePage', () => {
 
     await expect(page.locator('body')).toContainText('Step Sequencer')
   })
+
+  test('can see recently played track', async ({ page }, testInfo) => {
+    await page.route('/api/get-last-played', async route => {
+      await route.fulfill({
+        status: 200,
+        body: JSON.stringify({
+          name: 'Hard Discount Primitivo',
+          artist: 'Abdul Raeva',
+          album: 'Passion de la Passion',
+          image:
+            'https://i.scdn.co/image/ab67616d0000b273dc2cb9760cb0294dfe4309fc',
+          timestamp: '2025-03-24T08:41:28.751Z',
+          url: 'https://open.spotify.com/track/1GFb5Tb1edvKidRXkEQ487',
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    })
+
+    await page.goto('/')
+    await page.waitForTimeout(1000)
+
+    await takeSnapshot(page, 'Home Page - Recently Played', testInfo)
+
+    const link = page.getByTitle('Play Track')
+
+    await expect(link).toBeVisible()
+    await expect(link).toHaveAttribute(
+      'href',
+      'https://open.spotify.com/track/1GFb5Tb1edvKidRXkEQ487',
+    )
+
+    const albumArt = link.getByLabel('Passion de la Passion album art')
+    await expect(albumArt).toBeVisible()
+    await expect(albumArt).toHaveAttribute(
+      'src',
+      'https://i.scdn.co/image/ab67616d0000b273dc2cb9760cb0294dfe4309fc',
+    )
+
+    const trackInfo = link.getByTestId('recentlyplayed-info')
+    await expect(trackInfo).toBeVisible()
+    await expect(trackInfo).toContainText('Hard Discount Primitivo')
+    await expect(trackInfo).toContainText('Abdul Raeva')
+    await expect(trackInfo).toContainText('Played on 24/03/2025, 9:41 pm')
+
+    const [page1] = await Promise.all([
+      page.waitForEvent('popup'),
+      link.click(),
+    ])
+
+    await page.waitForTimeout(1000)
+    expect(page1.url()).toContain('spotify.com')
+    await expect(page1).toHaveTitle(/Spotify/)
+  })
 })
