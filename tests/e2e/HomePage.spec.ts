@@ -148,7 +148,7 @@ test.describe('HomePage', () => {
   })
 
   test('can see recently played track', async ({ page }, testInfo) => {
-    await page.route('/api/get-last-played', async route => {
+    await page.route('/api/get-last-played', async (route) => {
       await route.fulfill({
         status: 200,
         body: JSON.stringify({
