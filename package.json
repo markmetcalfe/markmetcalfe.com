@@ -31,7 +31,7 @@
     "hex-color-to-color-name": "^1.0.2",
     "is-mobile": "^4.0.0",
     "pinia": "^2.1.7",
-    "three": "^0.174.0",
+    "three": "^0.175.0",
     "tone": "^15.0.4",
     "vue": "^3.4.21",
     "vue-inline-svg": "^4.0.0"
@@ -44,7 +44,7 @@
     "@types/color-convert": "^2.0.3",
     "@types/node": "^22.0.0",
     "@types/spotify-api": "^0.0.25",
-    "@types/three": "^0.174.0",
+    "@types/three": "^0.175.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-vue": "^5.0.4",
