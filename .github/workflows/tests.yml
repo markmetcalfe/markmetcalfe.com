@@ -16,8 +16,8 @@ jobs:
         name: Install pnpm
         with:
           run_install: true
-      - name: Lint and check code quality
-        run: pnpm run check
+      - name: Lint the code
+        run: pnpm run lint
       - name: Build the project
         run: pnpm run build
 
