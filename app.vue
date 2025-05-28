@@ -2,16 +2,14 @@
   <div>
     <NuxtPage />
     <DynamicBackground />
-    <div id="seo-links">
-      <a
-        id="ga-insta-link"
-        href="https://www.instagram.com/_vizshun/"
-      >@vizshun</a>
-      <a
-        id="ga-insta-link"
-        href="https://www.instagram.com/_vizshun/"
-      >@_vizshun</a>
-    </div>
+    <a
+      class="seo-link"
+      href="https://www.instagram.com/_vizshun/"
+    >@vizshun</a>
+    <a
+      class="seo-link"
+      href="https://www.instagram.com/_vizshun/"
+    >@_vizshun</a>
   </div>
 </template>
 
@@ -153,14 +151,13 @@ button:focus:not(:disabled) {
   border-width: 0;
 }
 
-.seo-links {
-  display: block;
+.seo-link {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
-  font-size: 10px;
-  color: #000 !important;
-  opacity: 0 !important
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 /* Transition Animations */
