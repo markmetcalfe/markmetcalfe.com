@@ -15,10 +15,10 @@
 
 <script setup lang="ts">
 useSeoMeta({
-  title: 'Mark Metcalfe (@_vizshun)',
-  ogTitle: 'Mark Metcalfe (@_vizshun)',
-  description: 'Mark Metcalfe / @_vizshun: Developer & Visual Artist',
-  ogDescription: 'Mark Metcalfe / @_vizshun: Developer & Visual Artist',
+  title: 'Mark Metcalfe | Vizshun',
+  ogTitle: 'Mark Metcalfe | Vizshun',
+  description: 'Mark Metcalfe / Vizshun: Developer & Visual Artist',
+  ogDescription: 'Mark Metcalfe / Vizshun: Developer & Visual Artist',
   ogImage: 'https://markmetcalfe.com/social-card.jpg?v=4',
 })
 

@@ -15,13 +15,51 @@
         </div>
         <div class="home-header-right">
           <h1>Mark Metcalfe</h1>
-          <ul>
-            <li>Developer</li>
-            <li>Visual Artist</li>
-          </ul>
+          <div class="home-header-links">
+            <a
+              href="https://github.com/markmetcalfe"
+              title="GitHub"
+              target="_blank"
+              rel="noopener noreferer"
+            >
+              <Icon name="fa6-brands:github" />
+            </a>
+            <a
+              href="https://instagram.com/_vizshun"
+              title="Instagram"
+              target="_blank"
+              rel="noopener noreferer"
+            >
+              <Icon name="fa6-brands:instagram" />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/mark-metcalfe/"
+              title="LinkedIn"
+              target="_blank"
+              rel="noopener noreferer"
+            >
+              <Icon name="fa6-brands:linkedin" />
+            </a>
+            <a
+              :href="mailtoLink"
+              title="Email"
+              target="_blank"
+              rel="noopener noreferer"
+            >
+              <Icon name="fa6-regular:envelope" />
+            </a>
+          </div>
         </div>
       </section>
     </div>
+
+    <SectionBlock title="About me">
+      <div class="home-about-me">
+        <p>
+          I'm a software developer and visual artist who likes making cool experiences with code
+        </p>
+      </div>
+    </SectionBlock>
 
     <SectionBlock title="Projects">
       <LinkButton
@@ -37,53 +75,6 @@
         large
       >
         <Icon name="fa6-solid:music" />
-      </LinkButton>
-    </SectionBlock>
-
-    <SectionBlock title="Links">
-      <LinkButton
-        text="GitHub"
-        href="https://github.com/markmetcalfe"
-        external
-        large
-        hide-text
-      >
-        <Icon name="fa6-brands:github" />
-      </LinkButton>
-      <LinkButton
-        text="Instagram"
-        href="https://instagram.com/_vizshun"
-        external
-        large
-        hide-text
-      >
-        <Icon name="fa6-brands:instagram" />
-      </LinkButton>
-      <LinkButton
-        text="LinkedIn"
-        href="https://www.linkedin.com/in/mark-metcalfe/"
-        external
-        large
-        hide-text
-      >
-        <Icon name="fa6-brands:linkedin" />
-      </LinkButton>
-      <LinkButton
-        text="Email"
-        :href="mailtoLink"
-        external
-        large
-        hide-text
-      >
-        <Icon name="fa6-regular:envelope" />
-      </LinkButton>
-      <LinkButton
-        text="Resume"
-        href="/Mark-Metcalfe-Resume.pdf"
-        external
-        large
-      >
-        <Icon name="fa6-regular:file-lines" />
       </LinkButton>
     </SectionBlock>
 
@@ -187,6 +178,28 @@ onUnmounted(() => {
     }
   }
 
+  &-about-me {
+    display: flex;
+    flex-wrap: wrap;
+    text-align: left;
+
+    @include vars.desktop-only {
+      max-width: 450px;
+      font-size: 1.1rem;
+      gap: 0.75rem;
+    }
+
+    @include vars.mobile-only {
+      max-width: 325px;
+      font-size: 0.9rem;
+      gap: 0.5rem;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
   &-header {
     display: flex;
     gap: 1rem;
@@ -195,7 +208,15 @@ onUnmounted(() => {
     &-right {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+
+      @include vars.desktop-only {
+        justify-content: space-between;
+      }
+
+      @include vars.mobile-only {
+        justify-content: space-around;
+        gap: 0.5rem;
+      }
     }
 
     & h1 {
@@ -212,58 +233,14 @@ onUnmounted(() => {
         font-size: 5rem;
         line-height: 3.3rem;
         letter-spacing: -8px;
-        transform: scale(1.1, 1);
+        transform: scale(1, 0.9);
       }
 
       @include vars.mobile-only {
         font-size: 3.25rem;
         line-height: 2.15rem;
         letter-spacing: -5px;
-        transform: scale(1.05, 1);
-      }
-    }
-
-    & ul {
-      display: flex;
-      flex-wrap: wrap;
-      list-style: inside;
-      align-items: start;
-      margin: 0;
-      padding: 0;
-
-      @include vars.desktop-only {
-        gap: 1rem;
-      }
-
-      @include vars.mobile-only {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-    }
-
-    & li {
-      padding: 0;
-      margin: 0;
-      font-weight: 300;
-
-      /* Workaround for Safari */
-      list-style-type: none;
-
-      &::marker {
-        display: none;
-      }
-
-      &::before {
-        content: "> ";
-        color: var(--color-highlight);
-      }
-
-      @include vars.desktop-only {
-        font-size: 1.25rem;
-      }
-
-      @include vars.mobile-only {
-        font-size: 1rem;
+        transform: scale(1, 0.95);
       }
     }
 
@@ -277,7 +254,7 @@ onUnmounted(() => {
       }
 
       @include vars.mobile-only {
-        width: 170px;
+        width: 180px;
       }
 
       & h1 {
@@ -293,13 +270,11 @@ onUnmounted(() => {
       @include vars.desktop-only {
         height: 10rem;
         width: 10rem;
-        font-size: 5.25rem;
       }
 
       @include vars.mobile-only {
-        height: 8.25rem;
-        width: 8.25rem;
-        font-size: 3.75rem;
+        height: 8rem;
+        width: 8rem;
       }
 
       &-bg {
@@ -329,31 +304,25 @@ onUnmounted(() => {
       }
     }
 
-    &-about {
-      & li {
+    &-links {
+      display: flex;
+      gap: 1rem;
+
+      a {
+        color: var(--color-light);
+
         @include vars.desktop-only {
-          padding-top: 0.75rem;
+          font-size: 2rem;
         }
 
         @include vars.mobile-only {
-          padding-top: 0.4rem;
+          font-size: 1.75rem;
+        }
+
+        &:hover {
+          color: var(--color-highlight);
         }
       }
-    }
-  }
-
-  &-links {
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-
-    @include vars.desktop-only {
-      padding-top: 2.5rem;
-    }
-
-    @include vars.mobile-only {
-      padding-top: 1.5rem;
     }
   }
 }
