@@ -27,7 +27,7 @@ export default defineNuxtConfig({
     siteDomain: 'markmetcalfe.com',
     mailtoLink: 'mailto:mark@markmetcalfe.com',
   },
-  compatibilityDate: '2024-11-01',
+  compatibilityDate: '2025-05-28',
   eslint: {
     config: {
       stylistic: {
