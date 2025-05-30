@@ -55,7 +55,7 @@
         text="Add"
         @click="addShape"
       >
-        <Icon name="fa6-solid:plus" />
+        <Icon name="bx:plus" />
       </LinkButton>
       <LinkButton
         text="Delete"
@@ -65,16 +65,13 @@
         }"
         @click="deleteShape"
       >
-        <Icon
-          name="fa6-solid:trash"
-          style="max-height: 21px"
-        />
+        <Icon name="bx:trash-alt" />
       </LinkButton>
       <LinkButton
         text="Save"
         @click="save"
       >
-        <Icon name="fa6-regular:floppy-disk" />
+        <Icon name="bx:save" />
       </LinkButton>
     </div>
   </PageCard>

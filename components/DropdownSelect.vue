@@ -33,7 +33,7 @@
         @click="toggleDropdown"
       >
         <span>{{ selectedOption ? selectedOption.label : placeholder }}</span>
-        <span class="dropdownselect-arrow"><Icon name="fa6-solid:caret-down" /></span>
+        <span class="dropdownselect-arrow"><Icon name="bx:caret-down" /></span>
       </div>
 
       <ul

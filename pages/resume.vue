@@ -13,7 +13,7 @@
         href="/Mark-Metcalfe-Resume.pdf"
         large
       >
-        <Icon name="fa6-solid:download" />
+        <Icon name="bx:download" />
       </LinkButton>
     </template>
     <ResumeSection title="Experience">

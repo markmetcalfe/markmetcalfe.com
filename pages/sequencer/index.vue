@@ -10,29 +10,21 @@
           :title="sequencerStore.isPlaying ? 'Pause' : 'Play'"
           @click="sequencerStore.togglePlay"
         >
-          <Icon
-            :name="'fa6-solid:' + (sequencerStore.isPlaying ? 'pause' : 'play')"
-          />
+          <Icon :name="'fad:' + (sequencerStore.isPlaying ? 'pause' : 'play')" />
         </LinkButton>
 
         <LinkButton
           href="/sequencer/synths"
           title="Edit Synths"
         >
-          <Icon
-            name="fa6-solid:pen"
-            style="max-height: 21px"
-          />
+          <Icon name="bx:pencil" />
         </LinkButton>
 
         <LinkButton
           title="Clear Grid"
           @click="sequencerStore.resetGrid"
         >
-          <Icon
-            name="fa6-solid:trash"
-            style="max-height: 21px"
-          />
+          <Icon name="bx:trash-alt" />
         </LinkButton>
       </div>
 
@@ -67,18 +59,14 @@
                 :disabled="sequencerStore.gridRowCount < 2"
                 @click="sequencerStore.deleteGridRow(rowIndex)"
               >
-                <Icon name="fa6-solid:trash" />
+                <Icon name="bx:trash-alt" />
               </LinkButton>
 
               <LinkButton
                 :title="row.muted ? 'Unmute' : 'Mute'"
                 @click="row.muted = !row.muted"
               >
-                <Icon
-                  :name="
-                    'fa6-solid:' + (row.muted ? 'volume-xmark' : 'volume-high')
-                  "
-                />
+                <Icon :name="'bx:volume-' + (row.muted ? 'mute' : 'full')" />
               </LinkButton>
             </div>
           </div>
@@ -96,7 +84,7 @@
                 title="Add Row"
                 @click="sequencerStore.addGridRow(synthToAddId)"
               >
-                <Icon name="fa6-solid:plus" />
+                <Icon name="bx:plus" />
               </LinkButton>
             </div>
           </div>
@@ -134,7 +122,7 @@
             title="Add Bar"
             @click="sequencerStore.addBar()"
           >
-            <Icon name="fa6-solid:plus" />
+            <Icon name="bx:plus" />
           </LinkButton>
 
           <LinkButton
@@ -142,7 +130,7 @@
             :disabled="sequencerStore.barCount < 2"
             @click="sequencerStore.deleteBar()"
           >
-            <Icon name="fa6-solid:trash" />
+            <Icon name="bx:trash-alt" />
           </LinkButton>
         </div>
       </div>
@@ -268,6 +256,10 @@ onUnmounted(() => {
         & .dropdownselect-option {
           padding: 0.2rem 0.5rem;
         }
+
+        & .dropdownselect-arrow {
+          margin-right: 0;
+        }
       }
     }
 
@@ -289,11 +281,7 @@ onUnmounted(() => {
           font-size: 0.25rem;
           height: 0.25rem;
           width: 0.25rem;
-
-          & svg {
-            height: 0.75rem;
-            width: 0.75rem;
-          }
+          transform: scale(2.5);
         }
       }
     }

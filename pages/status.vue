@@ -31,7 +31,7 @@
         :disabled="status === 'pending'"
         @click="refresh()"
       >
-        <Icon name="fa6-solid:rotate" />
+        <Icon name="bx:refresh" />
       </LinkButton>
     </div>
   </PageCard>
