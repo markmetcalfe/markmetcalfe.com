@@ -2,6 +2,7 @@
   <PageCard
     back-button-page="/"
     longform
+    show-background
   >
     <template #title>
       Terms of Service
@@ -20,7 +21,7 @@
     <h4>Definitions</h4>
     <p>For the purposes of these Terms of Service:</p>
     <ul>
-      <li>
+      <ListItem>
         <p>
           <strong>Affiliate</strong> means an entity that controls, is
           controlled by or is under common control with a party, where
@@ -28,42 +29,42 @@
           equity interest or other securities entitled to vote for election of
           directors or other managing authority.
         </p>
-      </li>
-      <li>
+      </ListItem>
+      <ListItem>
         <p><strong>Country</strong> refers to: New Zealand</p>
-      </li>
-      <li>
+      </ListItem>
+      <ListItem>
         <p>
           <strong>Company</strong> (referred to as either &quot;the
           Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in
           this Agreement) refers to {{ siteDomain }}.
         </p>
-      </li>
-      <li>
+      </ListItem>
+      <ListItem>
         <p>
           <strong>Device</strong> means any device that can access the Service
           such as a computer, a cellphone or a digital tablet.
         </p>
-      </li>
-      <li>
+      </ListItem>
+      <ListItem>
         <p><strong>Service</strong> refers to the Website.</p>
-      </li>
-      <li>
+      </ListItem>
+      <ListItem>
         <p>
           <strong>Terms of Service</strong> (also referred as &quot;Terms&quot;)
           mean these Terms of Service that form the entire agreement between You
           and the Company regarding the use of the Service.
         </p>
-      </li>
-      <li>
+      </ListItem>
+      <ListItem>
         <p>
           <strong>Third-party Social Media Service</strong> means any services
           or content (including data, information, products or services)
           provided by a third-party that may be displayed, included or made
           available by the Service.
         </p>
-      </li>
-      <li>
+      </ListItem>
+      <ListItem>
         <p>
           <strong>Website</strong> refers to {{ siteDomain }}, accessible
           from
@@ -73,14 +74,14 @@
             target="_blank"
           >{{ 'https://' + siteDomain }}</a>
         </p>
-      </li>
-      <li>
+      </ListItem>
+      <ListItem>
         <p>
           <strong>You</strong> means the individual accessing or using the
           Service, or the company, or other legal entity on behalf of which such
           individual is accessing or using the Service, as applicable.
         </p>
-      </li>
+      </ListItem>
     </ul>
     <h3>Acknowledgment</h3>
     <p>

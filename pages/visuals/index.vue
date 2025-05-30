@@ -118,10 +118,10 @@
       </div>
 
       <ul class="visualspage-footnote">
-        <li>Scroll to Zoom In & Out</li>
-        <li>Click to Randomise Shapes</li>
-        <li>Space to Beatmatch BPM</li>
-        <li>Shift to Change Colours</li>
+        <ListItem>Scroll to Zoom In & Out</ListItem>
+        <ListItem>Click to Randomise Shapes</ListItem>
+        <ListItem>Space to Beatmatch BPM</ListItem>
+        <ListItem>Shift to Change Colours</ListItem>
       </ul>
     </div>
   </PageCard>
@@ -225,18 +225,6 @@ onUnmounted(() => {
       margin: 0;
       padding-top: 0.5rem;
       font-size: 1rem;
-
-      /* Workaround for Safari */
-      list-style-type: none;
-
-      &::marker {
-        display: none;
-      }
-
-      &::before {
-        content: "> ";
-        color: var(--color-highlight);
-      }
     }
   }
 }
