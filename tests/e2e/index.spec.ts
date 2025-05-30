@@ -4,11 +4,9 @@ test.describe('HomePage', () => {
   test('can load page', async ({ page }, testInfo) => {
     await page.goto('/')
     await expect(page.locator('text="Mark Metcalfe"')).toBeVisible()
-    await expect(page.locator('text="Developer"')).toBeVisible()
-    await expect(page.locator('text="Visual Artist"')).toBeVisible()
 
+    await expect(page.locator('text="About me"')).toBeVisible()
     await expect(page.locator('text="Projects"')).toBeVisible()
-    await expect(page.locator('text="Links"')).toBeVisible()
     await expect(page.locator('text="Recently Played"')).toBeVisible()
 
     await takeSnapshot(page, 'Home Page', testInfo)
@@ -46,13 +44,15 @@ test.describe('HomePage', () => {
     await expect(link).toHaveAttribute('href', 'https://www.linkedin.com/in/mark-metcalfe/')
   })
 
-  // TODO: Fix this failing test
-  test.skip('can navigate to the resume pdf', async ({ page }) => {
+  test('can navigate to the resume page', async ({ page }) => {
     await page.goto('/')
 
     const link = page.locator('a:has-text("Resume")')
 
-    await expect(link).toHaveAttribute('href', '/Mark-Metcalfe-Resume.pdf')
+    await Promise.all([page.waitForURL('/resume'), link.click()])
+
+    await expect(page.locator('body')).toContainText('Resume')
+    await expect(page.locator('body')).toContainText('Experience')
   })
 
   test('can navigate to the visuals page', async ({ page }) => {

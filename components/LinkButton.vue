@@ -4,45 +4,48 @@
       v-if="external"
       :href="href"
       :disabled="disabled"
-      :title="hideText ? text : undefined"
+      :title="title"
+      :aria-label="title"
       target="_blank"
       rel="noopener noreferer"
       :class="{
         'linkbutton-large': large,
-        'linkbutton-hidetext': hideText,
+        'linkbutton-hidetext': !text,
         'disabled': disabled,
       }"
     >
       <span class="linkbutton-icon"><slot /></span>
-      <span v-if="!hideText">{{ text }}</span>
+      <span v-if="text">{{ text }}</span>
     </a>
     <NuxtLink
       v-else-if="href"
       :to="href"
       :disabled="disabled"
-      :title="hideText ? text : undefined"
+      :title="title"
+      :aria-label="title"
       :class="{
         'linkbutton-large': large,
-        'linkbutton-hidetext': hideText,
+        'linkbutton-hidetext': !text,
         'disabled': disabled,
       }"
     >
       <span class="linkbutton-icon"><slot /></span>
-      <span v-if="!hideText">{{ text }}</span>
+      <span v-if="text">{{ text }}</span>
     </NuxtLink>
     <button
       v-else
       :disabled="disabled"
-      :title="hideText ? text : undefined"
+      :title="title"
+      :aria-label="title"
       :class="{
         'linkbutton-large': large,
-        'linkbutton-hidetext': hideText,
+        'linkbutton-hidetext': !text,
         'disabled': disabled,
       }"
       @click="handleClick"
     >
       <span class="linkbutton-icon"><slot /></span>
-      <span v-if="!hideText">{{ text }}</span>
+      <span v-if="text">{{ text }}</span>
     </button>
   </span>
 </template>
@@ -51,10 +54,10 @@
 interface Props {
   external?: boolean
   href?: string
-  text: string
+  text?: string
+  title?: string
   disabled?: boolean
   large?: boolean
-  hideText?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
@@ -62,7 +65,6 @@ withDefaults(defineProps<Props>(), {
   href: '',
   disabled: false,
   large: false,
-  hideText: false,
 })
 
 const emit = defineEmits<{

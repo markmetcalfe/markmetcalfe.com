@@ -27,8 +27,7 @@
       </p>
 
       <LinkButton
-        text="Refresh"
-        hide-text
+        title="Refresh"
         :disabled="status === 'pending'"
         @click="refresh()"
       >

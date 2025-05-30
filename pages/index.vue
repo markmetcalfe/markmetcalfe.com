@@ -58,6 +58,13 @@
         <p>
           I'm a software developer and visual artist who likes making cool experiences with code
         </p>
+        <LinkButton
+          text="Resume"
+          href="/resume"
+          large
+        >
+          <Icon name="fa6-regular:file-lines" />
+        </LinkButton>
       </div>
     </SectionBlock>
 

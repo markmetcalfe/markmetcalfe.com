@@ -7,8 +7,7 @@
     <div class="sequencerpage">
       <div class="sequencerpage-buttons">
         <LinkButton
-          :text="sequencerStore.isPlaying ? 'Pause' : 'Play'"
-          hide-text
+          :title="sequencerStore.isPlaying ? 'Pause' : 'Play'"
           @click="sequencerStore.togglePlay"
         >
           <Icon
@@ -18,8 +17,7 @@
 
         <LinkButton
           href="/sequencer/synths"
-          text="Edit Synths"
-          hide-text
+          title="Edit Synths"
         >
           <Icon
             name="fa6-solid:pen"
@@ -28,8 +26,7 @@
         </LinkButton>
 
         <LinkButton
-          text="Clear Grid"
-          hide-text
+          title="Clear Grid"
           @click="sequencerStore.resetGrid"
         >
           <Icon
@@ -66,8 +63,7 @@
 
             <div class="sequencerpage-rowoptions-buttons">
               <LinkButton
-                text="Delete Row"
-                hide-text
+                title="Delete Row"
                 :disabled="sequencerStore.gridRowCount < 2"
                 @click="sequencerStore.deleteGridRow(rowIndex)"
               >
@@ -75,8 +71,7 @@
               </LinkButton>
 
               <LinkButton
-                :text="row.muted ? 'Unmute' : 'Mute'"
-                hide-text
+                :title="row.muted ? 'Unmute' : 'Mute'"
                 @click="row.muted = !row.muted"
               >
                 <Icon
@@ -98,8 +93,7 @@
 
             <div class="sequencerpage-rowoptions-buttons">
               <LinkButton
-                text="Add Row"
-                hide-text
+                title="Add Row"
                 @click="sequencerStore.addGridRow(synthToAddId)"
               >
                 <Icon name="fa6-solid:plus" />
@@ -137,17 +131,15 @@
 
         <div class="sequencerpage-columnoptions">
           <LinkButton
-            text="Add Bar"
-            hide-text
+            title="Add Bar"
             @click="sequencerStore.addBar()"
           >
             <Icon name="fa6-solid:plus" />
           </LinkButton>
 
           <LinkButton
-            text="Delete Bar"
+            title="Delete Bar"
             :disabled="sequencerStore.barCount < 2"
-            hide-text
             @click="sequencerStore.deleteBar()"
           >
             <Icon name="fa6-solid:trash" />

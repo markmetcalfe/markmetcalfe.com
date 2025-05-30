@@ -39,6 +39,7 @@ export interface VisualStore {
     direction: 'in' | 'out'
     beat: number
   }
+  scrollToZoom: boolean
   rotationSpeed: {
     x: number
     y: number
@@ -95,6 +96,7 @@ const initialState: VisualStore = {
     direction: 'out',
     beat: 0,
   },
+  scrollToZoom: true,
   rotationSpeed: {
     x: 10,
     y: 10,
@@ -371,6 +373,9 @@ export const useVisualsStore = defineStore('visuals', {
           }
         })
         .setOnScroll((_renderer, event) => {
+          if (!this.scrollToZoom) {
+            return
+          }
           if (event.deltaY > 0) {
             this.zoomOut()
           }
