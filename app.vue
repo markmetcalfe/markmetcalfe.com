@@ -176,5 +176,7 @@ button:focus:not(:disabled) {
 .slide-right-enter-active,
 .slide-right-leave-active {
   transition: all 0.5s ease;
+  max-height: 100vh;
+  overflow-y: hidden;
 }
 </style>

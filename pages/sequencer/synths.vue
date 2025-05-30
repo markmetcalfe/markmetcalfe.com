@@ -16,8 +16,7 @@
 
         <LinkButton
           v-if="selectedSynthId"
-          text="Copy"
-          hide-text
+          title="Copy"
           @click="copySynth"
         >
           <Icon name="fa6-regular:copy" />
@@ -25,8 +24,7 @@
 
         <LinkButton
           v-if="selectedSynth?.canDelete()"
-          text="Delete"
-          hide-text
+          title="Delete"
           @click="deleteSynth"
         >
           <Icon name="fa6-solid:trash" />

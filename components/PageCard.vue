@@ -6,7 +6,7 @@
     <div
       class="pagecard-inner"
       :class="{
-        'pagecard-inner-backgroundvisible': backgroundVisible,
+        'pagecard-inner-backgroundvisible': showBackground,
       }"
     >
       <header
@@ -25,22 +25,14 @@
         <h2 class="pagecard-title">
           <slot name="title" />
         </h2>
-      </header>
 
-      <div
-        class="pagecard-cornerbuttons"
-      >
-        <button
-          v-if="sequencerStore.gridHasEntry"
-          class="button-icon"
-          :title="sequencerStore.isPlaying ? 'Pause' : 'Play'"
-          @click="sequencerStore.togglePlay"
+        <div
+          v-if="$slots.titleright"
+          class="pagecard-title-right"
         >
-          <Icon
-            :name="'fa6-solid:' + (sequencerStore.isPlaying ? 'pause' : 'play')"
-          />
-        </button>
-      </div>
+          <slot name="titleright" />
+        </div>
+      </header>
 
       <main class="pagecard-main">
         <slot />
@@ -50,26 +42,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useSequencerStore } from '~/stores/sequencer'
+import { useVisualsStore } from '~/stores/visuals'
 
 interface Props {
   backButtonPage?: string | null
   longform?: boolean
-  backgroundHidden?: boolean
+  showBackground?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   backButtonPage: null,
   longform: false,
-  backgroundHidden: true,
+  showBackground: false,
 })
 
-const sequencerStore = useSequencerStore()
+const visualsStore = useVisualsStore()
 
-const backgroundVisible = computed(
-  () => !props.backgroundHidden || props.longform,
-)
+onMounted(() => {
+  visualsStore.scrollToZoom = !props.longform
+})
 </script>
 
 <style lang="scss">
@@ -132,8 +123,15 @@ const backgroundVisible = computed(
     }
 
     & .pagecard-main {
-      font-size: 1rem;
       text-align: left;
+
+      @include vars.desktop-only {
+        font-size: 1rem;
+      }
+
+      @include vars.mobile-only {
+        font-size: 0.9rem;
+      }
     }
   }
 
@@ -176,19 +174,11 @@ const backgroundVisible = computed(
       font-size: 1.75rem;
       margin-bottom: 1.5rem;
     }
-  }
 
-  &-cornerbuttons {
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 0.5rem 0.75rem;
-    display: flex;
-    gap: 0.5rem;
-    z-index: 100;
-
-    & button {
-      font-size: 1rem;
+    &-right {
+      position: absolute;
+      top: 0;
+      right: 0;
     }
   }
 }
