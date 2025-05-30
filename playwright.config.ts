@@ -44,7 +44,7 @@ export default defineConfig<ChromaticConfig & ConfigOptions>({
 
     /* Chromatic snapshot settings */
     disableAutoSnapshot: true,
-    delay: 2000,
+    delay: 5000,
   },
 
   /* Configure projects for major browsers */
