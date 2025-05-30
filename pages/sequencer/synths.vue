@@ -19,7 +19,7 @@
           title="Copy"
           @click="copySynth"
         >
-          <Icon name="fa6-regular:copy" />
+          <Icon name="bx:copy" />
         </LinkButton>
 
         <LinkButton
@@ -27,7 +27,7 @@
           title="Delete"
           @click="deleteSynth"
         >
-          <Icon name="fa6-solid:trash" />
+          <Icon name="bx:trash-alt" />
         </LinkButton>
       </div>
 

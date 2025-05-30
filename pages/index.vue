@@ -22,7 +22,7 @@
               target="_blank"
               rel="noopener noreferer"
             >
-              <Icon name="fa6-brands:github" />
+              <Icon name="bx:bxl-github" />
             </a>
             <a
               href="https://instagram.com/_vizshun"
@@ -30,7 +30,7 @@
               target="_blank"
               rel="noopener noreferer"
             >
-              <Icon name="fa6-brands:instagram" />
+              <Icon name="bx:bxl-instagram" />
             </a>
             <a
               href="https://www.linkedin.com/in/mark-metcalfe/"
@@ -38,7 +38,7 @@
               target="_blank"
               rel="noopener noreferer"
             >
-              <Icon name="fa6-brands:linkedin" />
+              <Icon name="bx:bxl-linkedin-square" />
             </a>
             <a
               :href="mailtoLink"
@@ -46,7 +46,7 @@
               target="_blank"
               rel="noopener noreferer"
             >
-              <Icon name="fa6-regular:envelope" />
+              <Icon name="bx:envelope" />
             </a>
           </div>
         </div>
@@ -63,7 +63,7 @@
           href="/resume"
           large
         >
-          <Icon name="fa6-regular:file-lines" />
+          <Icon name="bx:file" />
         </LinkButton>
       </div>
     </SectionBlock>
@@ -81,7 +81,7 @@
         href="/sequencer"
         large
       >
-        <Icon name="fa6-solid:music" />
+        <Icon name="fad:waveform" />
       </LinkButton>
     </SectionBlock>
 

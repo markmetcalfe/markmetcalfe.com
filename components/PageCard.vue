@@ -19,7 +19,7 @@
           class="pagecard-back"
           aria-label="Back"
         >
-          <Icon name="fa6-solid:chevron-left" />
+          <Icon name="bx:arrow-back" />
         </router-link>
 
         <h2 class="pagecard-title">
@@ -142,20 +142,24 @@ onMounted(() => {
     color: var(--color-highlight);
 
     @include vars.desktop-only {
+      top: 5px;
       font-size: 2.25rem;
     }
 
     @include vars.mobile-only {
+      top: 4px;
       font-size: 1.75rem;
     }
   }
 
   &-inner-backgroundvisible &-back {
     @include vars.desktop-only {
+      top: 36px;
       left: 5rem;
     }
 
     @include vars.mobile-only {
+      top: 18px;
       left: 1rem;
     }
   }

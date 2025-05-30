@@ -63,15 +63,12 @@ importers:
       '@chromatic-com/playwright':
         specifier: ^0.12.0
         version: 0.12.0(@playwright/test@1.52.0)(@types/react@19.0.12)(esbuild@0.25.1)(typescript@5.8.2)
-      '@iconify-json/fa6-brands':
-        specifier: ^1.2.5
-        version: 1.2.5
-      '@iconify-json/fa6-regular':
-        specifier: ^1.2.3
-        version: 1.2.3
-      '@iconify-json/fa6-solid':
-        specifier: ^1.2.3
-        version: 1.2.3
+      '@iconify-json/bx':
+        specifier: ^1.2.2
+        version: 1.2.2
+      '@iconify-json/fad':
+        specifier: ^1.2.1
+        version: 1.2.1
       '@playwright/test':
         specifier: ^1.52.0
         version: 1.52.0
@@ -536,14 +533,11 @@ packages:
     resolution: {integrity: sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==}
     engines: {node: '>=18.18'}
 
-  '@iconify-json/fa6-brands@1.2.5':
-    resolution: {integrity: sha512-U/iFfziz6jSN9zArOJZYTtoj2tQyh6MxPdI8M84DQ2kEulPaj8j+h9bqvjmzszNHmD7v+kmmKd/MLkMKk+3Zuw==}
+  '@iconify-json/bx@1.2.2':
+    resolution: {integrity: sha512-hZVx6LMEkYckScdRdUuQWcmv8Lm2au6Cnf799TLoR6YgiAfFvaJ4M5ElwcnExvCu8ntsS7jW89r0W5LwBAfZXQ==}
 
-  '@iconify-json/fa6-regular@1.2.3':
-    resolution: {integrity: sha512-NGV2j5mn4j49mpP7MABCljp1WPWKjwgfjN6NGwsmlFuQ7bdnz36nZB/5aRXLOcT36NXaBeCoT05G9aatdtMr3A==}
-
-  '@iconify-json/fa6-solid@1.2.3':
-    resolution: {integrity: sha512-C5o8YJF+ekrS4wRb/6/0SE2KjRyJlCg++IOVC/fineiRinITivsmzFRNW1MQX2xfDZ1T7bxeKxLN6lcaTG3jGA==}
+  '@iconify-json/fad@1.2.1':
+    resolution: {integrity: sha512-WW6rGT3TzzhWBP+zE3nM8bPYKML16NhmX2VlEe6sz7KCJH3zen20TVuTsUR0gDXo99fBGyxud1NMkW/JdcAtHg==}
 
   '@iconify/collections@1.0.531':
     resolution: {integrity: sha512-IIw9WXF/vsDLNGxFwd1BxDcX7EdZwuYFBLtgvKeAz2RKG1vI0rZT3ve90mm4OUfQkCcvHJ+ikmI44KkiMXhNSA==}
@@ -5753,15 +5747,11 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.2': {}
 
-  '@iconify-json/fa6-brands@1.2.5':
+  '@iconify-json/bx@1.2.2':
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/fa6-regular@1.2.3':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/fa6-solid@1.2.3':
+  '@iconify-json/fad@1.2.1':
     dependencies:
       '@iconify/types': 2.0.0
 

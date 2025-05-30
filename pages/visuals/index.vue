@@ -13,20 +13,20 @@
           text="Randomise"
           @click="visualsStore.randomise"
         >
-          <Icon name="fa6-solid:dice" />
+          <Icon name="bx:shuffle" />
         </LinkButton>
         <LinkButton
           href="/visuals/shapes"
           text="Edit Shapes"
         >
-          <Icon name="custom:octohedron" />
+          <Icon name="bx:pencil" />
         </LinkButton>
         <LinkButton
           v-if="!isMobile()"
           text="Fullscreen"
           @click="requestFullscreen"
         >
-          <Icon name="fa6-solid:play" />
+          <Icon name="bx:fullscreen" />
         </LinkButton>
       </div>
 

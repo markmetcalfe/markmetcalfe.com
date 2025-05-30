@@ -149,7 +149,7 @@ const handleClick = (event: MouseEvent) => {
     justify-content: center;
 
     @include vars.desktop-only {
-      margin-right: 0.5rem;
+      margin-right: 0.4rem;
 
       @include desktop-icon-size;
 
@@ -174,7 +174,7 @@ const handleClick = (event: MouseEvent) => {
     @include vars.desktop-only {
       @include desktop-icon-size-large;
 
-      margin-right: 0.75rem;
+      margin-right: 0.5rem;
 
       & svg {
         @include desktop-icon-size-large;
@@ -184,7 +184,7 @@ const handleClick = (event: MouseEvent) => {
     @include vars.mobile-only {
       @include mobile-icon-size-large;
 
-      margin-right: 0.4rem;
+      margin-right: 0.3rem;
       font-size: 1.25rem;
 
       & svg {
