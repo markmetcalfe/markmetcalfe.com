@@ -12,6 +12,7 @@
         title="Download as a PDF"
         href="/Mark-Metcalfe-Resume.pdf"
         large
+        external
       >
         <Icon name="bx:download" />
       </LinkButton>
