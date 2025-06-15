@@ -48,7 +48,7 @@ body {
   font-family: Inter, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-weight: 200;
+  font-weight: 300;
   color: var(--color-light);
   background-color: var(--color-dark);
   overflow-x: hidden;
