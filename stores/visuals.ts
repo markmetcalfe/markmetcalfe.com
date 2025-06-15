@@ -103,7 +103,7 @@ const initialState: VisualStore = {
   },
   beatMatch: {
     enabled: true,
-    randomizeColors: false,
+    randomizeColors: true,
     syncToBar: true,
   },
   listeners: {

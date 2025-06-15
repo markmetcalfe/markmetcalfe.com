@@ -35,10 +35,8 @@ export class Renderer {
   protected onInit = (_renderer: this) => {}
 
   protected getZoom = () => 1
-  protected getPixelRatio = () => (window.devicePixelRatio > 1 ? 2 : 1)
-  protected getWidth = () => this.container.clientWidth * this.getPixelRatio()
-  protected getHeight = () =>
-    this.container.clientHeight * this.getPixelRatio()
+  protected getWidth = () => this.container.clientWidth
+  protected getHeight = () => this.container.clientHeight
 
   protected getDefaultGeometry = (): GeometryAttributes[] => []
 
@@ -118,15 +116,11 @@ export class Renderer {
 
     this.renderer = new THREE.WebGLRenderer()
     this.renderer.setSize(this.getWidth(), this.getHeight())
+    this.renderer.setPixelRatio(window.devicePixelRatio)
 
     this.initialiseEventListeners()
 
     this.container.appendChild(this.renderer.domElement)
-
-    if (this.getPixelRatio() > 1) {
-      this.renderer.domElement.style.transform
-        = 'scale(0.5) translateX(-50%) translateY(-50%)'
-    }
 
     const geometry = this.getDefaultGeometry().map(mapGeometryAttributes)
     this.placeGeometry(geometry)
@@ -263,10 +257,7 @@ export class Renderer {
     this.camera.aspect = renderer.getWidth() / renderer.getHeight()
     this.camera.updateProjectionMatrix()
     this.renderer!.setSize(renderer.getWidth(), renderer.getHeight())
-    if (this.getPixelRatio() > 1) {
-      this.renderer!.domElement.style.transform
-        = 'scale(0.5) translateX(-50%) translateY(-50%)'
-    }
+    this.renderer!.setPixelRatio(window.devicePixelRatio)
   }
 
   public getGeometry() {
