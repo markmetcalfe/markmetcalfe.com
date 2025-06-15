@@ -23,7 +23,7 @@ onMounted(() => {
       rendererInstance.initialise()
       renderer.value = rendererInstance
     },
-    isSafari ? 300 : 100, // Give Safari more time to init
+    isSafari ? 500 : 100, // Give Safari more time to init
   )
 })
 
