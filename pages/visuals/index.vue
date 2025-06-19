@@ -92,14 +92,11 @@
         />
 
         <FaderInput
-          :model-value="visualsStore.autoZoom.speed * 1000"
+          v-model="visualsStore.autoZoom.speed"
           :disabled="!autoZoomIsSmooth"
           :min="0"
           :max="100"
           label="Zoom Speed"
-          @update:model-value="
-            (value: number) => (visualsStore.autoZoom.speed = value / 1000)
-          "
         />
 
         <FaderInput

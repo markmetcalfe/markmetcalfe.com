@@ -92,14 +92,14 @@ const initialState: VisualStore = {
   },
   autoZoom: {
     mode: AutoZoomMode.SMOOTH,
-    speed: 0.01,
+    speed: 5,
     direction: 'out',
     beat: 0,
   },
   scrollToZoom: true,
   rotationSpeed: {
-    x: 10,
-    y: 10,
+    x: 5,
+    y: 5,
   },
   beatMatch: {
     enabled: true,
@@ -169,7 +169,7 @@ export const useVisualsStore = defineStore('visuals', {
       ])
 
       if (this.autoZoom.mode === AutoZoomMode.SMOOTH) {
-        this.autoZoom.speed = getRandomNum(0.001, 0.05)
+        this.autoZoom.speed = getRandomNum(1, 50)
       }
 
       this.setMinZoom(getRandomInt(-2, 2))
@@ -219,10 +219,10 @@ export const useVisualsStore = defineStore('visuals', {
       }
 
       if (this.autoZoom.direction === 'in') {
-        this.zoom.current += this.autoZoom.speed
+        this.zoom.current += (this.autoZoom.speed / 1000)
       }
       else {
-        this.zoom.current -= this.autoZoom.speed
+        this.zoom.current -= (this.autoZoom.speed / 1000)
       }
     },
 
