@@ -226,22 +226,24 @@ export const useVisualsStore = defineStore('visuals', {
       }
     },
 
-    beatMatchTick() {
+    beatMatchTick(force = false) {
       const siteStore = useSiteStore()
 
-      if (!this.beatMatch.enabled) {
-        return
-      }
+      if (!force) {
+        if (!this.beatMatch.enabled) {
+          return
+        }
 
-      const bpm = this.beatMatch.syncToBar
-        ? siteStore.beatMatch.bpm / siteStore.beatMatch.beatsPerBar
-        : siteStore.beatMatch.bpm
-      const intervalMs = (60 / bpm) * 1000
-      if (
-        new Date().getTime()
-          <= siteStore.beatMatch.lastTime.getTime() + intervalMs
-      ) {
-        return
+        const bpm = this.beatMatch.syncToBar
+          ? siteStore.beatMatch.bpm / siteStore.beatMatch.beatsPerBar
+          : siteStore.beatMatch.bpm
+        const intervalMs = (60 / bpm) * 1000
+        if (
+          new Date().getTime()
+            <= siteStore.beatMatch.lastTime.getTime() + intervalMs
+        ) {
+          return
+        }
       }
 
       this.renderer?.getGeometry()!.forEach((geometry, index) => {
