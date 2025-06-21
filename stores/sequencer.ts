@@ -8,6 +8,7 @@ interface SequencerRow {
   synthId: string
   beats: boolean[]
   muted: boolean
+  visualsSynced: boolean
 }
 
 export interface SequencerStore {
@@ -52,6 +53,7 @@ export const useSequencerStore = defineStore('sequencer', {
       }
 
       const siteStore = useSiteStore()
+      const visualStore = useVisualsStore()
 
       const localSynths: Record<string, Synth> = {}
       allSynths.forEach((synthClass) => {
@@ -68,6 +70,9 @@ export const useSequencerStore = defineStore('sequencer', {
         this.grid!.forEach((row) => {
           if (!row.muted && row.beats[this.currentBeat]) {
             localSynths[row.synthId].triggerSound(time)
+            if (row.visualsSynced) {
+              visualStore.beatMatchTick(true)
+            }
           }
         })
         this.nextBeat()
@@ -110,10 +115,11 @@ export const useSequencerStore = defineStore('sequencer', {
     },
 
     initGrid(synths: Synth[]) {
-      this.grid = synths.map(synth => ({
+      this.grid = synths.map((synth, index) => ({
         synthId: synth.getId(),
         beats: Array(this.beatCount).fill(false),
         muted: false,
+        visualsSynced: index === 0,
       }))
     },
 
@@ -134,6 +140,7 @@ export const useSequencerStore = defineStore('sequencer', {
         synthId: synth.getId(),
         beats: Array(this.beatCount).fill(false),
         muted: false,
+        visualsSynced: false,
       })
       this.gridRowCount++
     },
@@ -215,6 +222,13 @@ export const useSequencerStore = defineStore('sequencer', {
         synthId:
           row.synthId === synthId ? this.allSynths![0].getId() : row.synthId,
       }))
+    },
+
+    syncVisuals(rowIndex: number) {
+      const currentState = this.grid![rowIndex].visualsSynced === true
+      this.grid!.forEach(row => row.visualsSynced = false)
+      this.grid![rowIndex].visualsSynced = !currentState
+      console.log({ grid: this.grid })
     },
   },
 })

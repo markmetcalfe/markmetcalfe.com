@@ -40,6 +40,7 @@
       :class="{
         'linkbutton-large': large,
         'linkbutton-hidetext': !text,
+        'linkbutton-on': on,
         'disabled': disabled,
       }"
       @click="handleClick"
@@ -58,6 +59,7 @@ interface Props {
   title?: string
   disabled?: boolean
   large?: boolean
+  on?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
@@ -65,6 +67,7 @@ withDefaults(defineProps<Props>(), {
   href: '',
   disabled: false,
   large: false,
+  on: false,
 })
 
 const emit = defineEmits<{
@@ -121,7 +124,7 @@ const handleClick = (event: MouseEvent) => {
     }
 
     &:hover:not(.disabled),
-    &:focus:not(.disabled) {
+    &.linkbutton-on:not(.disabled) {
       color: var(--color-highlight);
       border: var(--color-highlight) 1px solid;
 

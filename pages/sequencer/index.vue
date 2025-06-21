@@ -68,6 +68,14 @@
               >
                 <Icon :name="'bx:volume-' + (row.muted ? 'mute' : 'full')" />
               </LinkButton>
+
+              <LinkButton
+                title="Sync Visuals"
+                :on="row.visualsSynced"
+                @click="sequencerStore.syncVisuals(rowIndex)"
+              >
+                <Icon name="custom:octohedron" />
+              </LinkButton>
             </div>
           </div>
 
