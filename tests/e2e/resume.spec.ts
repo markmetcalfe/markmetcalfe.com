@@ -24,7 +24,7 @@ test.describe('ResumePage', () => {
   test('download button has correct link', async ({ page }) => {
     const link = page.locator('a:has-text("PDF")')
 
-    await expect(link).toHaveAttribute('href', '/Mark-Metcalfe-Resume.pdf')
+    await expect(link).toHaveAttribute('href', /^\/Mark-Metcalfe-Resume.pdf\?v=\d+$/)
     await expect(link).toHaveAttribute('title', 'Download as a PDF')
   })
 })
