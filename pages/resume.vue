@@ -10,7 +10,7 @@
       <LinkButton
         text="PDF"
         title="Download as a PDF"
-        href="/Mark-Metcalfe-Resume.pdf"
+        href="/Mark-Metcalfe-Resume.pdf?v=20251029"
         large
         external
       >
