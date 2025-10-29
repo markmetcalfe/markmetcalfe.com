@@ -4,6 +4,16 @@
   ],
   "packageRules": [
     {
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "groupName": "all patch dependencies",
+      "groupSlug": "all-patch"
+    },
+    {
       "matchUpdateTypes": [
         "minor",
         "patch",
@@ -23,6 +33,14 @@
         "node"
       ],
       "enabled": false
+    },
+    {
+      "matchPackageNames": ["/eslint/"],
+      "groupName": "eslint"
+    },
+    {
+      "matchPackageNames": ["/@nuxt/"],
+      "groupName": "nuxt"
     }
   ],
   "lockFileMaintenance": {
