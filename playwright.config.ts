@@ -1,4 +1,3 @@
-import { fileURLToPath } from 'url'
 import { defineConfig, devices } from '@playwright/test'
 import type { ChromaticConfig } from '@chromatic-com/playwright'
 import type { ConfigOptions } from '@nuxt/test-utils/playwright'
@@ -27,10 +26,6 @@ export default defineConfig<ChromaticConfig & ConfigOptions>({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    nuxt: {
-      rootDir: fileURLToPath(new URL('.', import.meta.url)),
-    },
-
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:3001',
 
@@ -65,7 +60,7 @@ export default defineConfig<ChromaticConfig & ConfigOptions>({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'IS_PLAYWRIGHT=1 pnpm run build && IS_PLAYWRIGHT=1 pnpm run preview --port 3001',
+    command: 'IS_PLAYWRIGHT=1 npm run build && IS_PLAYWRIGHT=1 npm run preview -- --port 3001',
     port: 3001,
     reuseExistingServer: !process.env.CI,
   },
