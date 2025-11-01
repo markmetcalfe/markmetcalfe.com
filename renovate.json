@@ -4,14 +4,14 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": [
-        "*"
-      ],
       "matchUpdateTypes": [
         "patch"
       ],
       "groupName": "all patch dependencies",
-      "groupSlug": "all-patch"
+      "groupSlug": "all-patch",
+      "matchPackageNames": [
+        "*"
+      ]
     },
     {
       "matchUpdateTypes": [
@@ -35,11 +35,15 @@
       "enabled": false
     },
     {
-      "matchPackageNames": ["/eslint/"],
+      "matchPackageNames": [
+        "/eslint/"
+      ],
       "groupName": "eslint"
     },
     {
-      "matchPackageNames": ["/@nuxt/"],
+      "matchPackageNames": [
+        "/@nuxt/"
+      ],
       "groupName": "nuxt"
     }
   ],
