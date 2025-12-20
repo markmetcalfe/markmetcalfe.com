@@ -49,5 +49,5 @@
   },
   "platformAutomerge": true,
   "timezone": "Pacific/Auckland",
-  "schedule": "* 6-7 * * 1"
+  "schedule": "0 6 1-7 * 1"
 }
