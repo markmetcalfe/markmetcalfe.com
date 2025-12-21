@@ -5,18 +5,22 @@
   "packageRules": [
     {
       "description": "Update @markmetcalfe packages every hour",
-      "matchPackageNames": ["@markmetcalfe/*"],
-      "schedule": ["* * * * *"]
+      "matchPackageNames": [
+        "@markmetcalfe/*"
+      ],
+      "schedule": [
+        "* * * * *"
+      ]
     },
     {
-      "matchPackagePatterns": [
-        "*"
-      ],
       "matchUpdateTypes": [
         "patch"
       ],
       "groupName": "all patch dependencies",
-      "groupSlug": "all-patch"
+      "groupSlug": "all-patch",
+      "matchPackageNames": [
+        "*"
+      ]
     },
     {
       "matchUpdateTypes": [
@@ -40,11 +44,15 @@
       "enabled": false
     },
     {
-      "matchPackageNames": ["/eslint/"],
+      "matchPackageNames": [
+        "/eslint/"
+      ],
       "groupName": "eslint"
     },
     {
-      "matchPackageNames": ["/@nuxt/"],
+      "matchPackageNames": [
+        "/@nuxt/"
+      ],
       "groupName": "nuxt"
     }
   ],
