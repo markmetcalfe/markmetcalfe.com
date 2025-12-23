@@ -4,6 +4,11 @@
   ],
   "packageRules": [
     {
+      "description": "Update @markmetcalfe packages every hour",
+      "matchPackageNames": ["@markmetcalfe/*"],
+      "schedule": ["* * * * *"]
+    },
+    {
       "matchPackagePatterns": [
         "*"
       ],
@@ -43,11 +48,19 @@
       "groupName": "nuxt"
     }
   ],
+  "hostRules": [
+    {
+      "matchHost": "https://npm.pkg.github.com/",
+      "hostType": "npm",
+      "token": "{{ secrets.NPM_TOKEN }}"
+    }
+  ],
+  "npmrc": "@markmetcalfe:registry=https://npm.pkg.github.com/",
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true
   },
   "platformAutomerge": true,
   "timezone": "Pacific/Auckland",
-  "schedule": "0 6 1-7 * 1"
+  "schedule": "* * 1 * *"
 }
