@@ -263,4 +263,8 @@ export class Renderer {
   public getGeometry() {
     return this.geometry
   }
+
+  public getCanvasElement(): HTMLCanvasElement | undefined {
+    return this.renderer?.domElement
+  }
 }
