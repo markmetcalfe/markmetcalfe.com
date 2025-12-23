@@ -53,19 +53,11 @@
       </section>
     </div>
 
-    <SectionBlock title="About me">
-      <div class="home-about-me">
-        <p>
-          I'm a software developer and visual artist who likes making cool experiences with code
-        </p>
-        <LinkButton
-          text="Resume"
-          href="/resume"
-          large
-        >
-          <Icon name="bx:file" />
-        </LinkButton>
-      </div>
+    <SectionBlock
+      title="Me"
+      larger-text
+    >
+      I'm a software developer who likes making cool experiences with code
     </SectionBlock>
 
     <SectionBlock title="Projects">
@@ -85,8 +77,21 @@
       </LinkButton>
     </SectionBlock>
 
-    <SectionBlock title="Recently Played">
-      <RecentlyPlayed />
+    <SectionBlock title="More">
+      <LinkButton
+        text="Resume"
+        href="/resume"
+        large
+      >
+        <Icon name="bx:file" />
+      </LinkButton>
+      <LinkButton
+        text="Interests"
+        href="/interests"
+        large
+      >
+        <Icon name="bx:party" />
+      </LinkButton>
     </SectionBlock>
   </PageCard>
 </template>
@@ -182,28 +187,6 @@ onUnmounted(() => {
 
     @include vars.mobile-only {
       padding-bottom: 0.5rem;
-    }
-  }
-
-  &-about-me {
-    display: flex;
-    flex-wrap: wrap;
-    text-align: left;
-
-    @include vars.desktop-only {
-      max-width: 450px;
-      font-size: 1.1rem;
-      gap: 0.75rem;
-    }
-
-    @include vars.mobile-only {
-      max-width: 325px;
-      font-size: 0.9rem;
-      gap: 0.5rem;
-    }
-
-    p {
-      margin: 0;
     }
   }
 
