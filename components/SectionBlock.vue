@@ -5,7 +5,7 @@
     </h2>
     <div
       class="sectionblock-content"
-      :class="{ 'sectionblock-flex': flex }"
+      :class="{ 'sectionblock-flex': flex, 'sectionblock-larger-text': largerText }"
     >
       <slot />
     </div>
@@ -16,10 +16,12 @@
 interface Props {
   title: string
   flex?: boolean
+  largerText?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   flex: true,
+  largerText: false,
 })
 </script>
 
@@ -68,6 +70,28 @@ withDefaults(defineProps<Props>(), {
     display: flex;
     justify-content: start;
     gap: 1rem;
+  }
+
+  &-larger-text {
+    display: flex;
+    flex-wrap: wrap;
+    text-align: left;
+
+    @include vars.desktop-only {
+      max-width: 450px;
+      font-size: 1.1rem;
+      gap: 0.75rem;
+    }
+
+    @include vars.mobile-only {
+      max-width: 325px;
+      font-size: 0.9rem;
+      gap: 0.5rem;
+    }
+
+    p {
+      margin: 0;
+    }
   }
 }
 </style>
