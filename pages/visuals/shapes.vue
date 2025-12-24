@@ -82,6 +82,9 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useVisualsStore } from '~/stores/visuals'
 import { type GeometryAttributes, geometryClasses } from '~/util/3d/geometry'
 import { getColorName } from '~/util/color'
+import { useShowBackground } from '~/util/hooks/useShowBackground'
+
+useShowBackground()
 
 const visualsStore = useVisualsStore()
 
