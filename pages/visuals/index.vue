@@ -128,6 +128,9 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { isMobile } from 'is-mobile'
 import { AutoZoomMode, useVisualsStore } from '~/stores/visuals'
+import { useShowBackground } from '~/util/hooks/useShowBackground'
+
+useShowBackground()
 
 const visualsStore = useVisualsStore()
 

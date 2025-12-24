@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="dynamicbackground" />
+    <div
+      class="dynamicbackground"
+      :class="{ 'dynamicbackground--hidden': !visualsStore.visible }"
+    />
   </div>
 </template>
 
@@ -21,6 +24,9 @@ onMounted(() => {
       )
       visualsStore.setRenderer(rendererInstance)
       rendererInstance.initialise()
+      visualsStore.listeners.onStart = () => {
+        rendererInstance.start()
+      }
       renderer.value = rendererInstance
     },
     isSafari ? 500 : 100, // Give Safari more time to init
@@ -44,5 +50,9 @@ onUnmounted(() => {
   z-index: -100;
   transition: opacity 0.4s;
   cursor: pointer;
+
+  &--hidden {
+    opacity: 0;
+  }
 }
 </style>

@@ -51,7 +51,9 @@ export interface VisualStore {
   }
   listeners: {
     onRandomise: (() => void) | undefined
+    onStart?: () => void
   }
+  visible: boolean
 }
 
 export const defaultGeometry: GeometryAttributes[] = [
@@ -86,14 +88,14 @@ const initialState: VisualStore = {
   geometryConfig: defaultGeometry,
   followCursor: true,
   zoom: {
-    min: -2,
+    min: -6,
     max: 4,
-    current: 4,
+    current: -6,
   },
   autoZoom: {
     mode: AutoZoomMode.SMOOTH,
-    speed: 5,
-    direction: 'out',
+    speed: 100,
+    direction: 'in',
     beat: 0,
   },
   scrollToZoom: true,
@@ -109,6 +111,7 @@ const initialState: VisualStore = {
   listeners: {
     onRandomise: undefined,
   },
+  visible: false,
 }
 
 export const useVisualsStore = defineStore('visuals', {
@@ -134,6 +137,11 @@ export const useVisualsStore = defineStore('visuals', {
     },
 
     randomise() {
+      if (!this.renderer?.isStarted()) {
+        this.start()
+        return
+      }
+
       const siteStore = useSiteStore()
 
       this.randomiseZoom()
@@ -361,8 +369,15 @@ export const useVisualsStore = defineStore('visuals', {
         .setOnRenderTick((_, positionData) => {
           this.tick(positionData)
         })
-        .setOnInit(() => this.syncRotationSpeed())
-        .setOnClick(() => this.randomise())
+        .setOnStart(() => this.syncRotationSpeed())
+        .setOnClick(() => {
+          if (!this.renderer?.isStarted()) {
+            this.start()
+          }
+          else {
+            this.randomise()
+          }
+        })
         .setOnKeyDown((renderer, event) => {
           if (event.code === 'Space') {
             siteStore.tapBpm()
@@ -393,6 +408,27 @@ export const useVisualsStore = defineStore('visuals', {
     },
     removeListener(name: keyof VisualStore['listeners']) {
       this.listeners[name] = undefined
+    },
+
+    start() {
+      if (!this.renderer?.isStarted()) {
+        this.listeners.onStart?.()
+        setTimeout(() => {
+          this.autoZoom.speed = 5
+          this.zoom.min = -2
+        }, 500)
+      }
+      this.show()
+    },
+
+    show() {
+      this.visible = true
+    },
+    hide() {
+      this.visible = false
+    },
+    toggleVisible() {
+      this.visible = !this.visible
     },
   },
 })

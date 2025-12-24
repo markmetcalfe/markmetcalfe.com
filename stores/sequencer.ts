@@ -115,11 +115,11 @@ export const useSequencerStore = defineStore('sequencer', {
     },
 
     initGrid(synths: Synth[]) {
-      this.grid = synths.map((synth, index) => ({
+      this.grid = synths.map(synth => ({
         synthId: synth.getId(),
         beats: Array(this.beatCount).fill(false),
         muted: false,
-        visualsSynced: index === 0,
+        visualsSynced: false,
       }))
     },
 
@@ -225,10 +225,13 @@ export const useSequencerStore = defineStore('sequencer', {
     },
 
     syncVisuals(rowIndex: number) {
+      const visualStore = useVisualsStore()
       const currentState = this.grid![rowIndex].visualsSynced === true
       this.grid!.forEach(row => row.visualsSynced = false)
       this.grid![rowIndex].visualsSynced = !currentState
-      console.log({ grid: this.grid })
+      if (!visualStore.visible) {
+        visualStore.start()
+      }
     },
   },
 })

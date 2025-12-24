@@ -1,18 +1,22 @@
 <template>
   <div
     class="profilephoto"
-    @click="randomiseProfile"
+    @click="onClick"
   >
     <img src="/me.png?v=6">
     <div class="profilephoto-bg" />
+    <div class="profilephoto-fallback">
+      <img src="/me-bg.png">
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { isSafari } from 'react-device-detect'
 import { Renderer } from '~/util/3d/renderer'
 import { PartialSphere, Sphere } from '~/util/3d/geometry'
+
+const visualsStore = useVisualsStore()
 
 const rendererZoomLevel = 12
 const geometryDefinition = [
@@ -45,9 +49,10 @@ const geometryRotationSpeed = 20
 
 const renderer = ref<Renderer | undefined>(undefined)
 
-const randomiseProfile = (): void => {
+const onClick = (): void => {
   renderer.value?.randomiseRotations()
   renderer.value?.randomiseColors()
+  visualsStore.randomise()
 }
 
 onMounted(() => {
@@ -63,7 +68,7 @@ onMounted(() => {
       .setOnRenderTick(renderer =>
         renderer.getGeometry()?.forEach(geometry => geometry.rotate()),
       )
-      .setOnInit((renderer) => {
+      .setOnStart((renderer) => {
         renderer.getGeometry()?.forEach((geometry) => {
           geometry.setRotationSpeed({
             x: geometryRotationSpeed,
@@ -73,9 +78,10 @@ onMounted(() => {
       })
       .setGetZoom(() => rendererZoomLevel)
       .initialise()
+      .start()
 
     renderer.value.getCanvasElement()?.style.setProperty('border-radius', '50%')
-  }, isSafari ? 500 : 100)
+  }, 500)
 })
 
 onUnmounted(() => {
@@ -103,7 +109,7 @@ onUnmounted(() => {
     width: 8rem;
   }
 
-  &-bg {
+  &-bg, &-fallback {
     position: absolute;
     top: 0;
     left: 0;
@@ -129,5 +135,19 @@ onUnmounted(() => {
     border: var(--color-highlight) 1px solid;
     box-sizing: border-box;
   }
+
+  &-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: inherit;
+    height: inherit;
+
+    & > img {
+      z-index: 0;
+    }
+  }
+
 }
 </style>
