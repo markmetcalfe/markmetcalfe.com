@@ -45,7 +45,7 @@
     "@types/color-convert": "^2.0.4",
     "@types/spotify-api": "^0.0.25",
     "@types/three": "^0.181.0",
-    "chromatic": "^11.27.0",
+    "chromatic": "^13.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
     "sass": "^1.86.0",
