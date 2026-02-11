@@ -32,8 +32,7 @@ export class Renderer {
     },
   ) => {}
 
-  protected started = false
-  protected onStart = (_renderer: this) => {}
+  protected onInit = (_renderer: this) => {}
 
   protected getZoom = () => 1
   protected getWidth = () => this.container.clientWidth
@@ -86,8 +85,8 @@ export class Renderer {
     return this
   }
 
-  public setOnStart(onStart: (_renderer: this) => void) {
-    this.onStart = onStart
+  public setOnInit(onInit: (_renderer: this) => void) {
+    this.onInit = onInit
     return this
   }
 
@@ -122,19 +121,11 @@ export class Renderer {
     this.initialiseEventListeners()
 
     this.container.appendChild(this.renderer.domElement)
-    return this
-  }
-
-  public start(): this {
-    if (this.started) {
-      return this
-    }
 
     const geometry = this.getDefaultGeometry().map(mapGeometryAttributes)
     this.placeGeometry(geometry)
 
-    this.onStart(this)
-    this.started = true
+    this.onInit(this)
 
     this.animate()
 
@@ -275,9 +266,5 @@ export class Renderer {
 
   public getCanvasElement(): HTMLCanvasElement | undefined {
     return this.renderer?.domElement
-  }
-
-  public isStarted() {
-    return this.started
   }
 }

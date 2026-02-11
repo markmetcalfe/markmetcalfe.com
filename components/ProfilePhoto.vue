@@ -1,23 +1,18 @@
 <template>
   <div
     class="profilephoto"
-    @click="onClick"
+    @click="randomiseProfile"
   >
     <img src="/me.png?v=6">
     <div class="profilephoto-bg" />
-    <div class="profilephoto-fallback">
-      <img src="/me-bg.png">
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { isSafari } from 'react-device-detect'
 import { Renderer } from '~/util/3d/renderer'
 import { PartialSphere, Sphere } from '~/util/3d/geometry'
-import { useOnElementMounted } from '~/util/hooks/useOnElementMounted'
-
-const visualsStore = useVisualsStore()
 
 const rendererZoomLevel = 12
 const geometryDefinition = [
@@ -50,21 +45,25 @@ const geometryRotationSpeed = 20
 
 const renderer = ref<Renderer | undefined>(undefined)
 
-const onClick = (): void => {
+const randomiseProfile = (): void => {
   renderer.value?.randomiseRotations()
   renderer.value?.randomiseColors()
-  visualsStore.randomise()
 }
 
-useOnElementMounted(
-  '.profilephoto-bg',
-  (element: HTMLElement) => {
-    renderer.value = new Renderer(element)
+onMounted(() => {
+  setTimeout(() => {
+    const photoBgElement = document.querySelector(
+      '.profilephoto-bg',
+    ) as HTMLElement
+    if (!photoBgElement) {
+      return
+    }
+    renderer.value = new Renderer(photoBgElement)
       .setGetDefaultGeometry(() => geometryDefinition)
       .setOnRenderTick(renderer =>
         renderer.getGeometry()?.forEach(geometry => geometry.rotate()),
       )
-      .setOnStart((renderer) => {
+      .setOnInit((renderer) => {
         renderer.getGeometry()?.forEach((geometry) => {
           geometry.setRotationSpeed({
             x: geometryRotationSpeed,
@@ -74,11 +73,10 @@ useOnElementMounted(
       })
       .setGetZoom(() => rendererZoomLevel)
       .initialise()
-      .start()
 
     renderer.value.getCanvasElement()?.style.setProperty('border-radius', '50%')
-  },
-)
+  }, isSafari ? 500 : 100)
+})
 
 onUnmounted(() => {
   setTimeout(() => {
@@ -105,7 +103,7 @@ onUnmounted(() => {
     width: 8rem;
   }
 
-  &-bg, &-fallback {
+  &-bg {
     position: absolute;
     top: 0;
     left: 0;
@@ -131,19 +129,5 @@ onUnmounted(() => {
     border: var(--color-highlight) 1px solid;
     box-sizing: border-box;
   }
-
-  &-fallback {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    width: inherit;
-    height: inherit;
-
-    & > img {
-      z-index: 0;
-    }
-  }
-
 }
 </style>
