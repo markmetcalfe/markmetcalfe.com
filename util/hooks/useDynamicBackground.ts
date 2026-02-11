@@ -2,8 +2,10 @@ import { useVisualsStore } from '~/stores/visuals'
 
 export const useShowBackground = () => {
   const visualsStore = useVisualsStore()
+  visualsStore.show()
+}
 
-  onMounted(() => {
-    visualsStore.start()
-  })
+export const useHideBackground = () => {
+  const visualsStore = useVisualsStore()
+  visualsStore.hide()
 }

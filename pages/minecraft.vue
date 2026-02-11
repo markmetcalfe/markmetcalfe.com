@@ -12,7 +12,9 @@
 </template>
 
 <script setup lang="ts">
-// This component is simple and doesn't require any additional state or logic
+import { useHideBackground } from '~/util/hooks/useDynamicBackground'
+
+useHideBackground()
 </script>
 
 <style lang="scss">
