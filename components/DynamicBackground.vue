@@ -1,31 +1,31 @@
 <template>
   <div>
-    <div
-      class="dynamicbackground"
-      :class="{ 'dynamicbackground--hidden': !visualsStore.visible }"
-    />
+    <div class="dynamicbackground" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { isSafari } from 'react-device-detect'
 import { Renderer } from '~/util/3d/renderer'
 import { useVisualsStore } from '~/stores/visuals'
-import { useOnElementMounted } from '~/util/hooks/useOnElementMounted'
 
 const visualsStore = useVisualsStore()
 const renderer = ref<Renderer | undefined>(undefined)
 
-useOnElementMounted(
-  '.dynamicbackground',
-  (element: HTMLElement) => {
-    const rendererInstance = new Renderer(element)
-    visualsStore.setRenderer(rendererInstance)
-    rendererInstance.initialise()
-    rendererInstance.start()
-    renderer.value = rendererInstance
-  },
-)
+onMounted(() => {
+  setTimeout(
+    () => {
+      const rendererInstance = new Renderer(
+        document.querySelector('.dynamicbackground')!,
+      )
+      visualsStore.setRenderer(rendererInstance)
+      rendererInstance.initialise()
+      renderer.value = rendererInstance
+    },
+    isSafari ? 500 : 100, // Give Safari more time to init
+  )
+})
 
 onUnmounted(() => {
   renderer.value?.cleanUp()
@@ -44,9 +44,5 @@ onUnmounted(() => {
   z-index: -100;
   transition: opacity 0.4s;
   cursor: pointer;
-
-  &--hidden {
-    opacity: 0;
-  }
 }
 </style>
