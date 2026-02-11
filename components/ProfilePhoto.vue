@@ -12,9 +12,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { Renderer } from '~/util/3d/renderer'
 import { PartialSphere, Sphere } from '~/util/3d/geometry'
+import { useOnElementMounted } from '~/util/hooks/useOnElementMounted'
 
 const visualsStore = useVisualsStore()
 
@@ -55,15 +56,10 @@ const onClick = (): void => {
   visualsStore.randomise()
 }
 
-onMounted(() => {
-  setTimeout(() => {
-    const photoBgElement = document.querySelector(
-      '.profilephoto-bg',
-    ) as HTMLElement
-    if (!photoBgElement) {
-      return
-    }
-    renderer.value = new Renderer(photoBgElement)
+useOnElementMounted(
+  '.profilephoto-bg',
+  (element: HTMLElement) => {
+    renderer.value = new Renderer(element)
       .setGetDefaultGeometry(() => geometryDefinition)
       .setOnRenderTick(renderer =>
         renderer.getGeometry()?.forEach(geometry => geometry.rotate()),
@@ -81,8 +77,8 @@ onMounted(() => {
       .start()
 
     renderer.value.getCanvasElement()?.style.setProperty('border-radius', '50%')
-  }, 500)
-})
+  },
+)
 
 onUnmounted(() => {
   setTimeout(() => {

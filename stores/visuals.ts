@@ -3,9 +3,9 @@ import { isMobile } from 'is-mobile'
 import type { Vector3 } from 'three'
 import { useSiteStore } from './site'
 import {
+  Cube,
   type GeometryAttributes,
   mapGeometryAttributes,
-  PartialSphere,
 } from '~/util/3d/geometry'
 import type { Renderer } from '~/util/3d/renderer'
 import {
@@ -58,27 +58,11 @@ export interface VisualStore {
 
 export const defaultGeometry: GeometryAttributes[] = [
   {
-    type: PartialSphere.getName(),
-    color: 'rgb(0, 128, 0)',
+    type: Cube.getName(),
+    color: 'rgb(0, 255, 0)',
     solid: false,
-    radius: 5,
-    detail: 80,
-    reverseRotation: false,
-  },
-  {
-    type: PartialSphere.getName(),
-    color: 'rgb(0, 0, 255)',
-    solid: false,
-    radius: 5,
-    detail: 90,
-    reverseRotation: false,
-  },
-  {
-    type: PartialSphere.getName(),
-    color: 'rgb(255, 0, 0)',
-    solid: false,
-    radius: 5,
-    detail: 100,
+    radius: 2,
+    detail: 10,
     reverseRotation: false,
   },
 ]
@@ -88,30 +72,30 @@ const initialState: VisualStore = {
   geometryConfig: defaultGeometry,
   followCursor: true,
   zoom: {
-    min: -6,
-    max: 4,
-    current: -6,
+    min: 6,
+    max: 10,
+    current: 6,
   },
   autoZoom: {
     mode: AutoZoomMode.SMOOTH,
-    speed: 100,
+    speed: 20,
     direction: 'in',
     beat: 0,
   },
   scrollToZoom: true,
   rotationSpeed: {
-    x: 5,
-    y: 5,
+    x: 50,
+    y: 50,
   },
   beatMatch: {
-    enabled: true,
-    randomizeColors: true,
-    syncToBar: true,
+    enabled: false,
+    randomizeColors: false,
+    syncToBar: false,
   },
   listeners: {
     onRandomise: undefined,
   },
-  visible: false,
+  visible: true,
 }
 
 export const useVisualsStore = defineStore('visuals', {
@@ -413,10 +397,6 @@ export const useVisualsStore = defineStore('visuals', {
     start() {
       if (!this.renderer?.isStarted()) {
         this.listeners.onStart?.()
-        setTimeout(() => {
-          this.autoZoom.speed = 5
-          this.zoom.min = -2
-        }, 500)
       }
       this.show()
     },

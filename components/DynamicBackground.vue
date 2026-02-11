@@ -8,30 +8,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { isSafari } from 'react-device-detect'
+import { ref, onUnmounted } from 'vue'
 import { Renderer } from '~/util/3d/renderer'
 import { useVisualsStore } from '~/stores/visuals'
+import { useOnElementMounted } from '~/util/hooks/useOnElementMounted'
 
 const visualsStore = useVisualsStore()
 const renderer = ref<Renderer | undefined>(undefined)
 
-onMounted(() => {
-  setTimeout(
-    () => {
-      const rendererInstance = new Renderer(
-        document.querySelector('.dynamicbackground')!,
-      )
-      visualsStore.setRenderer(rendererInstance)
-      rendererInstance.initialise()
-      visualsStore.listeners.onStart = () => {
-        rendererInstance.start()
-      }
-      renderer.value = rendererInstance
-    },
-    isSafari ? 500 : 100, // Give Safari more time to init
-  )
-})
+useOnElementMounted(
+  '.dynamicbackground',
+  (element: HTMLElement) => {
+    const rendererInstance = new Renderer(element)
+    visualsStore.setRenderer(rendererInstance)
+    rendererInstance.initialise()
+    rendererInstance.start()
+    renderer.value = rendererInstance
+  },
+)
 
 onUnmounted(() => {
   renderer.value?.cleanUp()
