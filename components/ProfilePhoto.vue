@@ -3,7 +3,7 @@
     class="profilephoto"
     @click="randomiseProfile"
   >
-    <img src="/me.png?v=6">
+    <img src="/me.png?v=7">
     <div class="profilephoto-bg" />
   </div>
 </template>
