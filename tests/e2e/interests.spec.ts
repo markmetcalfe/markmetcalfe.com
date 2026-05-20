@@ -8,7 +8,6 @@ test.describe('InterestsPage', () => {
   test('can load page', async ({ page }, testInfo) => {
     await expect(page.locator('text="Interests"')).toBeVisible()
 
-    await expect(page.locator('text="Visual Art"')).toBeVisible()
     await expect(page.locator('text="DJing"')).toBeVisible()
     await expect(page.locator('text="Recently Played"')).toBeVisible()
 
@@ -23,16 +22,10 @@ test.describe('InterestsPage', () => {
     await expect(page.locator('body')).toContainText('Mark Metcalfe')
   })
 
-  test('can navigate to instagram', async ({ page }) => {
-    const link = page.locator('a:has-text("Instagram")')
-
-    await expect(link).toHaveAttribute('href', 'https://www.instagram.com/_vizshun/')
-  })
-
   test('can navigate to soundcloud', async ({ page }) => {
     const link = page.locator('a:has-text("Soundcloud")')
 
-    await expect(link).toHaveAttribute('href', 'https://soundcloud.com/vizshun')
+    await expect(link).toHaveAttribute('href', 'https://soundcloud.com/oh-high-mark')
   })
 
   test('can navigate to minecraft server', async ({ page }) => {

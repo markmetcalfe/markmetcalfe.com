@@ -19,14 +19,6 @@
               <Icon name="bx:bxl-github" />
             </a>
             <a
-              href="https://instagram.com/_vizshun"
-              title="Instagram"
-              target="_blank"
-              rel="noopener noreferer"
-            >
-              <Icon name="bx:bxl-instagram" />
-            </a>
-            <a
               href="https://www.linkedin.com/in/mark-metcalfe/"
               title="LinkedIn"
               target="_blank"

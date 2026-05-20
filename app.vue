@@ -2,23 +2,15 @@
   <div>
     <NuxtPage />
     <DynamicBackground />
-    <a
-      class="seo-link"
-      href="https://www.instagram.com/_vizshun/"
-    >@vizshun</a>
-    <a
-      class="seo-link"
-      href="https://www.instagram.com/_vizshun/"
-    >@_vizshun</a>
   </div>
 </template>
 
 <script setup lang="ts">
 useSeoMeta({
-  title: 'Mark Metcalfe | Vizshun',
-  ogTitle: 'Mark Metcalfe | Vizshun',
-  description: 'Mark Metcalfe / Vizshun: Developer & Visual Artist',
-  ogDescription: 'Mark Metcalfe / Vizshun: Developer & Visual Artist',
+  title: 'Mark Metcalfe',
+  ogTitle: 'Mark Metcalfe',
+  description: 'Mark Metcalfe: Developer & Visual Artist',
+  ogDescription: 'Mark Metcalfe: Developer & Visual Artist',
   ogImage: 'https://markmetcalfe.com/social-card.jpg?v=4',
 })
 
