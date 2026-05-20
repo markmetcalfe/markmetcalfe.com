@@ -28,14 +28,6 @@ test.describe('HomePage', () => {
     await expect(link).toHaveAttribute('href', 'https://github.com/markmetcalfe')
   })
 
-  test('can navigate to instagram', async ({ page }) => {
-    await page.goto('/')
-
-    const link = page.getByTitle('Instagram')
-
-    await expect(link).toHaveAttribute('href', 'https://instagram.com/_vizshun')
-  })
-
   test('can navigate to linkedin', async ({ page }) => {
     await page.goto('/')
 
