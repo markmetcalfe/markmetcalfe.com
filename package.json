@@ -42,7 +42,7 @@
     "@iconify-json/bx": "^1.2.2",
     "@iconify-json/fad": "^1.2.1",
     "@playwright/test": "^1.52.0",
-    "@types/color-convert": "^2.0.4",
+    "@types/color-convert": "^3.0.0",
     "@types/spotify-api": "^0.0.26",
     "@types/three": "^0.184.0",
     "chromatic": "^13.0.0",
