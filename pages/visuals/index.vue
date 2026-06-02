@@ -39,7 +39,12 @@
           />
 
           <ToggleSwitch
-            v-if="!isMobile()"
+            v-if="isMobile()"
+            v-model="visualsStore.edgeBounce.enabled"
+            label="Edge Bounce"
+          />
+          <ToggleSwitch
+            v-else
             v-model="visualsStore.followCursor"
             label="Follow Cursor"
           />

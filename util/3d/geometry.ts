@@ -70,9 +70,27 @@ export abstract class Geometry {
     return this
   }
 
-  public moveTowardPosition(targetPosition: THREE.Vector3) {
-    this.object.position.x += (targetPosition.x - this.object.position.x) / 50
-    this.object.position.y += (targetPosition.y - this.object.position.y) / 50
+  public moveTowardPosition(
+    targetPosition: THREE.Vector3,
+    maintainVelocity = false,
+  ) {
+    if (!maintainVelocity) {
+      this.object.position.x += (targetPosition.x - this.object.position.x) / 50
+      this.object.position.y += (targetPosition.y - this.object.position.y) / 50
+      return this
+    }
+
+    const deltaX = targetPosition.x - this.object.position.x
+    const deltaY = targetPosition.y - this.object.position.y
+    const distance = Math.hypot(deltaX, deltaY)
+
+    if (distance === 0) {
+      return this
+    }
+
+    const step = Math.min(0.05, distance)
+    this.object.position.x += (deltaX / distance) * step
+    this.object.position.y += (deltaY / distance) * step
     return this
   }
 

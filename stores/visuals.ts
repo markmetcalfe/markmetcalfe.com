@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { isMobile } from 'is-mobile'
-import type { Vector3 } from 'three'
+import { Vector3 } from 'three'
 import { useSiteStore } from './site'
 import {
   Octahedron,
@@ -28,6 +28,15 @@ export interface VisualStore {
   renderer: Renderer | undefined
   geometryConfig: GeometryAttributes[]
   followCursor: boolean
+  edgeBounce: {
+    enabled: boolean
+    target: Vector3 | undefined
+    velocity: {
+      x: number
+      y: number
+    }
+    speed: number
+  }
   zoom: {
     min: number
     max: number
@@ -69,6 +78,15 @@ const initialState: VisualStore = {
   renderer: undefined,
   geometryConfig: defaultGeometry,
   followCursor: true,
+  edgeBounce: {
+    enabled: false,
+    target: undefined,
+    velocity: {
+      x: 1,
+      y: 0.7,
+    },
+    speed: 0.02,
+  },
   zoom: {
     min: 6,
     max: 10,
@@ -98,6 +116,15 @@ const initialState: VisualStore = {
 export const useVisualsStore = defineStore('visuals', {
   state: () => initialState,
   actions: {
+    syncDeviceSettings() {
+      if (isMobile()) {
+        this.edgeBounce.enabled = true
+        this.followCursor = false
+        this.autoZoom.mode = AutoZoomMode.DISABLED
+        this.zoom.current = 10
+      }
+    },
+
     generateGeometry() {
       const geometry = this.geometryConfig.map(mapGeometryAttributes)
       this.renderer!.placeGeometry(geometry)
@@ -144,6 +171,10 @@ export const useVisualsStore = defineStore('visuals', {
       this.zoom.current -= 0.1
     },
     randomiseZoom() {
+      if (isMobile() && this.edgeBounce.enabled) {
+        return
+      }
+
       this.setCurrentZoom(getRandomInt(this.zoom.min, this.zoom.max))
 
       this.autoZoom.mode = getRandomValue([
@@ -164,6 +195,12 @@ export const useVisualsStore = defineStore('visuals', {
     tick(positionData: {
       mousePosition: Vector3 | undefined
       startingPosition: Vector3 | undefined
+      viewportBounds: {
+        minX: number
+        maxX: number
+        minY: number
+        maxY: number
+      }
     }) {
       this.movementTick(positionData)
       this.autoZoomTick()
@@ -173,21 +210,80 @@ export const useVisualsStore = defineStore('visuals', {
     movementTick({
       mousePosition,
       startingPosition,
+      viewportBounds,
     }: {
       mousePosition: Vector3 | undefined
       startingPosition: Vector3 | undefined
+      viewportBounds: {
+        minX: number
+        maxX: number
+        minY: number
+        maxY: number
+      }
     }) {
-      const objectScale = isMobile() ? 0.9 : 1
+      const mobile = isMobile()
+      const objectScale = mobile ? 0.9 : 1
+      const bounceTarget = this.getNextBounceTarget(
+        viewportBounds,
+        startingPosition,
+      )
+
       this.renderer?.getGeometry()!.forEach((object) => {
         object.rotate()
         object.setSize(objectScale)
-        if (!isMobile() && this.followCursor && mousePosition) {
-          object.moveTowardPosition(mousePosition)
+        if (this.followCursor && mousePosition) {
+          object.moveTowardPosition(mousePosition, mobile)
         }
-        else if (startingPosition) {
-          object.moveTowardPosition(startingPosition)
+        else if (this.edgeBounce.enabled) {
+          object.moveTowardPosition(bounceTarget, mobile)
+        }
+        else {
+          object.moveTowardPosition(startingPosition ?? new Vector3(0, 0, 0), mobile)
         }
       })
+    },
+
+    getNextBounceTarget(
+      viewportBounds: {
+        minX: number
+        maxX: number
+        minY: number
+        maxY: number
+      },
+      startingPosition: Vector3 | undefined,
+    ) {
+      if (!this.edgeBounce.target) {
+        this.edgeBounce.target = startingPosition?.clone()
+          ?? new Vector3(0, 0, 0)
+      }
+
+      const boundsPadding = 0.3
+      const minX = viewportBounds.minX + boundsPadding
+      const maxX = viewportBounds.maxX - boundsPadding
+      const minY = viewportBounds.minY + boundsPadding
+      const maxY = viewportBounds.maxY - boundsPadding
+
+      const nextX = this.edgeBounce.target.x
+        + this.edgeBounce.velocity.x * this.edgeBounce.speed
+      const nextY = this.edgeBounce.target.y
+        + this.edgeBounce.velocity.y * this.edgeBounce.speed
+
+      if (nextX <= minX || nextX >= maxX) {
+        this.edgeBounce.velocity.x *= -1
+      }
+      if (nextY <= minY || nextY >= maxY) {
+        this.edgeBounce.velocity.y *= -1
+      }
+
+      const targetX = this.edgeBounce.target.x
+        + this.edgeBounce.velocity.x * this.edgeBounce.speed
+      const targetY = this.edgeBounce.target.y
+        + this.edgeBounce.velocity.y * this.edgeBounce.speed
+
+      this.edgeBounce.target.x = Math.min(maxX, Math.max(minX, targetX))
+      this.edgeBounce.target.y = Math.min(maxY, Math.max(minY, targetY))
+
+      return this.edgeBounce.target
     },
 
     autoZoomTick() {
@@ -340,6 +436,7 @@ export const useVisualsStore = defineStore('visuals', {
     setRenderer(renderer: Renderer) {
       const siteStore = useSiteStore()
       this.renderer = renderer
+      this.syncDeviceSettings()
       this.renderer
         .setGetZoom(() => this.zoom.current)
         .setOnRenderTick((_, positionData) => {

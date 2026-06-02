@@ -29,6 +29,12 @@ export class Renderer {
     _positionData: {
       mousePosition: THREE.Vector3 | undefined
       startingPosition: THREE.Vector3 | undefined
+      viewportBounds: {
+        minX: number
+        maxX: number
+        minY: number
+        maxY: number
+      }
     },
   ) => {}
 
@@ -78,6 +84,12 @@ export class Renderer {
       positionData: {
         mousePosition: THREE.Vector3 | undefined
         startingPosition: THREE.Vector3 | undefined
+        viewportBounds: {
+          minX: number
+          maxX: number
+          minY: number
+          maxY: number
+        }
       }
     ) => void,
   ): this {
@@ -175,6 +187,7 @@ export class Renderer {
     this.onRenderTick(this, {
       mousePosition: this.getMousePosition(),
       startingPosition: this.getStartingPosition(),
+      viewportBounds: this.getViewportBounds(),
     })
     this.camera!.position.z = this.getZoom()
     this.render()
@@ -207,6 +220,21 @@ export class Renderer {
     const startingPosX = this.getWidth() / 2
     const startingPosY = this.getHeight() / 2
     return this.getObjectTargetPositionVector(startingPosX, startingPosY)
+  }
+
+  protected getViewportBounds() {
+    const topLeft = this.getObjectTargetPositionVector(0, 0)
+    const bottomRight = this.getObjectTargetPositionVector(
+      this.getWidth(),
+      this.getHeight(),
+    )
+
+    return {
+      minX: Math.min(topLeft.x, bottomRight.x),
+      maxX: Math.max(topLeft.x, bottomRight.x),
+      minY: Math.min(topLeft.y, bottomRight.y),
+      maxY: Math.max(topLeft.y, bottomRight.y),
+    }
   }
 
   private getMousePosition() {
