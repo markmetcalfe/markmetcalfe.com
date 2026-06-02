@@ -10,7 +10,14 @@
           :title="sequencerStore.isPlaying ? 'Pause' : 'Play'"
           @click="sequencerStore.togglePlay"
         >
-          <Icon :name="'fad:' + (sequencerStore.isPlaying ? 'pause' : 'play')" />
+          <Icon
+            v-if="sequencerStore.isPlaying"
+            name="fad:pause"
+          />
+          <Icon
+            v-else
+            name="fad:play"
+          />
         </LinkButton>
 
         <LinkButton
@@ -66,7 +73,14 @@
                 :title="row.muted ? 'Unmute' : 'Mute'"
                 @click="row.muted = !row.muted"
               >
-                <Icon :name="'bx:volume-' + (row.muted ? 'mute' : 'full')" />
+                <Icon
+                  v-if="row.muted"
+                  name="bx:volume-mute"
+                />
+                <Icon
+                  v-else
+                  name="bx:volume-full"
+                />
               </LinkButton>
 
               <LinkButton
