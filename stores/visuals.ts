@@ -3,7 +3,7 @@ import { isMobile } from 'is-mobile'
 import type { Vector3 } from 'three'
 import { useSiteStore } from './site'
 import {
-  Cube,
+  Octahedron,
   type GeometryAttributes,
   mapGeometryAttributes,
 } from '~/util/3d/geometry'
@@ -56,10 +56,10 @@ export interface VisualStore {
 
 export const defaultGeometry: GeometryAttributes[] = [
   {
-    type: Cube.getName(),
+    type: Octahedron.getName(),
     color: 'rgb(0, 255, 0)',
     solid: false,
-    radius: 2,
+    radius: 1,
     detail: 10,
     reverseRotation: false,
   },
@@ -82,8 +82,8 @@ const initialState: VisualStore = {
   },
   scrollToZoom: true,
   rotationSpeed: {
-    x: 50,
-    y: 50,
+    x: 100,
+    y: 100,
   },
   beatMatch: {
     enabled: false,
