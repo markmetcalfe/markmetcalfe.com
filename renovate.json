@@ -2,10 +2,12 @@
   "extends": [
     "config:recommended"
   ],
+  "minimumReleaseAge": "14 days",
   "packageRules": [
     {
       "description": "Update @markmetcalfe packages every hour",
       "matchPackageNames": ["@markmetcalfe/*"],
+      "minimumReleaseAge": null,
       "schedule": ["* * * * *"]
     },
     {
