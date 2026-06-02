@@ -11,14 +11,14 @@
       "schedule": ["* * * * *"]
     },
     {
-      "matchPackagePatterns": [
-        "*"
-      ],
       "matchUpdateTypes": [
         "patch"
       ],
       "groupName": "all patch dependencies",
-      "groupSlug": "all-patch"
+      "groupSlug": "all-patch",
+      "matchPackageNames": [
+        "*"
+      ]
     },
     {
       "matchUpdateTypes": [
