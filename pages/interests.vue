@@ -5,10 +5,22 @@
     <template #title>
       Interests
     </template>
+    <SectionBlock
+      title="Visual Art"
+    >
+      <LinkButton
+        text="Instagram"
+        href="https://www.instagram.com/markus_vizshun/"
+        large
+        external
+      >
+        <Icon name="simple-icons:instagram" />
+      </LinkButton>
+    </SectionBlock>
     <SectionBlock title="DJing">
       <LinkButton
         text="Soundcloud"
-        href="https://soundcloud.com/oh-high-mark"
+        href="https://soundcloud.com/markus_vizshun"
         large
         external
       >
