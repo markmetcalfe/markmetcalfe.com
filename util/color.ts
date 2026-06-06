@@ -1,5 +1,5 @@
 import colorConvert from 'color-convert'
-import type { RGB } from 'color-convert/conversions'
+import type { RGB } from 'color-convert'
 import { GetColorName } from 'hex-color-to-color-name'
 import { getRandomInt } from './random'
 
