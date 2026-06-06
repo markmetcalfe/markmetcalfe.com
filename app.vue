@@ -2,6 +2,10 @@
   <div>
     <NuxtPage />
     <DynamicBackground />
+    <a
+      class="seo-link"
+      href="https://www.instagram.com/markus_vizshun/"
+    >@markus_vizshun</a>
   </div>
 </template>
 
@@ -11,7 +15,7 @@ useSeoMeta({
   ogTitle: 'Mark Metcalfe',
   description: 'Mark Metcalfe: Developer & Visual Artist',
   ogDescription: 'Mark Metcalfe: Developer & Visual Artist',
-  ogImage: 'https://markmetcalfe.com/social-card.jpg?v=4',
+  ogImage: 'https://markmetcalfe.com/social-card.jpg?v=5',
 })
 
 onMounted(() => {
