@@ -46,7 +46,7 @@
     "@playwright/test": "^1.52.0",
     "@types/spotify-api": "^0.0.26",
     "@types/three": "^0.184.0",
-    "chromatic": "^13.0.0",
+    "chromatic": "^17.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
     "sass": "^1.86.0",
