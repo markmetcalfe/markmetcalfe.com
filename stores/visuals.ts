@@ -77,9 +77,9 @@ export const defaultGeometry: GeometryAttributes[] = [
 const initialState: VisualStore = {
   renderer: undefined,
   geometryConfig: defaultGeometry,
-  followCursor: true,
+  followCursor: false,
   edgeBounce: {
-    enabled: false,
+    enabled: true,
     target: undefined,
     velocity: {
       x: 1,
@@ -90,10 +90,10 @@ const initialState: VisualStore = {
   zoom: {
     min: 6,
     max: 10,
-    current: 6,
+    current: 10,
   },
   autoZoom: {
-    mode: AutoZoomMode.SMOOTH,
+    mode: AutoZoomMode.DISABLED,
     speed: 20,
     direction: 'in',
     beat: 0,
@@ -116,15 +116,6 @@ const initialState: VisualStore = {
 export const useVisualsStore = defineStore('visuals', {
   state: () => initialState,
   actions: {
-    syncDeviceSettings() {
-      if (isMobile()) {
-        this.edgeBounce.enabled = true
-        this.followCursor = false
-        this.autoZoom.mode = AutoZoomMode.DISABLED
-        this.zoom.current = 10
-      }
-    },
-
     generateGeometry() {
       const geometry = this.geometryConfig.map(mapGeometryAttributes)
       this.renderer!.placeGeometry(geometry)
@@ -221,6 +212,12 @@ export const useVisualsStore = defineStore('visuals', {
         maxY: number
       }
     }) {
+      if (!isMobile() && this.edgeBounce.enabled && !this.followCursor && this.renderer?.hasUserMoved()) {
+        // Switch from edge bounce to follow cursor on first mouse move
+        this.edgeBounce.enabled = false
+        this.followCursor = true
+      }
+
       const mobile = isMobile()
       const objectScale = mobile ? 0.9 : 1
       const bounceTarget = this.getNextBounceTarget(
@@ -439,7 +436,6 @@ export const useVisualsStore = defineStore('visuals', {
     setRenderer(renderer: Renderer) {
       const siteStore = useSiteStore()
       this.renderer = renderer
-      this.syncDeviceSettings()
       this.renderer
         .setGetZoom(() => this.zoom.current)
         .setOnRenderTick((_, positionData) => {

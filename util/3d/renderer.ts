@@ -15,6 +15,8 @@ export class Renderer {
 
   protected mousePosX = 0
   protected mousePosY = 0
+  protected hasUserMovedMouse = false
+  protected isMouseInViewport = true
 
   protected onClick = (_renderer: this, _event: MouseEvent) => {}
   protected onScroll = (_renderer: this, _event: WheelEvent) => {}
@@ -148,7 +150,25 @@ export class Renderer {
     window.addEventListener('resize', () => this.onWindowResize(this), false)
     document.addEventListener(
       'mousemove',
-      event => this.onMouseMove(this, event),
+      (event) => {
+        this.hasUserMovedMouse = true
+        this.isMouseInViewport = true
+        this.onMouseMove(this, event)
+      },
+      false,
+    )
+    document.addEventListener(
+      'mouseleave',
+      () => {
+        this.isMouseInViewport = false
+      },
+      false,
+    )
+    document.addEventListener(
+      'mouseenter',
+      () => {
+        this.isMouseInViewport = true
+      },
       false,
     )
     this.renderer?.domElement.addEventListener(
@@ -214,6 +234,14 @@ export class Renderer {
 
   public randomiseColors() {
     this.geometry!.forEach(object => object.setColor(...getRandomColor()))
+  }
+
+  public hasUserMoved(): boolean {
+    return this.hasUserMovedMouse
+  }
+
+  public getIsMouseInViewport(): boolean {
+    return this.isMouseInViewport
   }
 
   protected getStartingPosition() {
