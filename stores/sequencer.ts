@@ -66,10 +66,13 @@ export const useSequencerStore = defineStore('sequencer', {
 
       Tone.setContext(new Tone.Context({ latencyHint: 'playback' }))
 
-      Tone.getTransport().scheduleRepeat((time) => {
+      Tone.getTransport().scheduleRepeat((time: number) => {
         this.grid!.forEach((row) => {
           if (!row.muted && row.beats[this.currentBeat]) {
-            localSynths[row.synthId].triggerSound(time)
+            const synth = localSynths[row.synthId]
+            if (synth) {
+              synth.triggerSound(time)
+            }
             if (row.visualsSynced) {
               visualStore.beatMatchTick(true)
             }
@@ -217,17 +220,23 @@ export const useSequencerStore = defineStore('sequencer', {
       this.allSynths = this.allSynths!.filter(
         synth => synth.getId() !== synthId,
       )
+      const replacementSynthId = this.allSynths[0]?.getId()
       this.grid = this.grid!.map(row => ({
         ...row,
-        synthId:
-          row.synthId === synthId ? this.allSynths![0].getId() : row.synthId,
+        synthId: row.synthId === synthId && replacementSynthId
+          ? replacementSynthId
+          : row.synthId,
       }))
     },
 
     syncVisuals(rowIndex: number) {
-      const currentState = this.grid![rowIndex].visualsSynced === true
+      const row = this.grid?.[rowIndex]
+      if (!row) {
+        return
+      }
+      const currentState = row.visualsSynced === true
       this.grid!.forEach(row => row.visualsSynced = false)
-      this.grid![rowIndex].visualsSynced = !currentState
+      row.visualsSynced = !currentState
     },
   },
 })

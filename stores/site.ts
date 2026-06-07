@@ -54,8 +54,13 @@ export const useSiteStore = defineStore('site', {
 
       const timesBetween = []
       for (let i = 1; i < this.beatMatch.taps.length; i++) {
-        const a = this.beatMatch.taps[i - 1].getTime()
-        const b = this.beatMatch.taps[i].getTime()
+        const previousTap = this.beatMatch.taps[i - 1]
+        const currentTap = this.beatMatch.taps[i]
+        if (!previousTap || !currentTap) {
+          continue
+        }
+        const a = previousTap.getTime()
+        const b = currentTap.getTime()
         timesBetween.push(b - a)
       }
 

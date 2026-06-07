@@ -332,7 +332,10 @@ export const useVisualsStore = defineStore('visuals', {
 
         if (this.beatMatch.randomizeColors) {
           const randomColor = getRandomColor()
-          this.geometryConfig[index].color = `rgb(${randomColor.join(', ')})`
+          const config = this.geometryConfig[index]
+          if (config) {
+            config.color = `rgb(${randomColor.join(', ')})`
+          }
           geometry.setColor(...randomColor)
         }
       })

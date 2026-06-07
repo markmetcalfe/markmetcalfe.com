@@ -1,5 +1,5 @@
 import colorConvert from 'color-convert'
-import type { RGB } from 'color-convert/conversions'
+import type { RGB } from 'color-convert'
 import { GetColorName } from 'hex-color-to-color-name'
 import { getRandomInt } from './random'
 
@@ -10,11 +10,15 @@ export const getColorName = (color: string) => {
     const rgbMatches = color.match(
       /rgba?\s*\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*\d{1,3}\s*)*\)/,
     )
-    if (rgbMatches) {
+    if (!rgbMatches) {
+      return color
+    }
+    const [, red, green, blue] = rgbMatches
+    if (red && green && blue) {
       const rgb: RGB = [
-        parseInt(rgbMatches[1]),
-        parseInt(rgbMatches[2]),
-        parseInt(rgbMatches[3]),
+        parseInt(red),
+        parseInt(green),
+        parseInt(blue),
       ]
       hexValue = colorConvert.rgb.hex(rgb)
     }
@@ -35,7 +39,7 @@ export const getColorName = (color: string) => {
   return colorName
 }
 
-export const getRandomColor = (): RGB => {
+export const getRandomColor = (): [number, number, number] => {
   const red = getRandomInt(0, 255)
   const green = getRandomInt(0, 255)
   const blue = getRandomInt(0, 255)

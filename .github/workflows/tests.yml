@@ -10,7 +10,7 @@ on:
 
 jobs:
   lint:
-    name: Lint and Build the Project
+    name: Build and lint the Project
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -30,6 +30,9 @@ jobs:
       
       - name: Lint the code
         run: npm run lint
+
+      - name: Type-check the code
+        run: npm run typecheck
 
       - name: Build the project
         run: npm run build
