@@ -10,6 +10,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
     "postinstall": "nuxt prepare",
     "test": "npx playwright test",
     "chromatic": "chromatic --playwright --exit-zero-on-changes",
@@ -54,10 +55,12 @@
     "stylelint-config-recommended-scss": "^14.1.0",
     "stylelint-config-recommended-vue": "^1.6.0",
     "stylelint-config-standard-scss": "^14.0.0",
-    "typescript": "^6.0.0"
+    "typescript": "^5.8.2",
+    "vue-tsc": "^3.3.3"
   },
   "lint-staged": {
     "**/*.{js,ts,vue,jsx,tsx}": "eslint --fix",
+    "**/*.{ts,tsx,vue}": "sh -c 'vue-tsc --noEmit -p .nuxt/tsconfig.json'",
     "**/*.vue": "stylelint --fix strict"
   }
 }

@@ -78,5 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import resume from '@markmetcalfe/resume'
+import resumeData, { type Resume } from '@markmetcalfe/resume'
+
+const resume = resumeData as unknown as Resume
 </script>

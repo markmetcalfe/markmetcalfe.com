@@ -54,8 +54,11 @@
                 :model-value="row.synthId"
                 :options="synthOptions"
                 @update:model-value="
-                  (id: string | number) =>
-                    (sequencerStore.grid![rowIndex].synthId = id.toString())
+                  (id: string | number) => {
+                    if (sequencerStore.grid?.[rowIndex]) {
+                      sequencerStore.grid[rowIndex].synthId = id.toString()
+                    }
+                  }
                 "
               />
             </div>
@@ -185,7 +188,10 @@ const synthOptions = computed(() =>
 
 onMounted(() => {
   sequencerStore.init()
-  synthToAddId.value = sequencerStore.allSynths![0].getId()
+  const firstSynth = sequencerStore.allSynths?.[0]
+  if (firstSynth) {
+    synthToAddId.value = firstSynth.getId()
+  }
 })
 
 onUnmounted(() => {

@@ -117,7 +117,10 @@ const selectedSynthId = ref<string>('')
 
 onMounted(() => {
   if (sequencerStore.allSynths && sequencerStore.allSynths.length > 0) {
-    selectedSynthId.value = sequencerStore.allSynths[0].getId()
+    const firstSynth = sequencerStore.allSynths[0]
+    if (firstSynth) {
+      selectedSynthId.value = firstSynth.getId()
+    }
   }
 })
 
@@ -134,7 +137,10 @@ const deleteSynth = (): void => {
   sequencerStore.deleteSynth(selectedSynthId.value)
   if (sequencerStore.allSynths && sequencerStore.allSynths.length > 0) {
     const lastIndex = sequencerStore.allSynths.length - 1
-    selectedSynthId.value = sequencerStore.allSynths[lastIndex].getId()
+    const lastSynth = sequencerStore.allSynths[lastIndex]
+    if (lastSynth) {
+      selectedSynthId.value = lastSynth.getId()
+    }
   }
 }
 </script>

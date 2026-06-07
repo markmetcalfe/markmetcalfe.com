@@ -9,7 +9,10 @@
       :options="geometryItems"
     />
 
-    <div class="editshapes-settings">
+    <div
+      v-if="selectedShape"
+      class="editshapes-settings"
+    >
       <DropdownSelect
         v-model="selectedShape.type"
         label="Type"
@@ -37,10 +40,7 @@
         label="Radius"
         type="number"
         :model-value="selectedShape.radius.toFixed(0)"
-        @update:model-value="
-          (radius: string | number) =>
-            (selectedShape.radius = parseFloat(radius.toString()))
-        "
+        @update:model-value="updateSelectedShapeRadius"
       />
 
       <TextField
@@ -129,6 +129,13 @@ const save = (): void => {
     loading.value = false
   }, 250)
   visualsStore.generateGeometry()
+}
+
+const updateSelectedShapeRadius = (radius: string | number): void => {
+  if (!selectedShape.value) {
+    return
+  }
+  selectedShape.value.radius = parseFloat(radius.toString())
 }
 
 onMounted(() => {
