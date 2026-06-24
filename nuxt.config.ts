@@ -27,6 +27,12 @@ export default defineNuxtConfig({
     siteDomain: 'markmetcalfe.com',
     mailtoLink: 'mailto:mark@markmetcalfe.com',
   },
+  runtimeConfig: {
+    public: {
+      // Set NUXT_PUBLIC_DOODLE_API_URL=http://localhost:8787 in .env for local dev
+      doodleApiUrl: '',
+    },
+  },
   compatibilityDate: '2025-05-28',
   eslint: {
     config: {

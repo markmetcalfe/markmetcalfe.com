@@ -34,6 +34,7 @@
     </NuxtLink>
     <button
       v-else
+      :type="type"
       :disabled="disabled"
       :title="title"
       :aria-label="title"
@@ -60,6 +61,7 @@ interface Props {
   disabled?: boolean
   large?: boolean
   on?: boolean
+  type?: 'button' | 'submit' | 'reset'
 }
 
 withDefaults(defineProps<Props>(), {
@@ -68,6 +70,7 @@ withDefaults(defineProps<Props>(), {
   disabled: false,
   large: false,
   on: false,
+  type: 'button',
 })
 
 const emit = defineEmits<{
