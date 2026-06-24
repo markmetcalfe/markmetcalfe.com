@@ -69,6 +69,13 @@
       >
         <Icon name="fad:waveform" />
       </LinkButton>
+      <LinkButton
+        text="Games"
+        href="/games"
+        large
+      >
+        <Icon name="bx:joystick" />
+      </LinkButton>
     </SectionBlock>
 
     <SectionBlock title="More">

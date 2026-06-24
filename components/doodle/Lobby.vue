@@ -24,22 +24,40 @@
 
     <div class="doodlelobby-invite">
       <span class="doodlelobby-invite-url">{{ roomUrl }}</span>
-      <button
-        class="doodlelobby-invite-copy"
+      <LinkButton
+        :text="copied ? 'Copied!' : 'Copy Link'"
+        small
         @click="copyLink"
       >
-        {{ copied ? 'Copied!' : 'Copy Link' }}
-      </button>
+        <Icon
+          v-if="copied"
+          name="bx:check"
+        />
+        <Icon
+          v-else
+          name="bx:copy"
+        />
+      </LinkButton>
     </div>
 
-    <button
+    <FaderInput
       v-if="store.isHost"
-      class="doodlelobby-start"
+      v-model="store.roundLength"
+      label="Round length"
+      :min="30"
+      :max="180"
+      :step="10"
+      class="doodlelobby-settings"
+    />
+
+    <LinkButton
+      v-if="store.isHost"
+      :text="store.players.length < 2 ? 'Need at least 2 players' : 'Start Game'"
       :disabled="store.players.length < 2"
       @click="store.startGame()"
     >
-      {{ store.players.length < 2 ? 'Need at least 2 players' : 'Start Game' }}
-    </button>
+      <Icon name="bx:play" />
+    </LinkButton>
     <p
       v-else
       class="doodlelobby-waiting"
@@ -97,8 +115,7 @@ function copyLink() {
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    border: 1px solid var(--color-disabled);
-    border-radius: 4px;
+    border: 1px solid var(--color-light);
     padding: 0.4rem 0.75rem;
     font-size: 0.95rem;
 
@@ -111,8 +128,7 @@ function copyLink() {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    border: 1px solid var(--color-disabled);
-    border-radius: 4px;
+    border: 1px solid var(--color-light);
     padding: 0.5rem 0.75rem;
     max-width: 480px;
     width: 100%;
@@ -121,54 +137,21 @@ function copyLink() {
     &-url {
       flex: 1;
       font-size: 0.8rem;
-      color: var(--color-disabled);
+      color: var(--color-light);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       text-align: left;
     }
-
-    &-copy {
-      background: none;
-      border: 1px solid var(--color-highlight);
-      color: var(--color-highlight);
-      border-radius: 4px;
-      font-size: 0.8rem;
-      padding: 0.2rem 0.6rem;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 200ms, color 200ms;
-
-      &:hover {
-        background: var(--color-highlight);
-        color: var(--color-dark);
-      }
-    }
   }
 
-  &-start {
-    background: var(--color-highlight);
-    color: var(--color-dark);
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0.65rem 2rem;
-    transition: opacity 200ms;
-
-    &:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    &:hover:not(:disabled) {
-      opacity: 0.85;
-    }
+  &-settings {
+    width: 100%;
+    max-width: 280px;
   }
 
   &-waiting {
-    color: var(--color-disabled);
+    color: var(--color-light);
     font-size: 0.9rem;
   }
 }

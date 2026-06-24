@@ -22,7 +22,7 @@
           class="fader-input"
           :min="min"
           :max="max"
-          :step="1 / 10 ** decimalPlaces"
+          :step="step ?? (1 / 10 ** decimalPlaces)"
           :value="roundedValue"
           role="slider"
           :aria-valuemin="min"
@@ -63,6 +63,7 @@ interface Props {
   min?: number
   max?: number
   decimalPlaces?: number
+  step?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {

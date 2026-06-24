@@ -78,6 +78,7 @@ export const useDoodleStore = defineStore('doodle', {
     messages: [] as DoodleMessage[],
     drawColor: '#000000',
     drawSize: 3,
+    roundLength: 70,
   }),
 
   getters: {
@@ -150,7 +151,7 @@ export const useDoodleStore = defineStore('doodle', {
     },
 
     startGame() {
-      this.send({ type: 'start_game' })
+      this.send({ type: 'start_game', round_length: this.roundLength })
     },
 
     sendGuessOrChat(text: string) {

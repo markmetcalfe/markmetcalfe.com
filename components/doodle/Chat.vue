@@ -26,9 +26,12 @@
         autocomplete="off"
         @keydown.enter="submit"
       >
-      <button @click="submit">
-        →
-      </button>
+      <LinkButton
+        small
+        @click="submit"
+      >
+        <Icon name="bx:right-arrow-alt" />
+      </LinkButton>
     </div>
   </div>
 </template>
@@ -88,8 +91,7 @@ watch(() => store.messages.length, async () => {
     }
 
     &::-webkit-scrollbar-thumb {
-      background: var(--color-disabled);
-      border-radius: 2px;
+      background: var(--color-light);
     }
   }
 
@@ -117,14 +119,13 @@ watch(() => store.messages.length, async () => {
     display: flex;
     gap: 0.4rem;
     padding: 0.5rem;
-    border-top: 1px solid var(--color-disabled);
+    border-top: 1px solid var(--color-light);
     flex-shrink: 0;
 
     input {
       flex: 1;
       background: transparent;
-      border: 1px solid var(--color-disabled);
-      border-radius: 4px;
+      border: 1px solid var(--color-light);
       color: var(--color-light);
       font-size: 0.8rem;
       padding: 0.35rem 0.6rem;
@@ -140,19 +141,11 @@ watch(() => store.messages.length, async () => {
       }
     }
 
-    button {
-      background: none;
-      border: 1px solid var(--color-highlight);
-      color: var(--color-highlight);
-      border-radius: 4px;
-      font-size: 0.9rem;
-      padding: 0 0.6rem;
-      cursor: pointer;
-      transition: background 150ms, color 150ms;
+    .linkbutton {
+      display: flex;
 
-      &:hover {
-        background: var(--color-highlight);
-        color: var(--color-dark);
+      button {
+        flex: 1;
       }
     }
   }

@@ -42,14 +42,14 @@ function isDrawing(playerId: string) {
 
 .doodleplayers {
   padding: 0.75rem;
-  border-bottom: 1px solid var(--color-disabled);
+  border-bottom: 1px solid var(--color-light);
   flex-shrink: 0;
 
   &-heading {
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--color-disabled);
+    color: var(--color-light);
     font-weight: 400;
     margin-bottom: 0.5rem;
   }
@@ -65,7 +65,7 @@ function isDrawing(playerId: string) {
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      background: var(--color-disabled);
+      background: var(--color-light);
       color: var(--color-dark);
       display: flex;
       align-items: center;
@@ -85,7 +85,7 @@ function isDrawing(playerId: string) {
     &-score {
       font-weight: 600;
       font-size: 0.8rem;
-      color: var(--color-disabled);
+      color: var(--color-light);
     }
 
     &-drawing {

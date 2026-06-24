@@ -56,7 +56,7 @@ const sorted = computed(() =>
 
   &-word {
     font-size: 1rem;
-    color: var(--color-disabled);
+    color: var(--color-light);
   }
 
   &-scores {
@@ -71,8 +71,7 @@ const sorted = computed(() =>
   &-score {
     display: flex;
     justify-content: space-between;
-    border: 1px solid var(--color-disabled);
-    border-radius: 4px;
+    border: 1px solid var(--color-light);
     padding: 0.4rem 0.75rem;
     font-size: 0.95rem;
 
@@ -92,7 +91,7 @@ const sorted = computed(() =>
 
   &-next {
     font-size: 0.85rem;
-    color: var(--color-disabled);
+    color: var(--color-light);
   }
 }
 </style>
