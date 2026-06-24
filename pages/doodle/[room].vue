@@ -1,17 +1,10 @@
 <template>
   <div class="doodleroom">
-    <!-- Header -->
-    <header class="doodleroom-header">
-      <NuxtLink
-        to="/games"
-        class="doodleroom-header-back"
-        aria-label="Leave game"
-      >
-        <Icon name="bx:arrow-back" />
-      </NuxtLink>
-
-      <span class="doodleroom-header-brand">Doodle</span>
-
+    <HeaderBar
+      title="Doodle"
+      back-href="/games"
+      back-label="Leave game"
+    >
       <span
         v-if="store.totalRounds > 0"
         class="doodleroom-header-round"
@@ -32,7 +25,7 @@
       >
         {{ store.timeLeft }}s
       </span>
-    </header>
+    </HeaderBar>
 
     <!-- Main canvas / lobby area -->
     <main class="doodleroom-main">
@@ -77,7 +70,9 @@
           <LinkButton
             type="submit"
             text="Join Game"
-          />
+          >
+            <Icon name="bx:log-in" />
+          </LinkButton>
         </form>
       </div>
     </div>
@@ -149,33 +144,9 @@ onUnmounted(() => {
   }
 
   &-header {
-    grid-area: header;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--color-disabled);
-
-    &-back {
-      color: var(--color-highlight);
-      font-size: 1.4rem;
-      line-height: 1;
-      flex-shrink: 0;
-    }
-
-    &-brand {
-      font-weight: 600;
-      color: var(--color-highlight);
-      flex-shrink: 0;
-
-      @include vars.mobile-only {
-        display: none;
-      }
-    }
-
     &-round {
       font-size: 0.85rem;
-      color: var(--color-disabled);
+      color: var(--color-light);
       flex-shrink: 0;
     }
 
@@ -223,12 +194,12 @@ onUnmounted(() => {
     grid-area: sidebar;
     display: flex;
     flex-direction: column;
-    border-left: 1px solid var(--color-disabled);
+    border-left: 1px solid var(--color-light);
     overflow: hidden;
 
     @include vars.mobile-only {
       border-left: none;
-      border-top: 1px solid var(--color-disabled);
+      border-top: 1px solid var(--color-light);
       max-height: 220px;
     }
   }
@@ -248,7 +219,6 @@ onUnmounted(() => {
   &-modal {
     background: var(--color-dark);
     border: 1px solid var(--color-highlight);
-    border-radius: 6px;
     padding: 2rem;
     width: 100%;
     max-width: 360px;
@@ -264,13 +234,13 @@ onUnmounted(() => {
     form {
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 0.75rem;
     }
 
     input[type='text'] {
       background: transparent;
-      border: 1px solid var(--color-disabled);
-      border-radius: 4px;
+      border: 1px solid var(--color-light);
       color: var(--color-light);
       font-size: 1rem;
       padding: 0.6rem 0.8rem;
@@ -281,24 +251,6 @@ onUnmounted(() => {
 
       &:focus {
         border-color: var(--color-highlight);
-      }
-    }
-
-    .linkbutton button {
-      background: var(--color-highlight);
-      color: var(--color-dark);
-      border: none;
-      border-radius: 4px;
-      padding: 0.6rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 150ms;
-      width: 100%;
-      justify-content: center;
-
-      &:hover {
-        opacity: 0.85;
       }
     }
   }

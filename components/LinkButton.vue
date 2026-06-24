@@ -10,6 +10,7 @@
       rel="noopener noreferer"
       :class="{
         'linkbutton-large': large,
+        'linkbutton-small': small,
         'linkbutton-hidetext': !text,
         'disabled': disabled,
       }"
@@ -25,6 +26,7 @@
       :aria-label="title"
       :class="{
         'linkbutton-large': large,
+        'linkbutton-small': small,
         'linkbutton-hidetext': !text,
         'disabled': disabled,
       }"
@@ -40,6 +42,7 @@
       :aria-label="title"
       :class="{
         'linkbutton-large': large,
+        'linkbutton-small': small,
         'linkbutton-hidetext': !text,
         'linkbutton-on': on,
         'disabled': disabled,
@@ -60,6 +63,7 @@ interface Props {
   title?: string
   disabled?: boolean
   large?: boolean
+  small?: boolean
   on?: boolean
   type?: 'button' | 'submit' | 'reset'
 }
@@ -69,6 +73,7 @@ withDefaults(defineProps<Props>(), {
   href: '',
   disabled: false,
   large: false,
+  small: false,
   on: false,
   type: 'button',
 })
@@ -109,6 +114,18 @@ const handleClick = (event: MouseEvent) => {
   font-size: 1.25rem;
 }
 
+@mixin desktop-icon-size-small {
+  height: 0.9rem;
+  width: 0.9rem;
+  font-size: 0.9rem;
+}
+
+@mixin mobile-icon-size-small {
+  height: 0.75rem;
+  width: 0.75rem;
+  font-size: 0.75rem;
+}
+
 .linkbutton {
   a,
   button {
@@ -145,6 +162,18 @@ const handleClick = (event: MouseEvent) => {
       @include vars.mobile-only {
         font-size: 1rem;
         padding: 0.5rem;
+      }
+    }
+
+    &.linkbutton-small {
+      @include vars.desktop-only {
+        font-size: 0.8rem;
+        padding: 0.3rem;
+      }
+
+      @include vars.mobile-only {
+        font-size: 0.75rem;
+        padding: 0.25rem;
       }
     }
   }
@@ -195,6 +224,28 @@ const handleClick = (event: MouseEvent) => {
 
       & svg {
         @include mobile-icon-size-large;
+      }
+    }
+  }
+
+  &-small &-icon {
+    @include vars.desktop-only {
+      @include desktop-icon-size-small;
+
+      margin-right: 0.25rem;
+
+      & svg {
+        @include desktop-icon-size-small;
+      }
+    }
+
+    @include vars.mobile-only {
+      @include mobile-icon-size-small;
+
+      margin-right: 0.2rem;
+
+      & svg {
+        @include mobile-icon-size-small;
       }
     }
   }

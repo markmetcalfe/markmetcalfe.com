@@ -20,7 +20,7 @@
           v-for="color in COLORS"
           :key="color"
           :class="['doodlecanvas-color', { 'doodlecanvas-color-active': store.drawColor === color }]"
-          :style="{ background: color, border: color === '#ffffff' ? '1px solid #555' : 'none' }"
+          :style="{ background: color }"
           :title="color"
           @click="store.drawColor = color"
         />
@@ -42,18 +42,20 @@
       </div>
 
       <div class="doodlecanvas-toolbar-actions">
-        <button
-          class="doodlecanvas-action"
+        <LinkButton
+          text="Eraser"
+          small
           @click="eraser"
         >
-          Eraser
-        </button>
-        <button
-          class="doodlecanvas-action"
+          <Icon name="bx:eraser" />
+        </LinkButton>
+        <LinkButton
+          text="Clear"
+          small
           @click="store.clearCanvas()"
         >
-          Clear
-        </button>
+          <Icon name="bx:trash" />
+        </LinkButton>
       </div>
     </div>
   </div>
@@ -207,6 +209,7 @@ onUnmounted(() => {
     max-height: 100%;
     cursor: default;
     touch-action: none;
+    border: 1px solid var(--color-highlight);
 
     &-active {
       cursor: crosshair;
@@ -219,7 +222,7 @@ onUnmounted(() => {
     flex-wrap: wrap;
     gap: 0.75rem;
     padding: 0.6rem 1rem;
-    border-top: 1px solid var(--color-disabled);
+    border-top: 1px solid var(--color-light);
     flex-shrink: 0;
 
     @include vars.mobile-only {
@@ -240,6 +243,7 @@ onUnmounted(() => {
     border-radius: 50%;
     cursor: pointer;
     padding: 0;
+    border: 1px solid var(--color-light);
     transition: transform 100ms;
     outline: 2px solid transparent;
     outline-offset: 2px;
@@ -265,7 +269,7 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--color-disabled);
+    border: 1px solid var(--color-light);
     border-radius: 50%;
     cursor: pointer;
     padding: 0;
@@ -290,7 +294,7 @@ onUnmounted(() => {
 
   &-action {
     background: none;
-    border: 1px solid var(--color-disabled);
+    border: 1px solid var(--color-light);
     color: var(--color-light);
     border-radius: 4px;
     font-size: 0.8rem;

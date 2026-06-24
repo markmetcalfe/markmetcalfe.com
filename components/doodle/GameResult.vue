@@ -77,8 +77,7 @@ const winner = computed(() => sorted.value[0])
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    border: 1px solid var(--color-disabled);
-    border-radius: 4px;
+    border: 1px solid var(--color-light);
     padding: 0.4rem 0.75rem;
     font-size: 0.95rem;
 
@@ -88,7 +87,7 @@ const winner = computed(() => sorted.value[0])
 
     &-rank {
       font-size: 0.75rem;
-      color: var(--color-disabled);
+      color: var(--color-light);
       width: 16px;
       text-align: center;
       flex-shrink: 0;
@@ -108,7 +107,7 @@ const winner = computed(() => sorted.value[0])
 
   &-returning {
     font-size: 0.85rem;
-    color: var(--color-disabled);
+    color: var(--color-light);
   }
 }
 </style>
