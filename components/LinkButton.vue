@@ -15,7 +15,10 @@
         'disabled': disabled,
       }"
     >
-      <span class="linkbutton-icon"><slot /></span>
+      <span
+        v-if="$slots.default"
+        class="linkbutton-icon"
+      ><slot /></span>
       <span v-if="text">{{ text }}</span>
     </a>
     <NuxtLink
@@ -31,7 +34,10 @@
         'disabled': disabled,
       }"
     >
-      <span class="linkbutton-icon"><slot /></span>
+      <span
+        v-if="$slots.default"
+        class="linkbutton-icon"
+      ><slot /></span>
       <span v-if="text">{{ text }}</span>
     </NuxtLink>
     <button
@@ -49,7 +55,10 @@
       }"
       @click="handleClick"
     >
-      <span class="linkbutton-icon"><slot /></span>
+      <span
+        v-if="$slots.default"
+        class="linkbutton-icon"
+      ><slot /></span>
       <span v-if="text">{{ text }}</span>
     </button>
   </span>

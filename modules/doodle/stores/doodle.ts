@@ -37,6 +37,7 @@ type ServerMessage =
   | { type: 'timer', timeLeft: number }
   | { type: 'hint_update', hint: string }
   | { type: 'your_word', word: string }
+  | { type: 'word_suggested', playerId: string }
   | { type: 'error', message: string }
 
 interface StatePayload {
@@ -48,6 +49,7 @@ interface StatePayload {
   totalRounds: number
   timeLeft: number
   drawHistory: DrawEvent[]
+  suggestedWordPlayerIds: string[]
 }
 
 // ── Module-level non-reactive singletons ─────────────────────────────────────
@@ -75,6 +77,7 @@ export const useDoodleStore = defineStore('doodle', {
     timeLeft: 0,
     drawHistory: [] as DrawEvent[],
     correctGuessers: [] as string[],
+    suggestedWordPlayerIds: [] as string[],
     messages: [] as DoodleMessage[],
     drawColor: '#000000',
     drawSize: 3,
@@ -86,6 +89,7 @@ export const useDoodleStore = defineStore('doodle', {
     me: state => state.players.find(p => p.id === state.myId),
     isHost: state => state.players.find(p => p.id === state.myId)?.isHost ?? false,
     formattedHint: state => state.wordHint.split('').join(' '),
+    iHaveSubmittedWord: state => state.suggestedWordPlayerIds.includes(state.myId),
   },
 
   actions: {
@@ -154,6 +158,10 @@ export const useDoodleStore = defineStore('doodle', {
       this.send({ type: 'start_game', round_length: this.roundLength })
     },
 
+    suggestWord(word: string) {
+      this.send({ type: 'suggest_word', word })
+    },
+
     sendGuessOrChat(text: string) {
       if (!text.trim()) return
       if (this.phase === 'drawing' && this.currentDrawerId !== this.myId) {
@@ -180,6 +188,7 @@ export const useDoodleStore = defineStore('doodle', {
           this.totalRounds = msg.state.totalRounds
           this.timeLeft = msg.state.timeLeft
           this.drawHistory = msg.state.drawHistory
+          this.suggestedWordPlayerIds = msg.state.suggestedWordPlayerIds ?? []
           this.correctGuessers = []
           this.myWord = ''
           _onReset?.(this.drawHistory)
@@ -239,9 +248,16 @@ export const useDoodleStore = defineStore('doodle', {
           this._addMessage({ type: 'system', text: `Your word: "${msg.word}"` })
           break
 
+        case 'word_suggested':
+          if (!this.suggestedWordPlayerIds.includes(msg.playerId)) {
+            this.suggestedWordPlayerIds.push(msg.playerId)
+          }
+          break
+
         case 'round_end':
           this.phase = 'round_end'
           this.players = msg.players
+          this.wordHint = msg.word
           break
 
         case 'game_end':
@@ -278,6 +294,7 @@ export const useDoodleStore = defineStore('doodle', {
       this.timeLeft = 0
       this.drawHistory = []
       this.correctGuessers = []
+      this.suggestedWordPlayerIds = []
       this.messages = []
     },
   },
