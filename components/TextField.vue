@@ -68,7 +68,7 @@ const onInput = (event: Event) => {
 </script>
 
 <style lang="scss">
-@use "~/variables" as vars;
+@use "/variables" as vars;
 
 .textfield {
   display: flex;

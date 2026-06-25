@@ -216,7 +216,7 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
-@use "~/variables" as vars;
+@use "/variables" as vars;
 
 .dropdownselect {
   display: flex;

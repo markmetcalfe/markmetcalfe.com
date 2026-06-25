@@ -6,7 +6,7 @@ import type { ConfigOptions } from '@nuxt/test-utils/playwright'
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig<ChromaticConfig & ConfigOptions>({
-  testDir: './tests/e2e',
+  testMatch: '**/tests/e2e/**/*.spec.ts',
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
   expect: {
