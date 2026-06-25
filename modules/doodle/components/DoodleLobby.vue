@@ -14,13 +14,45 @@
           {{ player.name }}
         </span>
         <span
-          v-if="player.isHost"
+          v-if="store.suggestedWordPlayerIds.includes(player.id)"
+          class="doodlelobby-player-word highlight"
+          title="Suggested a word"
+        >
+          word ready
+        </span>
+        <span
+          v-else-if="player.isHost"
           class="highlight"
         >
           host
         </span>
       </div>
     </div>
+
+    <form
+      class="doodlelobby-suggest"
+      @submit.prevent="submitWord"
+    >
+      <TextField
+        v-model="wordInput"
+        placeholder="Suggest a word to draw…"
+        :disabled="store.iHaveSubmittedWord"
+      />
+      <LinkButton
+        type="submit"
+        :text="store.iHaveSubmittedWord ? 'Word submitted!' : 'Submit'"
+        :disabled="!canSubmitWord"
+      >
+        <Icon
+          v-if="store.iHaveSubmittedWord"
+          name="bx:check"
+        />
+        <Icon
+          v-else
+          name="bx:send"
+        />
+      </LinkButton>
+    </form>
 
     <div class="doodlelobby-invite">
       <span class="doodlelobby-invite-url">{{ roomUrl }}</span>
@@ -70,8 +102,14 @@
 <script setup lang="ts">
 const store = useDoodleStore()
 const copied = ref(false)
+const wordInput = ref('')
 
 const roomUrl = computed(() => typeof window !== 'undefined' ? window.location.href : '')
+
+const canSubmitWord = computed(() => {
+  const len = wordInput.value.trim().length
+  return !store.iHaveSubmittedWord && len >= 3 && len <= 15
+})
 
 function copyLink() {
   navigator.clipboard.writeText(roomUrl.value).then(() => {
@@ -80,6 +118,11 @@ function copyLink() {
       copied.value = false
     }, 2000)
   })
+}
+
+function submitWord() {
+  if (!canSubmitWord.value) return
+  store.suggestWord(wordInput.value.trim())
 }
 </script>
 
@@ -119,6 +162,21 @@ function copyLink() {
 
     &-name {
       font-weight: 500;
+    }
+
+    &-word {
+      font-size: 0.8rem;
+    }
+  }
+
+  &-suggest {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 360px;
+
+    .textfield {
+      flex: 1;
     }
   }
 
