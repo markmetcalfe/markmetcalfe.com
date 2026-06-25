@@ -3,6 +3,14 @@ const siteDomain = 'markmetcalfe.com'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  extends: [
+    './modules/doodle',
+    './modules/minecraft',
+    './modules/networkstatus',
+    './modules/resume',
+    './modules/sequencer',
+    './modules/visuals',
+  ],
   modules: [
     '@nuxt/eslint',
     '@nuxt/fonts',
@@ -53,6 +61,9 @@ export default defineNuxtConfig({
         dir: './assets/icons',
       },
     ],
+  },
+  pinia: {
+    storesDirs: ['stores'],
   },
   ...(isPlaywrightTest
     ? {}

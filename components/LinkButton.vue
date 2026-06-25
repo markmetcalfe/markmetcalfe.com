@@ -88,7 +88,7 @@ const handleClick = (event: MouseEvent) => {
 </script>
 
 <style lang="scss">
-@use "~/variables" as vars;
+@use "/variables" as vars;
 
 @mixin desktop-icon-size {
   height: 1.25rem;

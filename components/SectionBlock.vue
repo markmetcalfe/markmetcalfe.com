@@ -26,7 +26,7 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <style lang="scss">
-@use "~/variables" as vars;
+@use "/variables" as vars;
 
 .sectionblock {
   margin-top: 1rem;

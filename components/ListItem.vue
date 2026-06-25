@@ -7,7 +7,7 @@
 </template>
 
 <style lang="scss">
-@use "~/variables" as vars;
+@use "/variables" as vars;
 
 .listitem {
   display: flex;

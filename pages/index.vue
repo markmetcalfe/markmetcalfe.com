@@ -102,7 +102,7 @@ const { mailtoLink } = useAppConfig()
 </script>
 
 <style lang="scss">
-@use "~/variables" as vars;
+@use "/variables" as vars;
 
 .home {
   & .pagecard-inner {

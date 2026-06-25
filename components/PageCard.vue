@@ -42,29 +42,21 @@
 </template>
 
 <script setup lang="ts">
-import { useVisualsStore } from '~/stores/visuals'
-
 interface Props {
   backButtonPage?: string | null
   longform?: boolean
   showBackground?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   backButtonPage: null,
   longform: false,
   showBackground: false,
 })
-
-const visualsStore = useVisualsStore()
-
-onMounted(() => {
-  visualsStore.scrollToZoom = !props.longform
-})
 </script>
 
 <style lang="scss">
-@use "~/variables" as vars;
+@use "/variables" as vars;
 
 .pagecard {
   display: flex;

@@ -27,7 +27,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
-@use "~/variables" as vars;
+@use "/variables" as vars;
 
 :root {
   --color-dark: #000;

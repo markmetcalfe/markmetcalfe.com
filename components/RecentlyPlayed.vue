@@ -88,7 +88,7 @@ const formattedTime = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "~/variables" as vars;
+@use "/variables" as vars;
 
 $height-desktop: 4rem;
 $height-mobile: 3.5rem;
