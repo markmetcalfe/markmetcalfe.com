@@ -8,6 +8,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "dev:api": "npm --prefix api run dev & API_LOCAL=1 nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "typecheck": "nuxt typecheck",
@@ -60,7 +61,8 @@
   },
   "lint-staged": {
     "**/*.{js,ts,vue,jsx,tsx}": "eslint --fix",
-    "**/*.{ts,tsx,vue}": "sh -c 'vue-tsc --noEmit -p .nuxt/tsconfig.json'",
+    "api/**/*.ts": "sh -c 'tsc --noEmit -p api/tsconfig.json'",
+    "!(api)/**/*.{ts,tsx,vue}": "sh -c 'vue-tsc --noEmit -p .nuxt/tsconfig.json'",
     "**/*.vue": "stylelint --fix strict"
   }
 }

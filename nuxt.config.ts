@@ -1,4 +1,7 @@
+import { buildLocalDevProxy } from './dev-proxy'
+
 const isPlaywrightTest = process.env.IS_PLAYWRIGHT === '1'
+const isApiLocal = process.env.API_LOCAL === '1'
 const siteDomain = 'markmetcalfe.com'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -69,13 +72,15 @@ export default defineNuxtConfig({
     ? {}
     : {
         nitro: {
-          devProxy: {
-            '/api': {
-              target: `https://${siteDomain}/api`,
-              changeOrigin: true,
-              prependPath: true,
-            },
-          },
+          devProxy: isApiLocal
+            ? buildLocalDevProxy()
+            : {
+                '/api': {
+                  target: `https://${siteDomain}/api`,
+                  changeOrigin: true,
+                  prependPath: true,
+                },
+              },
         },
       }),
 })
