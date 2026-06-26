@@ -63,5 +63,6 @@ export default defineConfig<ChromaticConfig & ConfigOptions>({
     command: 'IS_PLAYWRIGHT=1 npm run build && IS_PLAYWRIGHT=1 npm run preview -- --port 3001',
     port: 3001,
     reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
   },
 })

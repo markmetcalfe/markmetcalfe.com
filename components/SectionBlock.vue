@@ -4,8 +4,9 @@
       {{ title }}
     </h2>
     <div
-      class="sectionblock-content"
-      :class="{ 'sectionblock-flex': flex, 'sectionblock-larger-text': largerText }"
+      :class="{ 'sectionblock-content': !grid,
+                'sectionblock-larger-text': largerText,
+                'sectionblock-grid': grid }"
     >
       <slot />
     </div>
@@ -15,13 +16,13 @@
 <script setup lang="ts">
 interface Props {
   title: string
-  flex?: boolean
   largerText?: boolean
+  grid?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
-  flex: true,
   largerText: false,
+  grid: false,
 })
 </script>
 
@@ -66,9 +67,15 @@ withDefaults(defineProps<Props>(), {
     }
   }
 
-  &-flex {
+  &-content {
     display: flex;
-    justify-content: start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
 
