@@ -1,0 +1,31 @@
+{
+  "name": "markmetcalfe-doodle",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-11-11",
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "markmetcalfe.com/api/doodle/*",
+      "zone_name": "markmetcalfe.com"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "GAME_ROOMS",
+        "class_name": "GameRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["GameRoom"]
+    }
+  ]
+  // Optional: uncomment after running `wrangler kv namespace create ROOM_LIST`
+  // "kv_namespaces": [
+  //   { "binding": "ROOM_LIST", "id": "YOUR_KV_NAMESPACE_ID_HERE" }
+  // ]
+}

@@ -2,7 +2,7 @@
   <div class="doodleroom">
     <HeaderBar
       title="Doodle"
-      back-href="/games"
+      back-href="/"
       back-label="Leave game"
     >
       <span
