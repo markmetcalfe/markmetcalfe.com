@@ -3,7 +3,7 @@
     <NuxtPage />
     <DynamicBackground />
     <a
-      class="seo-link"
+      id="seo-link"
       href="https://www.instagram.com/markus_vizshun/"
     >@markus_vizshun</a>
   </div>
@@ -20,8 +20,7 @@ useSeoMeta({
 
 onMounted(() => {
   nextTick(() => {
-    // Remove SEO links
-    document.getElementById('seo-links')?.remove()
+    document.getElementById('seo-link')?.remove()
   })
 })
 </script>
@@ -147,7 +146,7 @@ button:focus:not(:disabled) {
   border-width: 0;
 }
 
-.seo-link {
+#seo-link {
   position: absolute;
   left: -10000px;
   top: auto;

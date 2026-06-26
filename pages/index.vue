@@ -54,7 +54,17 @@
       I'm a software developer who likes making cool experiences with code
     </SectionBlock>
 
-    <SectionBlock title="Projects">
+    <SectionBlock
+      title="My Work"
+      grid
+    >
+      <LinkButton
+        text="Resume"
+        href="/resume"
+        large
+      >
+        <Icon name="bx:file" />
+      </LinkButton>
       <LinkButton
         text="Visuals"
         href="/visuals"
@@ -70,28 +80,11 @@
         <Icon name="fad:waveform" />
       </LinkButton>
       <LinkButton
-        text="Games"
-        href="/games"
+        text="Doodle"
+        href="/doodle"
         large
       >
-        <Icon name="bx:joystick" />
-      </LinkButton>
-    </SectionBlock>
-
-    <SectionBlock title="More">
-      <LinkButton
-        text="Resume"
-        href="/resume"
-        large
-      >
-        <Icon name="bx:file" />
-      </LinkButton>
-      <LinkButton
-        text="Interests"
-        href="/interests"
-        large
-      >
-        <Icon name="bx:party" />
+        <Icon name="bx:paint" />
       </LinkButton>
     </SectionBlock>
   </PageCard>

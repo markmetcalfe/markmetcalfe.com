@@ -6,8 +6,7 @@ test.describe('HomePage', () => {
     await expect(page.locator('text="Mark Metcalfe"')).toBeVisible()
 
     await expect(page.locator('text="Me"')).toBeVisible()
-    await expect(page.locator('text="Projects"')).toBeVisible()
-    await expect(page.locator('text="More"')).toBeVisible()
+    await expect(page.locator('text="My Work"')).toBeVisible()
 
     await takeSnapshot(page, 'Home Page', testInfo)
   })
@@ -55,16 +54,6 @@ test.describe('HomePage', () => {
     await expect(page.locator('body')).toContainText('Experience')
   })
 
-  test('can navigate to the interests page', async ({ page }) => {
-    await page.goto('/')
-
-    const link = page.locator('a:has-text("Interests")')
-
-    await Promise.all([page.waitForURL('/interests'), link.click()])
-
-    await expect(page.locator('body')).toContainText('Interests')
-  })
-
   test('can navigate to the visuals page', async ({ page }) => {
     await page.goto('/')
 
@@ -83,5 +72,16 @@ test.describe('HomePage', () => {
     await Promise.all([page.waitForURL('/sequencer'), link.click()])
 
     await expect(page.locator('body')).toContainText('Step Sequencer')
+  })
+
+  test('can navigate to the doodle page', async ({ page }) => {
+    await page.goto('/')
+
+    const link = page.locator('a:has-text("Doodle")')
+
+    await Promise.all([page.waitForURL(/\/doodle\/.+/), link.click()])
+
+    await expect(page.locator('body')).toContainText('Doodle')
+    await expect(page.locator('body')).toContainText('Waiting for players')
   })
 })
