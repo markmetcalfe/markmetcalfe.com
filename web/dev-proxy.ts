@@ -15,7 +15,9 @@ export function buildLocalDevProxy() {
       continue;
     }
 
-    const jsonc = readFileSync(configPath, "utf-8").replace(/\/\/[^\n]*/g, "");
+    const jsonc = readFileSync(configPath, "utf-8")
+      .replace(/\/\/[^\n]*/g, "")
+      .replace(/,(\s*[}\]])/g, "$1");
     const route = JSON.parse(jsonc).routes?.[0];
     if (!route) {
       continue;

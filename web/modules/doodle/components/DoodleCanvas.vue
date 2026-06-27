@@ -42,10 +42,10 @@
       </div>
 
       <div class="doodlecanvas-toolbar-actions">
-        <LinkButton text="Eraser" small @click="eraser">
+        <LinkButton text="Eraser" @click="eraser">
           <Icon name="bx:eraser" />
         </LinkButton>
-        <LinkButton text="Clear" small @click="store.clearCanvas()">
+        <LinkButton text="Clear" @click="store.clearCanvas()">
           <Icon name="bx:trash" />
         </LinkButton>
       </div>
@@ -242,6 +242,7 @@ onUnmounted(() => {
 
   &-toolbar {
     display: flex;
+    height: 35px;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.75rem;

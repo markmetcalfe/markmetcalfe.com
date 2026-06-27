@@ -3,6 +3,8 @@ set -euo pipefail
 
 trap 'kill 0' EXIT
 
+pkill -f "wrangler dev" 2>/dev/null || true
+
 port=8787
 inspector_port=9229
 

@@ -12,16 +12,15 @@
     </div>
 
     <div class="doodlechat-input">
-      <input
+      <TextField
         v-model="inputText"
-        type="text"
         :placeholder="inputPlaceholder"
         maxlength="100"
         autocomplete="off"
         @keydown.enter="submit"
       />
-      <LinkButton small @click="submit">
-        <Icon name="bx:right-arrow-alt" />
+      <LinkButton @click="submit">
+        <Icon name="bx:send" />
       </LinkButton>
     </div>
   </div>
@@ -109,33 +108,17 @@ watch(
 
   &-input {
     display: flex;
+    height: 38px;
     gap: 0.4rem;
     padding: 0.5rem;
     border-top: 1px solid var(--color-light);
     flex-shrink: 0;
 
-    input {
-      flex: 1;
-      background: transparent;
-      border: 1px solid var(--color-light);
-      color: var(--color-light);
-      font-size: 0.8rem;
-      padding: 0.35rem 0.6rem;
-      outline: none;
-      transition: border-color 150ms;
-
-      &:focus {
-        border-color: var(--color-highlight);
-      }
-
-      &::placeholder {
-        color: var(--color-disabled);
-      }
-    }
-
+    .textfield,
     .linkbutton {
       display: flex;
 
+      input,
       button {
         flex: 1;
       }

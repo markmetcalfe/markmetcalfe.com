@@ -4,9 +4,6 @@
   "type": "module",
   "scripts": {
     "dev": "bash dev.sh",
-    "deploy:doodle": "wrangler deploy --config doodle/wrangler.jsonc",
-    "deploy:network-status": "wrangler deploy --config network-status/wrangler.jsonc",
-    "deploy:resume": "wrangler deploy --config resume/wrangler.jsonc",
     "lint": "oxlint . && oxfmt --check .",
     "lint:fix": "oxlint . --fix && oxfmt ."
   },
