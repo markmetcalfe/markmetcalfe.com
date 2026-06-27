@@ -60,7 +60,12 @@
       <LinkButton text="Sequencer" href="/sequencer" large>
         <Icon name="fad:waveform" />
       </LinkButton>
-      <LinkButton text="Doodle" href="/doodle" large>
+      <LinkButton
+        v-if="!isMobile()"
+        text="Doodle"
+        href="/doodle"
+        large
+      >
         <Icon name="bx:paint" />
       </LinkButton>
     </SectionBlock>
@@ -68,6 +73,8 @@
 </template>
 
 <script setup lang="ts">
+import isMobile from "is-mobile";
+
 const { mailtoLink } = useAppConfig();
 </script>
 

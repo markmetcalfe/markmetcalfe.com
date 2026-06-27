@@ -92,7 +92,12 @@ test.describe("HomePage", () => {
     );
   });
 
-  test("can navigate to the doodle page", async ({ page }) => {
+  test("can navigate to the doodle page", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, "Doodle link is not shown on mobile");
+
     await page.goto("/");
 
     const link = page.locator('a:has-text("Doodle")');
@@ -106,5 +111,18 @@ test.describe("HomePage", () => {
     await expect(page.locator("body")).toContainText(
       "Waiting for players",
     );
+  });
+
+  test("doodle link is hidden on mobile", async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, "Only relevant on mobile");
+
+    await page.goto("/");
+
+    await expect(
+      page.locator('a:has-text("Doodle")'),
+    ).not.toBeVisible();
   });
 });
