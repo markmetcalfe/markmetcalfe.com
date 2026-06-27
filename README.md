@@ -1,26 +1,68 @@
 # [markmetcalfe.com](https://markmetcalfe.com)
 
-[![Playwright Tests](https://github.com/markmetcalfe/markmetcalfe.com/actions/workflows/playwright.yml/badge.svg)](https://github.com/markmetcalfe/markmetcalfe.com/actions/workflows/playwright.yml)
+The source code for my personal portfolio site at [markmetcalfe.com](https://markmetcalfe.com).
 
-The code for my portfolio site located at [markmetcalfe.com](https://markmetcalfe.com)
+## What it contains
 
-Written in Vue 3 and Typescript, using the Vite vue framework.
+The site is a portfolio and creative playground, including:
 
-## Tests
+- **Home page** — landing page with an interactive 3D visuals background
+- **Resume** — dynamically fetched from the `@markmetcalfe/resume` package
+- **Visuals** — interactive generative graphics using Three.js
+- **Doodle** — a multiplayer drawing and guessing game
+- **Sequencer** — a browser-based music sequencer built with Tone.js
 
-Playwright is used for automated end-to-end testing.
-If you haven't installed playwright before, you will need to run `npm playwright install` before running `npm run test`
+## Architecture
 
-## Commands
+The repo is split into two sub-projects:
 
-- Install: `npm install`
+### `web/`
 
-- Run development server: `npm run dev`
+The frontend, built with:
 
-- Production build: `npm run build`
+- [Nuxt.js](https://nuxt.com/) (Vue 3 framework)
+- [Vue 3](https://vuejs.org/) with [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vite.dev/) (via Nuxt)
+- [Pinia](https://pinia.vuejs.org/) for state management
+- [Three.js](https://threejs.org/) and [Tone.js](https://tonejs.github.io/) for creative features
 
-- Run tests: `npm run test`
+Features are organised as Nuxt modules under `web/modules/`.
+
+### `api/`
+
+A set of [Cloudflare Workers](https://workers.cloudflare.com/) managed with [Wrangler](https://developers.cloudflare.com/workers/wrangler/). Each worker lives in its own subdirectory (`doodle/`, `network-status/`, `resume/`) and has its own `wrangler.jsonc` config.
+
+## Development
+
+1. Install dependencies in both sub-projects:
+
+```sh
+cd web && npm install
+cd ../api && npm install
+```
+
+2. Start the development server (from the `web/` directory). This also starts the API workers locally:
+
+```sh
+npm run dev:api
+```
+
+## Testing
+
+Playwright is used for end-to-end testing. Tests live in `web/tests/e2e/`.
+
+Install Playwright browsers if you haven't already:
+
+```sh
+npx playwright install
+```
+
+Run the tests (from the `web/` directory):
+
+```sh
+npm run test
+```
 
 ## Deployment
 
-The master branch is automatically deployed by Cloudflare to a Cloudflare web instance.
+The `main` branch is automatically deployed by Cloudflare Pages (frontend) and Cloudflare Workers (API).

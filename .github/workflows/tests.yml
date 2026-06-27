@@ -25,17 +25,25 @@ jobs:
       
       - name: Install dependencies
         run: npm ci
+        working-directory: web
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
+
+      - name: Install API dependencies
+        run: npm ci
+        working-directory: api
+
       - name: Lint the code
         run: npm run lint
+        working-directory: web
 
       - name: Type-check the code
         run: npm run typecheck
+        working-directory: web
 
       - name: Build the project
         run: npm run build
+        working-directory: web
 
   playwright:
     name: Playwright E2E Tests
@@ -51,30 +59,34 @@ jobs:
         name: Set up Node.js
         with:
           node-version: 22
-      
+
       - name: Install dependencies
         run: npm ci
+        working-directory: web
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install Playwright
         run: npm exec playwright install
+        working-directory: web
 
       - name: Run Playwright tests
         run: CI=1 npm run test
+        working-directory: web
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: test-results
           path: |
-            playwright-report/
-            test-results/
+            web/playwright-report/
+            web/test-results/
           retention-days: 7
 
       - name: Run Chromatic
         uses: chromaui/action@d92ea1ce501f70e8c34745b2c7888648150a368a # v17.2.0
         with:
+          workingDir: web
           playwright: true
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           exitZeroOnChanges: true

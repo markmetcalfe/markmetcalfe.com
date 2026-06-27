@@ -1,4 +1,7 @@
+import { buildLocalDevProxy } from './dev-proxy'
+
 const isPlaywrightTest = process.env.IS_PLAYWRIGHT === '1'
+const isApiLocal = process.env.API_LOCAL === '1'
 const siteDomain = 'markmetcalfe.com'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -6,7 +9,7 @@ export default defineNuxtConfig({
   extends: [
     './modules/doodle',
     './modules/minecraft',
-    './modules/networkstatus',
+    './modules/network-status',
     './modules/resume',
     './modules/sequencer',
     './modules/visuals',
@@ -34,12 +37,6 @@ export default defineNuxtConfig({
   appConfig: {
     siteDomain: 'markmetcalfe.com',
     mailtoLink: 'mailto:mark@markmetcalfe.com',
-  },
-  runtimeConfig: {
-    public: {
-      // Set NUXT_PUBLIC_DOODLE_API_URL=http://localhost:8787 in .env for local dev
-      doodleApiUrl: '',
-    },
   },
   compatibilityDate: '2025-05-28',
   eslint: {
@@ -69,13 +66,15 @@ export default defineNuxtConfig({
     ? {}
     : {
         nitro: {
-          devProxy: {
-            '/api': {
-              target: `https://${siteDomain}/api`,
-              changeOrigin: true,
-              prependPath: true,
-            },
-          },
+          devProxy: isApiLocal
+            ? buildLocalDevProxy()
+            : {
+                '/api': {
+                  target: `https://${siteDomain}/api`,
+                  changeOrigin: true,
+                  prependPath: true,
+                },
+              },
         },
       }),
 })

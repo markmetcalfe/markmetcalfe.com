@@ -8,15 +8,16 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "dev:api": "npm --prefix ../api run dev & API_LOCAL=1 nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "typecheck": "nuxt typecheck",
+    "typecheck": "nuxt typecheck && tsc --noEmit -p ../api/tsconfig.json",
     "postinstall": "nuxt prepare",
     "test": "npx playwright test",
     "chromatic": "chromatic --playwright --exit-zero-on-changes",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky install"
+    "prepare": "cd .. && web/node_modules/.bin/husky"
   },
   "dependencies": {
     "@markmetcalfe/resume": "^1.0.0",
