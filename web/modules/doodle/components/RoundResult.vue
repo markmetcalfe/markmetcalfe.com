@@ -1,8 +1,6 @@
 <template>
   <div class="doodleroundresult">
-    <h2 class="doodleroundresult-heading">
-      Round Over!
-    </h2>
+    <h2 class="doodleroundresult-heading">Round Over!</h2>
     <p class="doodleroundresult-word">
       The word was: <strong class="highlight">{{ store.wordHint }}</strong>
     </p>
@@ -19,18 +17,14 @@
       </li>
     </ul>
 
-    <p class="doodleroundresult-next">
-      Next round starting shortly&hellip;
-    </p>
+    <p class="doodleroundresult-next">Next round starting shortly&hellip;</p>
   </div>
 </template>
 
 <script setup lang="ts">
-const store = useDoodleStore()
+const store = useDoodleStore();
 
-const sorted = computed(() =>
-  [...store.players].sort((a, b) => b.score - a.score),
-)
+const sorted = computed(() => [...store.players].sort((a, b) => b.score - a.score));
 </script>
 
 <style lang="scss">

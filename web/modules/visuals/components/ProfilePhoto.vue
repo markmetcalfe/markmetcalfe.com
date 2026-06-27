@@ -1,24 +1,21 @@
 <template>
-  <div
-    class="profilephoto"
-    @click="randomiseProfile"
-  >
-    <img src="/me.png?v=7">
+  <div class="profilephoto" @click="randomiseProfile">
+    <img src="/me.png?v=7" />
     <div class="profilephoto-bg" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { isSafari } from 'react-device-detect'
-import { Renderer } from '@visuals/util/renderer'
-import { PartialSphere, Sphere } from '@visuals/util/geometry'
+import { ref, onMounted, onUnmounted } from "vue";
+import { isSafari } from "react-device-detect";
+import { Renderer } from "@visuals/util/renderer";
+import { PartialSphere, Sphere } from "@visuals/util/geometry";
 
-const rendererZoomLevel = 12
+const rendererZoomLevel = 12;
 const geometryDefinition = [
   {
     type: Sphere.getName(),
-    color: 'rgb(0, 128, 0)',
+    color: "rgb(0, 128, 0)",
     solid: false,
     radius: 5,
     detail: 80,
@@ -26,7 +23,7 @@ const geometryDefinition = [
   },
   {
     type: PartialSphere.getName(),
-    color: 'rgb(0, 0, 255)',
+    color: "rgb(0, 0, 255)",
     solid: false,
     radius: 5,
     detail: 90,
@@ -34,55 +31,54 @@ const geometryDefinition = [
   },
   {
     type: PartialSphere.getName(),
-    color: 'rgb(255, 0, 0)',
+    color: "rgb(255, 0, 0)",
     solid: false,
     radius: 5,
     detail: 100,
     reverseRotation: false,
   },
-]
-const geometryRotationSpeed = 20
+];
+const geometryRotationSpeed = 20;
 
-const renderer = ref<Renderer | undefined>(undefined)
+const renderer = ref<Renderer | undefined>(undefined);
 
 const randomiseProfile = (): void => {
-  renderer.value?.randomiseRotations()
-  renderer.value?.randomiseColors()
-}
+  renderer.value?.randomiseRotations();
+  renderer.value?.randomiseColors();
+};
 
 onMounted(() => {
-  setTimeout(() => {
-    const photoBgElement = document.querySelector(
-      '.profilephoto-bg',
-    ) as HTMLElement
-    if (!photoBgElement) {
-      return
-    }
-    renderer.value = new Renderer(photoBgElement)
-      .setGetDefaultGeometry(() => geometryDefinition)
-      .setOnRenderTick(renderer =>
-        renderer.getGeometry()?.forEach(geometry => geometry.rotate()),
-      )
-      .setOnInit((renderer) => {
-        renderer.getGeometry()?.forEach((geometry) => {
-          geometry.setRotationSpeed({
-            x: geometryRotationSpeed,
-            y: geometryRotationSpeed,
-          })
+  setTimeout(
+    () => {
+      const photoBgElement = document.querySelector(".profilephoto-bg") as HTMLElement;
+      if (!photoBgElement) {
+        return;
+      }
+      renderer.value = new Renderer(photoBgElement)
+        .setGetDefaultGeometry(() => geometryDefinition)
+        .setOnRenderTick(renderer => renderer.getGeometry()?.forEach(geometry => geometry.rotate()))
+        .setOnInit(renderer => {
+          renderer.getGeometry()?.forEach(geometry => {
+            geometry.setRotationSpeed({
+              x: geometryRotationSpeed,
+              y: geometryRotationSpeed,
+            });
+          });
         })
-      })
-      .setGetZoom(() => rendererZoomLevel)
-      .initialise()
+        .setGetZoom(() => rendererZoomLevel)
+        .initialise();
 
-    renderer.value.getCanvasElement()?.style.setProperty('border-radius', '50%')
-  }, isSafari ? 500 : 100)
-})
+      renderer.value.getCanvasElement()?.style.setProperty("border-radius", "50%");
+    },
+    isSafari ? 500 : 100,
+  );
+});
 
 onUnmounted(() => {
   setTimeout(() => {
-    renderer.value?.cleanUp()
-  }, 250)
-})
+    renderer.value?.cleanUp();
+  }, 250);
+});
 </script>
 
 <style lang="scss" scoped>

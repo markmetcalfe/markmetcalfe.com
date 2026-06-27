@@ -1,8 +1,6 @@
 <template>
   <div class="doodleplayers">
-    <h3 class="doodleplayers-heading">
-      Players
-    </h3>
+    <h3 class="doodleplayers-heading">Players</h3>
     <div
       v-for="player in store.players"
       :key="player.id"
@@ -18,7 +16,7 @@
         {{ player.name.charAt(0).toUpperCase() }}
       </span>
       <span class="doodleplayers-item-name">
-        {{ player.name }}{{ player.isHost ? ' ★' : '' }}
+        {{ player.name }}{{ player.isHost ? " ★" : "" }}
       </span>
       <span class="doodleplayers-item-score">
         {{ player.score }}
@@ -28,10 +26,10 @@
 </template>
 
 <script setup lang="ts">
-const store = useDoodleStore()
+const store = useDoodleStore();
 
 function isDrawing(playerId: string) {
-  return store.phase === 'drawing' && store.currentDrawerId === playerId
+  return store.phase === "drawing" && store.currentDrawerId === playerId;
 }
 </script>
 
@@ -88,7 +86,7 @@ function isDrawing(playerId: string) {
 
     &-drawing {
       .doodleplayers-item-name::after {
-        content: ' ✏';
+        content: " ✏";
       }
     }
 

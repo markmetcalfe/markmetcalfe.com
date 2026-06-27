@@ -4,9 +4,11 @@
       {{ title }}
     </h2>
     <div
-      :class="{ 'sectionblock-content': !grid,
-                'sectionblock-larger-text': largerText,
-                'sectionblock-grid': grid }"
+      :class="{
+        'sectionblock-content': !grid,
+        'sectionblock-larger-text': largerText,
+        'sectionblock-grid': grid,
+      }"
     >
       <slot />
     </div>
@@ -15,15 +17,15 @@
 
 <script setup lang="ts">
 interface Props {
-  title: string
-  largerText?: boolean
-  grid?: boolean
+  title: string;
+  largerText?: boolean;
+  grid?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
   largerText: false,
   grid: false,
-})
+});
 </script>
 
 <style lang="scss">

@@ -1,150 +1,144 @@
-import * as Tone from 'tone'
+import * as Tone from "tone";
 
 export abstract class Synth {
-  private synth: Tone.Synth | Tone.NoiseSynth | Tone.MetalSynth | undefined
+  private synth: Tone.Synth | Tone.NoiseSynth | Tone.MetalSynth | undefined;
 
-  private hasChanges = false
+  private hasChanges = false;
 
-  protected deleteable = false
+  protected deleteable = false;
 
-  protected id: string
+  protected id: string;
 
-  public name = 'Synth'
+  public name = "Synth";
 
-  public note: string | undefined
+  public note: string | undefined;
 
-  public octave: number | undefined
+  public octave: number | undefined;
 
-  public duration = 8
+  public duration = 8;
 
   protected envelope = {
     attack: 0.1,
     decay: 0.1,
     sustain: 0.1,
     release: 0.1,
-  }
+  };
 
   constructor() {
-    this.id
-      = this.constructor.name + '-' + Math.random().toString(36).substring(2)
+    this.id = this.constructor.name + "-" + Math.random().toString(36).substring(2);
   }
 
   public getId() {
-    return this.id
+    return this.id;
   }
 
   public clone() {
-    const Constructor = this.constructor as new () => this
-    const clone = new Constructor()
-    clone.name = this.name + ' (copy)'
-    clone.deleteable = true
-    clone.note = this.note
-    clone.octave = this.octave
-    clone.duration = this.duration
-    clone.envelope = Object.assign({}, this.envelope)
-    return clone
+    const Constructor = this.constructor as new () => this;
+    const clone = new Constructor();
+    clone.name = this.name + " (copy)";
+    clone.deleteable = true;
+    clone.note = this.note;
+    clone.octave = this.octave;
+    clone.duration = this.duration;
+    clone.envelope = Object.assign({}, this.envelope);
+    return clone;
   }
 
-  protected abstract initSynth(): Tone.Synth | Tone.NoiseSynth | Tone.MetalSynth
+  protected abstract initSynth(): Tone.Synth | Tone.NoiseSynth | Tone.MetalSynth;
 
   public getSynth(): Tone.Synth | Tone.NoiseSynth | Tone.MetalSynth {
     if (!this.synth || this.hasChanges) {
-      this.synth = this.initSynth()
-      this.synth.context.resume()
-      this.hasChanges = false
+      this.synth = this.initSynth();
+      void this.synth.context.resume();
+      this.hasChanges = false;
     }
-    return this.synth
+    return this.synth;
   }
 
   public canDelete() {
-    return this.deleteable
+    return this.deleteable;
   }
 
   public canSetNote() {
-    return false
+    return false;
   }
 
   public triggerSound(time: number): void {
-    const synth = this.getSynth()
+    const synth = this.getSynth();
     if (this.canSetNote() && this.note && this.octave) {
-      synth.triggerAttackRelease(
-        this.note + this.octave,
-        this.duration + 'n',
-        time,
-      )
-    }
-    else {
-      synth.triggerAttackRelease(this.duration + 'n', time)
+      synth.triggerAttackRelease(this.note + this.octave, this.duration + "n", time);
+    } else {
+      synth.triggerAttackRelease(this.duration + "n", time);
     }
   }
 
-  public getEnvelopeValue(key: keyof Synth['envelope']) {
-    return this.envelope[key]
+  public getEnvelopeValue(key: keyof Synth["envelope"]) {
+    return this.envelope[key];
   }
 
-  public setEnvelopeValue(key: keyof Synth['envelope'], value: number) {
-    this.envelope[key] = value
-    this.hasChanges = true
+  public setEnvelopeValue(key: keyof Synth["envelope"], value: number) {
+    this.envelope[key] = value;
+    this.hasChanges = true;
   }
 }
 
 class MembraneSynth extends Synth {
-  public override name = 'Kick'
+  public override name = "Kick";
 
-  public override note = 'C'
+  public override note = "C";
 
-  public override octave = 1
+  public override octave = 1;
 
   protected override envelope = {
     attack: 0.01,
     decay: 0.2,
     sustain: 0.1,
     release: 0.8,
-  }
+  };
 
   public override canSetNote(): boolean {
-    return true
+    return true;
   }
 
   protected initSynth(): Tone.MembraneSynth {
     return new Tone.MembraneSynth({
       pitchDecay: 0.05,
       octaves: 4,
-      oscillator: { type: 'sine' },
-      envelope: { ...this.envelope, attackCurve: 'exponential' },
-    }).toDestination()
+      oscillator: { type: "sine" },
+      envelope: { ...this.envelope, attackCurve: "exponential" },
+    }).toDestination();
   }
 }
 
 class NoiseSynth extends Synth {
-  public override name = 'Snare'
+  public override name = "Snare";
 
   protected override envelope = {
     attack: 0.001,
     decay: 0.2,
     sustain: 0.01,
     release: 0.2,
-  }
+  };
 
   protected initSynth(): Tone.NoiseSynth {
     return new Tone.NoiseSynth({
-      noise: { type: 'white' },
+      noise: { type: "white" },
       envelope: this.envelope,
-    }).toDestination()
+    }).toDestination();
   }
 }
 
 class MetalSynth extends Synth {
-  public override name = 'Hi-hat'
+  public override name = "Hi-hat";
 
-  public override duration = 32
+  public override duration = 32;
 
   protected override envelope = {
     attack: 0.001,
     decay: 0.1,
     release: 0.1,
     sustain: 0.1,
-  }
+  };
 
   protected initSynth(): Tone.MetalSynth {
     return new Tone.MetalSynth({
@@ -153,36 +147,36 @@ class MetalSynth extends Synth {
       modulationIndex: 32,
       resonance: 4000,
       octaves: 1.5,
-    }).toDestination()
+    }).toDestination();
   }
 }
 
 class MembraneSynth2 extends Synth {
-  public override name = 'Tom'
+  public override name = "Tom";
 
-  public override note = 'G'
+  public override note = "G";
 
-  public override octave = 2
+  public override octave = 2;
 
   protected override envelope = {
     attack: 0.001,
     decay: 0.3,
     sustain: 0.01,
     release: 0.3,
-  }
+  };
 
   public override canSetNote(): boolean {
-    return true
+    return true;
   }
 
   protected initSynth(): Tone.MembraneSynth {
     return new Tone.MembraneSynth({
       pitchDecay: 0.008,
       octaves: 2,
-      oscillator: { type: 'sine' },
+      oscillator: { type: "sine" },
       envelope: this.envelope,
-    }).toDestination()
+    }).toDestination();
   }
 }
 
-export const allSynths = [MembraneSynth, NoiseSynth, MetalSynth, MembraneSynth2]
+export const allSynths = [MembraneSynth, NoiseSynth, MetalSynth, MembraneSynth2];

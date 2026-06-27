@@ -1,36 +1,20 @@
 <template>
   <PageCard back-button-page="/">
-    <template #title>
-      Connection Status
-    </template>
+    <template #title> Connection Status </template>
     <div class="networkstatus">
-      <p
-        v-if="status === 'pending'"
-        class="networkstatus-status networkstatus-loading"
-      >
+      <p v-if="status === 'pending'" class="networkstatus-status networkstatus-loading">
         Loading...
       </p>
 
       <template v-else-if="networkStatus?.isConnected === true">
-        <p class="networkstatus-status networkstatus-success">
-          Connected To Local Network
-        </p>
+        <p class="networkstatus-status networkstatus-success">Connected To Local Network</p>
         <p>Home IP: {{ networkStatus.homeIp }}</p>
         <p>Your IP: {{ networkStatus.yourIp }}</p>
       </template>
 
-      <p
-        v-else
-        class="networkstatus-status networkstatus-error"
-      >
-        Not Connected To Local Network
-      </p>
+      <p v-else class="networkstatus-status networkstatus-error">Not Connected To Local Network</p>
 
-      <LinkButton
-        title="Refresh"
-        :disabled="status === 'pending'"
-        @click="refresh()"
-      >
+      <LinkButton title="Refresh" :disabled="status === 'pending'" @click="refresh()">
         <Icon name="bx:refresh" />
       </LinkButton>
     </div>
@@ -39,16 +23,16 @@
 
 <script setup lang="ts">
 interface NetworkStatus {
-  isConnected: boolean
-  yourIp?: string
-  homeIp?: string
+  isConnected: boolean;
+  yourIp?: string;
+  homeIp?: string;
 }
 
 const {
   data: networkStatus,
   status,
   refresh,
-} = await useFetch<NetworkStatus>('/api/get-network-status', { server: false })
+} = await useFetch<NetworkStatus>("/api/get-network-status", { server: false });
 </script>
 
 <style lang="scss">

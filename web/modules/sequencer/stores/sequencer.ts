@@ -1,22 +1,22 @@
-import { defineStore } from 'pinia'
-import * as Tone from 'tone'
-import type { Synth } from '@sequencer/util/tone/synths'
-import { allSynths } from '@sequencer/util/tone/synths'
+import { defineStore } from "pinia";
+import * as Tone from "tone";
+import type { Synth } from "@sequencer/util/tone/synths";
+import { allSynths } from "@sequencer/util/tone/synths";
 
 interface SequencerRow {
-  synthId: string
-  beats: boolean[]
-  muted: boolean
-  visualsSynced: boolean
+  synthId: string;
+  beats: boolean[];
+  muted: boolean;
+  visualsSynced: boolean;
 }
 
 export interface SequencerStore {
-  allSynths: Synth[] | undefined
-  grid: SequencerRow[] | undefined
-  gridRowCount: number
-  barCount: number
-  currentBeat: number
-  isPlaying: boolean
+  allSynths: Synth[] | undefined;
+  grid: SequencerRow[] | undefined;
+  gridRowCount: number;
+  barCount: number;
+  currentBeat: number;
+  isPlaying: boolean;
 }
 
 const initialState: SequencerStore = {
@@ -26,94 +26,92 @@ const initialState: SequencerStore = {
   barCount: 4,
   currentBeat: 0,
   isPlaying: false,
-}
+};
 
-export const useSequencerStore = defineStore('sequencer', {
+export const useSequencerStore = defineStore("sequencer", {
   state: () => initialState,
   getters: {
     beatCount(): number {
-      const siteStore = useSiteStore()
-      return this.barCount * siteStore.beatMatch.beatsPerBar
+      const siteStore = useSiteStore();
+      return this.barCount * siteStore.beatMatch.beatsPerBar;
     },
     beatNumbers(): number[] {
-      return Array.from({ length: this.beatCount }, (_, i) => i)
+      return Array.from({ length: this.beatCount }, (_, i) => i);
     },
     gridHasEntry(): boolean {
       return (
-        this.grid !== undefined
-        && this.grid.some(row => row.beats.some(beats => beats !== false))
-      )
+        this.grid !== undefined && this.grid.some(row => row.beats.some(beats => beats !== false))
+      );
     },
   },
   actions: {
     init() {
       if (this.allSynths !== undefined) {
-        return
+        return;
       }
 
-      const siteStore = useSiteStore()
-      const visualStore = useVisualsStore()
+      const siteStore = useSiteStore();
+      const visualStore = useVisualsStore();
 
-      const localSynths: Record<string, Synth> = {}
-      allSynths.forEach((synthClass) => {
-        const synth = new synthClass()
-        localSynths[synth.getId()] = synth
-      })
-      this.allSynths = Object.values(localSynths)
+      const localSynths: Record<string, Synth> = {};
+      allSynths.forEach(synthClass => {
+        const synth = new synthClass();
+        localSynths[synth.getId()] = synth;
+      });
+      this.allSynths = Object.values(localSynths);
 
-      this.initGrid(Object.values(localSynths))
+      this.initGrid(Object.values(localSynths));
 
-      Tone.setContext(new Tone.Context({ latencyHint: 'playback' }))
+      Tone.setContext(new Tone.Context({ latencyHint: "playback" }));
 
       Tone.getTransport().scheduleRepeat((time: number) => {
-        this.grid!.forEach((row) => {
+        this.grid!.forEach(row => {
           if (!row.muted && row.beats[this.currentBeat]) {
-            const synth = localSynths[row.synthId]
+            const synth = localSynths[row.synthId];
             if (synth) {
-              synth.triggerSound(time)
+              synth.triggerSound(time);
             }
             if (row.visualsSynced) {
-              visualStore.beatMatchTick(true)
+              visualStore.beatMatchTick(true);
             }
           }
-        })
-        this.nextBeat()
-      }, this.beatCount + 'n')
+        });
+        this.nextBeat();
+      }, this.beatCount + "n");
 
       siteStore.addBpmListener({
-        consumer: 'sequencer',
+        consumer: "sequencer",
         onUpdate: (bpm: number) => {
-          Tone.getTransport().bpm.value = bpm
+          Tone.getTransport().bpm.value = bpm;
         },
-      })
+      });
     },
 
     nextBeat() {
-      this.currentBeat = (this.currentBeat + 1) % this.beatCount
+      this.currentBeat = (this.currentBeat + 1) % this.beatCount;
     },
 
     togglePlay() {
       if (this.isPlaying) {
-        this.stop()
-      }
-      else {
-        this.start()
+        this.stop();
+      } else {
+        this.start();
       }
     },
 
     start() {
-      const siteStore = useSiteStore()
-      this.isPlaying = true
-      this.currentBeat = 0
-      Tone.start()
-      Tone.getTransport().bpm.value = siteStore.beatMatch.bpm
-      Tone.getTransport().start('+0.1')
+      const siteStore = useSiteStore();
+      this.isPlaying = true;
+      this.currentBeat = 0;
+      void Tone.start();
+      Tone.getTransport().bpm.value = siteStore.beatMatch.bpm;
+      Tone.getTransport().start("+0.1");
     },
 
     stop() {
-      this.isPlaying = false
-      this.currentBeat = 0
-      Tone.getTransport().stop()
+      this.isPlaying = false;
+      this.currentBeat = 0;
+      Tone.getTransport().stop();
     },
 
     initGrid(synths: Synth[]) {
@@ -122,120 +120,112 @@ export const useSequencerStore = defineStore('sequencer', {
         beats: Array(this.beatCount).fill(false),
         muted: false,
         visualsSynced: index === 0,
-      }))
+      }));
     },
 
     resetGrid() {
-      this.stop()
+      this.stop();
       this.grid = this.grid!.map(row => ({
         ...row,
         beats: Array(this.beatCount).fill(false),
-      }))
+      }));
     },
 
     addGridRow(synthId?: string) {
-      const synth = synthId ? this.getSynth(synthId) : this.allSynths![0]
+      const synth = synthId ? this.getSynth(synthId) : this.allSynths![0];
       if (!synth) {
-        throw new Error('No valid synth found')
+        throw new Error("No valid synth found");
       }
       this.grid!.push({
         synthId: synth.getId(),
         beats: Array(this.beatCount).fill(false),
         muted: false,
         visualsSynced: false,
-      })
-      this.gridRowCount++
+      });
+      this.gridRowCount++;
     },
 
     deleteGridRow(rowIndex: number) {
-      this.grid!.splice(rowIndex, 1)
-      this.gridRowCount--
+      this.grid!.splice(rowIndex, 1);
+      this.gridRowCount--;
     },
 
     isBeatPlaying(beat: number) {
       if (!this.isPlaying) {
-        return false
+        return false;
       }
 
-      const currentBeatOffset = (this.currentBeat + 1) % this.beatCount
-      return beat === currentBeatOffset
+      const currentBeatOffset = (this.currentBeat + 1) % this.beatCount;
+      return beat === currentBeatOffset;
     },
 
     isBarStart(beat: number) {
-      const siteStore = useSiteStore()
-      return beat % siteStore.beatMatch.beatsPerBar === 0
+      const siteStore = useSiteStore();
+      return beat % siteStore.beatMatch.beatsPerBar === 0;
     },
 
     updateBarCount(barCount: number) {
-      const wasPlaying = this.isPlaying
+      const wasPlaying = this.isPlaying;
       if (this.isPlaying) {
-        this.stop()
+        this.stop();
       }
 
-      this.barCount = barCount
+      this.barCount = barCount;
 
-      this.grid = this.grid!.map((row) => {
-        const currentBeats = row.beats.length
-        let beats = row.beats
+      this.grid = this.grid!.map(row => {
+        const currentBeats = row.beats.length;
+        let beats = row.beats;
         if (currentBeats < this.beatCount) {
-          beats = [
-            ...beats,
-            ...Array(this.beatCount - currentBeats).fill(false),
-          ]
-        }
-        else if (currentBeats > this.beatCount) {
-          beats = beats.slice(0, this.beatCount)
+          beats = [...beats, ...Array(this.beatCount - currentBeats).fill(false)];
+        } else if (currentBeats > this.beatCount) {
+          beats = beats.slice(0, this.beatCount);
         }
         return {
           ...row,
           beats,
-        }
-      })
+        };
+      });
 
       if (wasPlaying) {
-        this.start()
+        this.start();
       }
     },
 
     addBar() {
-      this.updateBarCount(this.barCount + 1)
+      this.updateBarCount(this.barCount + 1);
     },
 
     deleteBar() {
-      this.updateBarCount(this.barCount - 1)
+      this.updateBarCount(this.barCount - 1);
     },
 
     getSynth(id: string) {
-      return this.allSynths!.find(synth => synth.getId() === id)
+      return this.allSynths!.find(synth => synth.getId() === id);
     },
 
     copySynth(synthId: string) {
-      const copy = this.getSynth(synthId)!.clone()
-      this.allSynths!.push(copy)
-      return copy
+      const copy = this.getSynth(synthId)!.clone();
+      this.allSynths!.push(copy);
+      return copy;
     },
 
     deleteSynth(synthId: string) {
-      this.allSynths = this.allSynths!.filter(
-        synth => synth.getId() !== synthId,
-      )
-      const replacementSynthId = this.allSynths[0]?.getId()
+      this.allSynths = this.allSynths!.filter(synth => synth.getId() !== synthId);
+      const replacementSynthId = this.allSynths[0]?.getId();
       this.grid = this.grid!.map(row => ({
         ...row,
-        synthId: row.synthId === synthId && replacementSynthId
-          ? replacementSynthId
-          : row.synthId,
-      }))
+        synthId: row.synthId === synthId && replacementSynthId ? replacementSynthId : row.synthId,
+      }));
     },
 
     syncVisuals(rowIndex: number) {
-      const row = this.grid?.[rowIndex]
+      const row = this.grid?.[rowIndex];
       if (!row) {
-        return
+        return;
       }
-      const currentState = row.visualsSynced === true
-      this.grid!.forEach(row => row.visualsSynced = false)
-      row.visualsSynced = !currentState
+      const currentState = row.visualsSynced === true;
+      this.grid!.forEach(row => (row.visualsSynced = false));
+      row.visualsSynced = !currentState;
     },
   },
-})
+});

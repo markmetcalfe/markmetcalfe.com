@@ -1,10 +1,6 @@
 <template>
   <header class="headerbar">
-    <NuxtLink
-      :to="backHref"
-      class="headerbar-back"
-      :aria-label="backLabel"
-    >
+    <NuxtLink :to="backHref" class="headerbar-back" :aria-label="backLabel">
       <Icon name="bx:arrow-back" />
     </NuxtLink>
 
@@ -16,15 +12,15 @@
 
 <script setup lang="ts">
 interface Props {
-  title: string
-  backHref?: string
-  backLabel?: string
+  title: string;
+  backHref?: string;
+  backLabel?: string;
 }
 
 withDefaults(defineProps<Props>(), {
-  backHref: '/',
-  backLabel: 'Back',
-})
+  backHref: "/",
+  backLabel: "Back",
+});
 </script>
 
 <style lang="scss">

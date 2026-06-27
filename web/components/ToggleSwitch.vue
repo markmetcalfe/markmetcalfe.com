@@ -1,15 +1,6 @@
 <template>
-  <div
-    class="toggleswitch"
-    :class="{ disabled: disabled }"
-  >
-    <label
-      v-if="label"
-      class="toggleswitch__label"
-      :for="id"
-    >{{
-      label
-    }}</label>
+  <div class="toggleswitch" :class="{ disabled: disabled }">
+    <label v-if="label" class="toggleswitch__label" :for="id">{{ label }}</label>
     <div
       :id="id"
       class="toggleswitch__switch"
@@ -25,10 +16,7 @@
       @keydown.space.prevent="toggle"
       @keydown.enter.prevent="toggle"
     >
-      <span
-        :id="labelId"
-        class="sr-only"
-      >{{ label }}</span>
+      <span :id="labelId" class="sr-only">{{ label }}</span>
       <div class="toggleswitch-track">
         <div class="toggleswitch-thumb" />
       </div>
@@ -37,34 +25,36 @@
 </template>
 
 <script setup lang="ts">
-import { useId } from 'vue'
+import { useId } from "vue";
 
 interface Props {
-  modelValue?: boolean
-  disabled?: boolean
-  label?: string
+  modelValue?: boolean;
+  disabled?: boolean;
+  label?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
   disabled: false,
-  label: '',
-})
+  label: "",
+});
 
 const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
-  'change': [value: boolean]
-}>()
+  "update:modelValue": [value: boolean];
+  change: [value: boolean];
+}>();
 
-const id = useId()
-const labelId = useId()
+const id = useId();
+const labelId = useId();
 
 const toggle = () => {
-  if (props.disabled) return
-  const newValue = !props.modelValue
-  emit('update:modelValue', newValue)
-  emit('change', newValue)
-}
+  if (props.disabled) {
+    return;
+  }
+  const newValue = !props.modelValue;
+  emit("update:modelValue", newValue);
+  emit("change", newValue);
+};
 </script>
 
 <style lang="scss">

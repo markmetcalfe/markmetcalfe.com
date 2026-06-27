@@ -1,18 +1,12 @@
 <template>
-  <div
-    class="pagecard"
-    :class="{ 'pagecard-longform': longform, 'pagecard-simple': !longform }"
-  >
+  <div class="pagecard" :class="{ 'pagecard-longform': longform, 'pagecard-simple': !longform }">
     <div
       class="pagecard-inner"
       :class="{
         'pagecard-inner-backgroundvisible': showBackground,
       }"
     >
-      <header
-        v-if="$slots.title"
-        class="pagecard-header"
-      >
+      <header v-if="$slots.title" class="pagecard-header">
         <router-link
           v-if="backButtonPage"
           :to="backButtonPage"
@@ -26,10 +20,7 @@
           <slot name="title" />
         </h2>
 
-        <div
-          v-if="$slots.titleright"
-          class="pagecard-title-right"
-        >
+        <div v-if="$slots.titleright" class="pagecard-title-right">
           <slot name="titleright" />
         </div>
       </header>
@@ -43,16 +34,16 @@
 
 <script setup lang="ts">
 interface Props {
-  backButtonPage?: string | null
-  longform?: boolean
-  showBackground?: boolean
+  backButtonPage?: string | null;
+  longform?: boolean;
+  showBackground?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
   backButtonPage: null,
   longform: false,
   showBackground: false,
-})
+});
 </script>
 
 <style lang="scss">

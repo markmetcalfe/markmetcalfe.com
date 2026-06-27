@@ -26,7 +26,8 @@
   }
 
   &-inner {
-    & > *:first-child, & > p {
+    & > *:first-child,
+    & > p {
       margin-top: 0;
       padding-top: 0;
     }
