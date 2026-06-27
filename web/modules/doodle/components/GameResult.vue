@@ -1,12 +1,7 @@
 <template>
   <div class="doodlegameresult">
-    <h2 class="doodlegameresult-heading">
-      Game Over!
-    </h2>
-    <p
-      v-if="winner"
-      class="doodlegameresult-winner"
-    >
+    <h2 class="doodlegameresult-heading">Game Over!</h2>
+    <p v-if="winner" class="doodlegameresult-winner">
       <span class="highlight">{{ winner.name }}</span> wins!
     </p>
 
@@ -23,20 +18,16 @@
       </li>
     </ul>
 
-    <p class="doodlegameresult-returning">
-      Returning to lobby shortly&hellip;
-    </p>
+    <p class="doodlegameresult-returning">Returning to lobby shortly&hellip;</p>
   </div>
 </template>
 
 <script setup lang="ts">
-const store = useDoodleStore()
+const store = useDoodleStore();
 
-const sorted = computed(() =>
-  [...store.players].sort((a, b) => b.score - a.score),
-)
+const sorted = computed(() => [...store.players].sort((a, b) => b.score - a.score));
 
-const winner = computed(() => sorted.value[0])
+const winner = computed(() => sorted.value[0]);
 </script>
 
 <style lang="scss">

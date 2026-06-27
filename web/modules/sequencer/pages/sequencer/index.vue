@@ -1,8 +1,6 @@
 <template>
   <PageCard back-button-page="/">
-    <template #title>
-      Step Sequencer
-    </template>
+    <template #title> Step Sequencer </template>
 
     <div class="sequencerpage">
       <div class="sequencerpage-buttons">
@@ -10,27 +8,15 @@
           :title="sequencerStore.isPlaying ? 'Pause' : 'Play'"
           @click="sequencerStore.togglePlay"
         >
-          <Icon
-            v-if="sequencerStore.isPlaying"
-            name="fad:pause"
-          />
-          <Icon
-            v-else
-            name="fad:play"
-          />
+          <Icon v-if="sequencerStore.isPlaying" name="fad:pause" />
+          <Icon v-else name="fad:play" />
         </LinkButton>
 
-        <LinkButton
-          href="/sequencer/synths"
-          title="Edit Synths"
-        >
+        <LinkButton href="/sequencer/synths" title="Edit Synths">
           <Icon name="bx:pencil" />
         </LinkButton>
 
-        <LinkButton
-          title="Clear Grid"
-          @click="sequencerStore.resetGrid"
-        >
+        <LinkButton title="Clear Grid" @click="sequencerStore.resetGrid">
           <Icon name="bx:trash-alt" />
         </LinkButton>
       </div>
@@ -39,10 +25,7 @@
         <BpmFader />
       </div>
 
-      <div
-        v-if="sequencerStore.grid && synthOptions"
-        class="sequencerpage-sequences"
-      >
+      <div v-if="sequencerStore.grid && synthOptions" class="sequencerpage-sequences">
         <div class="sequencerpage-rowoptions">
           <div
             v-for="(row, rowIndex) in sequencerStore.grid"
@@ -56,7 +39,7 @@
                 @update:model-value="
                   (id: string | number) => {
                     if (sequencerStore.grid?.[rowIndex]) {
-                      sequencerStore.grid[rowIndex].synthId = id.toString()
+                      sequencerStore.grid[rowIndex].synthId = id.toString();
                     }
                   }
                 "
@@ -72,18 +55,9 @@
                 <Icon name="bx:trash-alt" />
               </LinkButton>
 
-              <LinkButton
-                :title="row.muted ? 'Unmute' : 'Mute'"
-                @click="row.muted = !row.muted"
-              >
-                <Icon
-                  v-if="row.muted"
-                  name="bx:volume-mute"
-                />
-                <Icon
-                  v-else
-                  name="bx:volume-full"
-                />
+              <LinkButton :title="row.muted ? 'Unmute' : 'Mute'" @click="row.muted = !row.muted">
+                <Icon v-if="row.muted" name="bx:volume-mute" />
+                <Icon v-else name="bx:volume-full" />
               </LinkButton>
 
               <LinkButton
@@ -98,17 +72,11 @@
 
           <div class="sequencerpage-rowoptions-wrapper">
             <div class="sequencerpage-rowoptions-select">
-              <DropdownSelect
-                v-model="synthToAddId"
-                :options="synthOptions"
-              />
+              <DropdownSelect v-model="synthToAddId" :options="synthOptions" />
             </div>
 
             <div class="sequencerpage-rowoptions-buttons">
-              <LinkButton
-                title="Add Row"
-                @click="sequencerStore.addGridRow(synthToAddId)"
-              >
+              <LinkButton title="Add Row" @click="sequencerStore.addGridRow(synthToAddId)">
                 <Icon name="bx:plus" />
               </LinkButton>
             </div>
@@ -129,10 +97,8 @@
                 {
                   'sequencerpage-beat-on': beat,
                   'sequencerpage-beat-off': !beat,
-                  'sequencerpage-beat-barstart':
-                    sequencerStore.isBarStart(beatIndex),
-                  'sequencerpage-beat-playing':
-                    sequencerStore.isBeatPlaying(beatIndex),
+                  'sequencerpage-beat-barstart': sequencerStore.isBarStart(beatIndex),
+                  'sequencerpage-beat-playing': sequencerStore.isBeatPlaying(beatIndex),
                   'sequencerpage-beat-muted': row.muted,
                 },
               ]"
@@ -143,10 +109,7 @@
         </div>
 
         <div class="sequencerpage-columnoptions">
-          <LinkButton
-            title="Add Bar"
-            @click="sequencerStore.addBar()"
-          >
+          <LinkButton title="Add Bar" @click="sequencerStore.addBar()">
             <Icon name="bx:plus" />
           </LinkButton>
 
@@ -160,10 +123,7 @@
         </div>
       </div>
 
-      <p
-        v-if="isIOS && sequencerStore.isPlaying"
-        class="sequencerpage-info"
-      >
+      <p v-if="isIOS && sequencerStore.isPlaying" class="sequencerpage-info">
         Nothing playing? Take your phone off silent
       </p>
     </div>
@@ -171,33 +131,33 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, ref } from 'vue'
-import { isIOS } from 'react-device-detect'
+import { computed, onUnmounted, ref } from "vue";
+import { isIOS } from "react-device-detect";
 
-const sequencerStore = useSequencerStore()
+const sequencerStore = useSequencerStore();
 
-const synthToAddId = ref('')
+const synthToAddId = ref("");
 
 const synthOptions = computed(() =>
   sequencerStore.allSynths?.map(synth => ({
     value: synth.getId(),
     label: synth.name,
   })),
-)
+);
 
 onMounted(() => {
-  sequencerStore.init()
-  const firstSynth = sequencerStore.allSynths?.[0]
+  sequencerStore.init();
+  const firstSynth = sequencerStore.allSynths?.[0];
   if (firstSynth) {
-    synthToAddId.value = firstSynth.getId()
+    synthToAddId.value = firstSynth.getId();
   }
-})
+});
 
 onUnmounted(() => {
   if (sequencerStore.isPlaying && !sequencerStore.gridHasEntry) {
-    sequencerStore.stop()
+    sequencerStore.stop();
   }
-})
+});
 </script>
 
 <style lang="scss">

@@ -2,9 +2,6 @@
   "name": "markmetcalfe.com",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": "22.x.x"
-  },
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -15,20 +12,18 @@
     "postinstall": "nuxt prepare",
     "test": "npx playwright test",
     "chromatic": "chromatic --playwright --exit-zero-on-changes",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "oxlint . && oxfmt --check .",
+    "lint:fix": "oxlint . --fix && oxfmt .",
     "prepare": "cd .. && web/node_modules/.bin/husky"
   },
   "dependencies": {
     "@markmetcalfe/resume": "^1.0.0",
-    "@nuxt/eslint": "1.2.0",
     "@nuxt/fonts": "0.11.0",
     "@nuxt/icon": "2.2.2",
     "@nuxt/image": "2.0.0",
     "@nuxt/test-utils": "4.0.3",
     "@pinia/nuxt": "0.11.3",
     "color-convert": "^3.0.1",
-    "eslint": "^9.0.0",
     "hex-color-to-color-name": "^2.0.0",
     "is-mobile": "^5.0.0",
     "nuxt": "^4.0.0",
@@ -51,6 +46,9 @@
     "chromatic": "^17.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.0",
+    "oxfmt": "^0.56.0",
+    "oxlint": "^1.71.0",
+    "oxlint-tsgolint": "^0.23.0",
     "sass": "^1.86.0",
     "stylelint": "^16.16.0",
     "stylelint-config-recommended-scss": "^14.1.0",
@@ -60,8 +58,14 @@
     "vue-tsc": "^3.3.3"
   },
   "lint-staged": {
-    "**/*.{js,ts,vue,jsx,tsx}": "eslint --fix",
+    "**/*.{js,ts,vue,jsx,tsx}": [
+      "oxlint --fix",
+      "oxfmt"
+    ],
     "**/*.{ts,tsx,vue}": "sh -c 'vue-tsc --noEmit -p .nuxt/tsconfig.json'",
     "**/*.vue": "stylelint --fix strict"
+  },
+  "engines": {
+    "node": "22.x.x"
   }
 }

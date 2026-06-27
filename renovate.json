@@ -6,6 +6,7 @@
   "packageRules": [
     {
       "description": "Update @markmetcalfe packages every hour",
+      "matchFileNames": ["web/**"],
       "matchPackageNames": ["@markmetcalfe/*"],
       "minimumReleaseAge": null,
       "schedule": ["* * * * *"]
@@ -14,11 +15,14 @@
       "matchUpdateTypes": [
         "patch"
       ],
-      "groupName": "all patch dependencies",
-      "groupSlug": "all-patch",
-      "matchPackageNames": [
-        "*"
-      ]
+      "matchFileNames": ["web/**"],
+      "groupName": "web patch dependencies",
+      "groupSlug": "web-patch"
+    },
+    {
+      "matchFileNames": ["api/**"],
+      "groupName": "api dependencies",
+      "groupSlug": "api"
     },
     {
       "matchUpdateTypes": [
@@ -42,12 +46,14 @@
       "enabled": false
     },
     {
-      "matchPackageNames": ["/eslint/"],
-      "groupName": "eslint"
+      "matchFileNames": ["web/**"],
+      "matchPackageNames": ["/oxlint/", "/oxfmt/"],
+      "groupName": "web oxlint"
     },
     {
+      "matchFileNames": ["web/**"],
       "matchPackageNames": ["/@nuxt/"],
-      "groupName": "nuxt"
+      "groupName": "web nuxt"
     }
   ],
   "hostRules": [

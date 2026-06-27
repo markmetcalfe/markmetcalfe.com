@@ -8,19 +8,13 @@
         <p v-if="left">
           <strong>{{ left }}</strong>
         </p>
-        <slot
-          v-else
-          name="left"
-        />
+        <slot v-else name="left" />
       </div>
       <div class="resumeentry-right">
         <p v-if="right">
           {{ right }}
         </p>
-        <slot
-          v-else-if="$slots.right"
-          name="right"
-        />
+        <slot v-else-if="$slots.right" name="right" />
         <slot v-else />
       </div>
     </template>
@@ -29,11 +23,11 @@
 
 <script setup lang="ts">
 interface Props {
-  left?: string
-  right?: string
+  left?: string;
+  right?: string;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 </script>
 
 <style lang="scss">

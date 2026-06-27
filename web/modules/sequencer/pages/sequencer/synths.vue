@@ -1,51 +1,27 @@
 <template>
   <PageCard back-button-page="/sequencer">
-    <template #title>
-      Edit Synths
-    </template>
+    <template #title> Edit Synths </template>
 
-    <div
-      v-if="sequencerStore.allSynths"
-      class="editsynths"
-    >
+    <div v-if="sequencerStore.allSynths" class="editsynths">
       <div class="editsynths-select">
-        <DropdownSelect
-          v-model="selectedSynthId"
-          :options="synthOptions"
-        />
+        <DropdownSelect v-model="selectedSynthId" :options="synthOptions" />
 
-        <LinkButton
-          v-if="selectedSynthId"
-          title="Copy"
-          @click="copySynth"
-        >
+        <LinkButton v-if="selectedSynthId" title="Copy" @click="copySynth">
           <Icon name="bx:copy" />
         </LinkButton>
 
-        <LinkButton
-          v-if="selectedSynth?.canDelete()"
-          title="Delete"
-          @click="deleteSynth"
-        >
+        <LinkButton v-if="selectedSynth?.canDelete()" title="Delete" @click="deleteSynth">
           <Icon name="bx:trash-alt" />
         </LinkButton>
       </div>
 
-      <div
-        v-if="selectedSynth"
-        class="editsynths-settings"
-      >
-        <TextField
-          v-model="selectedSynth.name"
-          label="Label"
-        />
+      <div v-if="selectedSynth" class="editsynths-settings">
+        <TextField v-model="selectedSynth.name" label="Label" />
 
         <DropdownSelect
           v-if="selectedSynth.canSetNote()"
           v-model="selectedSynth.note"
-          :options="
-            Object.entries(notes).map(([value, label]) => ({ value, label }))
-          "
+          :options="Object.entries(notes).map(([value, label]) => ({ value, label }))"
           label="Note"
         />
 
@@ -57,12 +33,7 @@
           label="Octave"
         />
 
-        <RangeSlider
-          v-model="selectedSynth.duration"
-          :min="1"
-          :max="64"
-          label="Duration"
-        />
+        <RangeSlider v-model="selectedSynth.duration" :min="1" :max="64" label="Duration" />
 
         <RangeSlider
           v-for="[key, label] in Object.entries({
@@ -72,19 +43,14 @@
             release: 'Release',
           })"
           :key="key"
-          :model-value="
-            selectedSynth.getEnvelopeValue(key as keyof Synth['envelope'])
-          "
+          :model-value="selectedSynth.getEnvelopeValue(key as keyof Synth['envelope'])"
           :label="label"
           :min="0.001"
           :max="1"
           :decimal-places="3"
           @update:model-value="
             (value: number) =>
-              selectedSynth?.setEnvelopeValue(
-                key as keyof Synth['envelope'],
-                value,
-              )
+              selectedSynth?.setEnvelopeValue(key as keyof Synth['envelope'], value)
           "
         />
       </div>
@@ -93,15 +59,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import type { Synth } from '@sequencer/util/tone/synths'
-import { notes } from '@sequencer/util/tone'
+import { ref, computed, onMounted } from "vue";
+import type { Synth } from "@sequencer/util/tone/synths";
+import { notes } from "@sequencer/util/tone";
 
-const sequencerStore = useSequencerStore()
+const sequencerStore = useSequencerStore();
 
 onMounted(() => {
-  sequencerStore.init()
-})
+  sequencerStore.init();
+});
 
 const synthOptions = computed(() =>
   sequencerStore.allSynths
@@ -110,38 +76,36 @@ const synthOptions = computed(() =>
         label: synth.name,
       }))
     : [],
-)
+);
 
-const selectedSynthId = ref<string>('')
+const selectedSynthId = ref<string>("");
 
 onMounted(() => {
   if (sequencerStore.allSynths && sequencerStore.allSynths.length > 0) {
-    const firstSynth = sequencerStore.allSynths[0]
+    const firstSynth = sequencerStore.allSynths[0];
     if (firstSynth) {
-      selectedSynthId.value = firstSynth.getId()
+      selectedSynthId.value = firstSynth.getId();
     }
   }
-})
+});
 
-const selectedSynth = computed(() =>
-  sequencerStore.getSynth(selectedSynthId.value),
-)
+const selectedSynth = computed(() => sequencerStore.getSynth(selectedSynthId.value));
 
 const copySynth = (): void => {
-  const copy = sequencerStore.copySynth(selectedSynthId.value)
-  selectedSynthId.value = copy.getId()
-}
+  const copy = sequencerStore.copySynth(selectedSynthId.value);
+  selectedSynthId.value = copy.getId();
+};
 
 const deleteSynth = (): void => {
-  sequencerStore.deleteSynth(selectedSynthId.value)
+  sequencerStore.deleteSynth(selectedSynthId.value);
   if (sequencerStore.allSynths && sequencerStore.allSynths.length > 0) {
-    const lastIndex = sequencerStore.allSynths.length - 1
-    const lastSynth = sequencerStore.allSynths[lastIndex]
+    const lastIndex = sequencerStore.allSynths.length - 1;
+    const lastSynth = sequencerStore.allSynths[lastIndex];
     if (lastSynth) {
-      selectedSynthId.value = lastSynth.getId()
+      selectedSynthId.value = lastSynth.getId();
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

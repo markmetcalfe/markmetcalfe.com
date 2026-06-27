@@ -1,3 +1,3 @@
 interface Env {
-  GITHUB_API_TOKEN: string
+  GITHUB_API_TOKEN: string;
 }

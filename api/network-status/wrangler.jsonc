@@ -7,9 +7,9 @@
   "routes": [
     {
       "pattern": "markmetcalfe.com/api/get-network-status",
-      "zone_name": "markmetcalfe.com"
-    }
+      "zone_name": "markmetcalfe.com",
+    },
   ],
   "kv_namespaces": [],
-  "env": {}
+  "env": {},
 }

@@ -1,8 +1,6 @@
 <template>
   <PageCard class="home">
-    <div
-      class="home-container"
-    >
+    <div class="home-container">
       <section class="home-header">
         <div class="home-header-left">
           <ProfilePhoto />
@@ -34,12 +32,7 @@
             >
               <Icon name="bx:bxl-linkedin-square" />
             </a>
-            <a
-              :href="mailtoLink"
-              title="Email"
-              target="_blank"
-              rel="noopener noreferer"
-            >
+            <a :href="mailtoLink" title="Email" target="_blank" rel="noopener noreferer">
               <Icon name="bx:envelope" />
             </a>
           </div>
@@ -47,43 +40,21 @@
       </section>
     </div>
 
-    <SectionBlock
-      title="Me"
-      larger-text
-    >
+    <SectionBlock title="Me" larger-text>
       I'm a software developer who likes making cool experiences with code
     </SectionBlock>
 
-    <SectionBlock
-      title="My Work"
-      grid
-    >
-      <LinkButton
-        text="Resume"
-        href="/resume"
-        large
-      >
+    <SectionBlock title="My Work" grid>
+      <LinkButton text="Resume" href="/resume" large>
         <Icon name="bx:file" />
       </LinkButton>
-      <LinkButton
-        text="Visuals"
-        href="/visuals"
-        large
-      >
+      <LinkButton text="Visuals" href="/visuals" large>
         <Icon name="custom:octohedron" />
       </LinkButton>
-      <LinkButton
-        text="Sequencer"
-        href="/sequencer"
-        large
-      >
+      <LinkButton text="Sequencer" href="/sequencer" large>
         <Icon name="fad:waveform" />
       </LinkButton>
-      <LinkButton
-        text="Doodle"
-        href="/doodle"
-        large
-      >
+      <LinkButton text="Doodle" href="/doodle" large>
         <Icon name="bx:paint" />
       </LinkButton>
     </SectionBlock>
@@ -91,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-const { mailtoLink } = useAppConfig()
+const { mailtoLink } = useAppConfig();
 </script>
 
 <style lang="scss">

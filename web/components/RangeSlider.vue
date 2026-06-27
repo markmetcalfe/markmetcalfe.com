@@ -1,20 +1,7 @@
 <template>
-  <div
-    class="range-slider"
-    :class="{ disabled: disabled }"
-  >
-    <label
-      v-if="label"
-      :id="labelId"
-      class="range-slider-label"
-      :for="id"
-    >{{
-      label
-    }}</label>
-    <div
-      class="range-slider-container"
-      :class="{ 'range-slider--active': isFocused }"
-    >
+  <div class="range-slider" :class="{ disabled: disabled }">
+    <label v-if="label" :id="labelId" class="range-slider-label" :for="id">{{ label }}</label>
+    <div class="range-slider-container" :class="{ 'range-slider--active': isFocused }">
       <div class="range-slider-track">
         <input
           :id="id"
@@ -22,7 +9,7 @@
           class="range-slider-input"
           :min="min"
           :max="max"
-          :step="step ?? (1 / 10 ** decimalPlaces)"
+          :step="step ?? 1 / 10 ** decimalPlaces"
           :value="roundedValue"
           role="slider"
           :aria-valuemin="min"
@@ -34,11 +21,8 @@
           @input="updateValue"
           @focus="handleFocus"
           @blur="handleBlur"
-        >
-        <div
-          class="range-slider-progress"
-          :style="{ width: `${progressPercentage}%` }"
         />
+        <div class="range-slider-progress" :style="{ width: `${progressPercentage}%` }" />
       </div>
       <slot name="append" />
       <TextField
@@ -54,16 +38,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, useId } from 'vue'
+import { ref, computed, useId } from "vue";
 
 interface Props {
-  label?: string | null
-  modelValue: number
-  disabled?: boolean
-  min?: number
-  max?: number
-  decimalPlaces?: number
-  step?: number
+  label?: string | null;
+  modelValue: number;
+  disabled?: boolean;
+  min?: number;
+  max?: number;
+  decimalPlaces?: number;
+  step?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -72,45 +56,45 @@ const props = withDefaults(defineProps<Props>(), {
   min: 0,
   max: 100,
   decimalPlaces: 0,
-})
+});
 
 const emit = defineEmits<{
-  'update:modelValue': [value: number]
-  'change': [value: number]
-}>()
+  "update:modelValue": [value: number];
+  change: [value: number];
+}>();
 
-const isFocused = ref(false)
-const id = useId()
-const labelId = useId()
+const isFocused = ref(false);
+const id = useId();
+const labelId = useId();
 
 const progressPercentage = computed((): number => {
-  return ((props.modelValue - props.min) / (props.max - props.min)) * 100
-})
+  return ((props.modelValue - props.min) / (props.max - props.min)) * 100;
+});
 
 const roundedValue = computed((): string => {
-  return props.modelValue.toFixed(props.decimalPlaces)
-})
+  return props.modelValue.toFixed(props.decimalPlaces);
+});
 
 const updateValue = (event: Event): void => {
-  const target = event.target as HTMLInputElement
-  const value = Number(target.value)
-  emit('update:modelValue', value)
-  emit('change', value)
-}
+  const target = event.target as HTMLInputElement;
+  const value = Number(target.value);
+  emit("update:modelValue", value);
+  emit("change", value);
+};
 
 const updateTextValue = (textValue: string | number): void => {
-  const value = Number(textValue)
-  emit('update:modelValue', value)
-  emit('change', value)
-}
+  const value = Number(textValue);
+  emit("update:modelValue", value);
+  emit("change", value);
+};
 
 const handleFocus = (): void => {
-  isFocused.value = true
-}
+  isFocused.value = true;
+};
 
 const handleBlur = (): void => {
-  isFocused.value = false
-}
+  isFocused.value = false;
+};
 </script>
 
 <style lang="scss">
