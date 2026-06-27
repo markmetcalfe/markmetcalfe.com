@@ -372,16 +372,12 @@ export class GameRoom implements DurableObject {
     });
     this.game.phase = "drawing";
     this.game.alarmMode = "countdown";
-    // Shuffle suggested words and use them as the word pool, falling back to WORDS when exhausted
-    const suggested = Object.values(this.game.suggestedWords);
-    for (let i = suggested.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [suggested[i], suggested[j]] = [
-        suggested[j] as string,
-        suggested[i] as string,
-      ];
-    }
-    this.game.wordPool = suggested;
+    // Each player draws the word they suggested; fall back to a random word if they didn't suggest one
+    this.game.wordPool = this.game.drawOrder.map(
+      playerId =>
+        this.game.suggestedWords[playerId] ??
+        (WORDS[Math.floor(Math.random() * WORDS.length)] as string),
+    );
     this.game.wordPoolIndex = 0;
     this.doStartRound();
   }
@@ -430,6 +426,22 @@ export class GameRoom implements DurableObject {
       players: [...this.game.players],
     });
     void this.state.storage.setAlarm(Date.now() + 1000);
+  }
+
+  private doSkipRound(): void {
+    if (this.game.players.length === 0) {
+      return;
+    }
+    if (this.game.roundNumber >= this.game.totalRounds) {
+      this.doEndGame();
+      return;
+    }
+    this.game.roundNumber++;
+    this.game.currentDrawerIndex =
+      (this.game.currentDrawerIndex + 1) % this.game.drawOrder.length;
+    this.game.phase = "drawing";
+    this.game.alarmMode = "countdown";
+    this.doStartRound();
   }
 
   private doEndGame(): void {
@@ -482,11 +494,12 @@ export class GameRoom implements DurableObject {
       players: this.game.players,
     });
 
-    if (
-      this.game.phase === "drawing" &&
-      playerId === this.currentDrawerId()
-    ) {
-      this.doEndRound();
+    if (this.game.phase === "drawing") {
+      if (this.game.players.length < 2) {
+        this.doEndGame();
+      } else if (playerId === this.currentDrawerId()) {
+        this.doSkipRound();
+      }
     }
 
     if (this.game.players.length === 0) {

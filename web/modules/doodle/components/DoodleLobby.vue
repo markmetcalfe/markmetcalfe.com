@@ -43,7 +43,7 @@
     </form>
 
     <div class="doodlelobby-invite">
-      <span class="doodlelobby-invite-url">{{ roomUrl }}</span>
+      <span class="doodlelobby-invite-url">{{ displayRoomUrl }}</span>
       <LinkButton
         :text="copied ? 'Copied!' : 'Copy Link'"
         small
@@ -83,12 +83,19 @@
 </template>
 
 <script setup lang="ts">
+import isMobile from "is-mobile";
+
 const store = useDoodleStore();
 const copied = ref(false);
 const wordInput = ref("");
 
 const roomUrl = computed(() =>
   typeof window !== "undefined" ? window.location.href : "",
+);
+const displayRoomUrl = computed(() =>
+  isMobile()
+    ? roomUrl.value.replace(/^https?:\/\//, "")
+    : roomUrl.value,
 );
 
 const canSubmitWord = computed(() => {

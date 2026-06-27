@@ -2,7 +2,10 @@
   <div class="doodleroom">
     <HeaderBar title="Doodle" back-href="/" back-label="Leave game">
       <span
-        v-if="store.totalRounds > 0"
+        v-if="
+          store.totalRounds > 0 &&
+          !['game_end', 'waiting'].includes(store.phase)
+        "
         class="doodleroom-header-round"
       >
         Round {{ store.roundNumber }}/{{ store.totalRounds }}
@@ -48,10 +51,9 @@
       <div class="doodleroom-modal">
         <h2>Enter your name</h2>
         <form @submit.prevent="submitName">
-          <input
+          <TextField
             ref="nameInput"
             v-model="nameValue"
-            type="text"
             maxlength="24"
             placeholder="Your name..."
             autocomplete="off"
@@ -71,6 +73,8 @@ definePageMeta({ ssr: false });
 const route = useRoute();
 const config = useRuntimeConfig();
 const store = useDoodleStore();
+
+useDoodleSound();
 
 const roomId = computed(() => route.params.room as string);
 const showNamePrompt = ref(false);

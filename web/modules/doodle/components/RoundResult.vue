@@ -23,7 +23,11 @@
     </ul>
 
     <p class="doodleroundresult-next">
-      Next round starting shortly&hellip;
+      {{
+        store.roundNumber >= store.totalRounds
+          ? "Showing game results shortly"
+          : "Next round starting shortly"
+      }}&hellip;
     </p>
   </div>
 </template>

@@ -113,7 +113,11 @@ export const useDoodleStore = defineStore("doodle", {
     me: state => state.players.find(p => p.id === state.myId),
     isHost: state =>
       state.players.find(p => p.id === state.myId)?.isHost ?? false,
-    formattedHint: state => state.wordHint.split("").join(" "),
+    formattedHint: state =>
+      state.wordHint
+        .split(" ")
+        .map(w => w.split("").join(" "))
+        .join("   "),
     iHaveSubmittedWord: state =>
       state.suggestedWordPlayerIds.includes(state.myId),
   },
