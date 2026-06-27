@@ -2,27 +2,26 @@
   <div>
     <NuxtPage />
     <DynamicBackground />
-    <a
-      id="seo-link"
-      href="https://www.instagram.com/markus_vizshun/"
-    >@markus_vizshun</a>
+    <a id="seo-link" href="https://www.instagram.com/markus_vizshun/"
+      >@markus_vizshun</a
+    >
   </div>
 </template>
 
 <script setup lang="ts">
 useSeoMeta({
-  title: 'Mark Metcalfe',
-  ogTitle: 'Mark Metcalfe',
-  description: 'Mark Metcalfe: Developer & Visual Artist',
-  ogDescription: 'Mark Metcalfe: Developer & Visual Artist',
-  ogImage: 'https://markmetcalfe.com/social-card.jpg?v=5',
-})
+  title: "Mark Metcalfe",
+  ogTitle: "Mark Metcalfe",
+  description: "Mark Metcalfe: Developer & Visual Artist",
+  ogDescription: "Mark Metcalfe: Developer & Visual Artist",
+  ogImage: "https://markmetcalfe.com/social-card.jpg?v=5",
+});
 
 onMounted(() => {
-  nextTick(() => {
-    document.getElementById('seo-link')?.remove()
-  })
-})
+  void nextTick(() => {
+    document.getElementById("seo-link")?.remove();
+  });
+});
 </script>
 
 <style lang="scss">
@@ -83,7 +82,9 @@ button {
   padding: 0;
   margin: 0;
   text-decoration: none;
-  transition: color 250ms, border 250ms;
+  transition:
+    color 250ms,
+    border 250ms;
 }
 
 a:hover,

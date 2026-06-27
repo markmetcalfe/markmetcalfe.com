@@ -1,18 +1,14 @@
 <template>
   <div class="doodlechat">
-    <div
-      ref="messagesEl"
-      class="doodlechat-messages"
-    >
+    <div ref="messagesEl" class="doodlechat-messages">
       <div
         v-for="(msg, i) in store.messages"
         :key="i"
         :class="['doodlechat-msg', `doodlechat-msg-${msg.type}`]"
       >
-        <span
-          v-if="msg.name"
-          class="doodlechat-msg-sender"
-        >{{ msg.name }}:&nbsp;</span>
+        <span v-if="msg.name" class="doodlechat-msg-sender"
+          >{{ msg.name }}:&nbsp;</span
+        >
         {{ msg.text }}
       </div>
     </div>
@@ -25,11 +21,8 @@
         maxlength="100"
         autocomplete="off"
         @keydown.enter="submit"
-      >
-      <LinkButton
-        small
-        @click="submit"
-      >
+      />
+      <LinkButton small @click="submit">
         <Icon name="bx:right-arrow-alt" />
       </LinkButton>
     </div>
@@ -37,29 +30,34 @@
 </template>
 
 <script setup lang="ts">
-const store = useDoodleStore()
-const inputText = ref('')
-const messagesEl = ref<HTMLElement>()
+const store = useDoodleStore();
+const inputText = ref("");
+const messagesEl = ref<HTMLElement>();
 
 const inputPlaceholder = computed(() =>
-  store.phase === 'drawing' && store.currentDrawerId !== store.myId
-    ? 'Guess the word…'
-    : 'Chat…',
-)
+  store.phase === "drawing" && store.currentDrawerId !== store.myId
+    ? "Guess the word…"
+    : "Chat…",
+);
 
 function submit() {
-  const text = inputText.value.trim()
-  if (!text) return
-  store.sendGuessOrChat(text)
-  inputText.value = ''
+  const text = inputText.value.trim();
+  if (!text) {
+    return;
+  }
+  store.sendGuessOrChat(text);
+  inputText.value = "";
 }
 
-watch(() => store.messages.length, async () => {
-  await nextTick()
-  if (messagesEl.value) {
-    messagesEl.value.scrollTop = messagesEl.value.scrollHeight
-  }
-})
+watch(
+  () => store.messages.length,
+  async () => {
+    await nextTick();
+    if (messagesEl.value) {
+      messagesEl.value.scrollTop = messagesEl.value.scrollHeight;
+    }
+  },
+);
 </script>
 
 <style lang="scss">

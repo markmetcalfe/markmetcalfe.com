@@ -20,13 +20,13 @@
 </template>
 
 <script setup lang="ts">
-const siteStore = useSiteStore()
+const siteStore = useSiteStore();
 
 interface Props {
-  disabled?: boolean
+  disabled?: boolean;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 </script>
 
 <style lang="scss">

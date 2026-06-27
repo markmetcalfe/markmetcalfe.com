@@ -1,13 +1,8 @@
 <template>
   <PageCard back-button-page="/sequencer">
-    <template #title>
-      Edit Synths
-    </template>
+    <template #title> Edit Synths </template>
 
-    <div
-      v-if="sequencerStore.allSynths"
-      class="editsynths"
-    >
+    <div v-if="sequencerStore.allSynths" class="editsynths">
       <div class="editsynths-select">
         <DropdownSelect
           v-model="selectedSynthId"
@@ -31,20 +26,17 @@
         </LinkButton>
       </div>
 
-      <div
-        v-if="selectedSynth"
-        class="editsynths-settings"
-      >
-        <TextField
-          v-model="selectedSynth.name"
-          label="Label"
-        />
+      <div v-if="selectedSynth" class="editsynths-settings">
+        <TextField v-model="selectedSynth.name" label="Label" />
 
         <DropdownSelect
           v-if="selectedSynth.canSetNote()"
           v-model="selectedSynth.note"
           :options="
-            Object.entries(notes).map(([value, label]) => ({ value, label }))
+            Object.entries(notes).map(([value, label]) => ({
+              value,
+              label,
+            }))
           "
           label="Note"
         />
@@ -73,7 +65,9 @@
           })"
           :key="key"
           :model-value="
-            selectedSynth.getEnvelopeValue(key as keyof Synth['envelope'])
+            selectedSynth.getEnvelopeValue(
+              key as keyof Synth['envelope'],
+            )
           "
           :label="label"
           :min="0.001"
@@ -93,15 +87,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import type { Synth } from '@sequencer/util/tone/synths'
-import { notes } from '@sequencer/util/tone'
+import { ref, computed, onMounted } from "vue";
+import type { Synth } from "@sequencer/util/tone/synths";
+import { notes } from "@sequencer/util/tone";
 
-const sequencerStore = useSequencerStore()
+const sequencerStore = useSequencerStore();
 
 onMounted(() => {
-  sequencerStore.init()
-})
+  sequencerStore.init();
+});
 
 const synthOptions = computed(() =>
   sequencerStore.allSynths
@@ -110,38 +104,44 @@ const synthOptions = computed(() =>
         label: synth.name,
       }))
     : [],
-)
+);
 
-const selectedSynthId = ref<string>('')
+const selectedSynthId = ref<string>("");
 
 onMounted(() => {
-  if (sequencerStore.allSynths && sequencerStore.allSynths.length > 0) {
-    const firstSynth = sequencerStore.allSynths[0]
+  if (
+    sequencerStore.allSynths &&
+    sequencerStore.allSynths.length > 0
+  ) {
+    const firstSynth = sequencerStore.allSynths[0];
     if (firstSynth) {
-      selectedSynthId.value = firstSynth.getId()
+      selectedSynthId.value = firstSynth.getId();
     }
   }
-})
+});
 
 const selectedSynth = computed(() =>
   sequencerStore.getSynth(selectedSynthId.value),
-)
+);
 
 const copySynth = (): void => {
-  const copy = sequencerStore.copySynth(selectedSynthId.value)
-  selectedSynthId.value = copy.getId()
-}
+  const copy = sequencerStore.copySynth(selectedSynthId.value);
+  selectedSynthId.value = copy.getId();
+};
 
 const deleteSynth = (): void => {
-  sequencerStore.deleteSynth(selectedSynthId.value)
-  if (sequencerStore.allSynths && sequencerStore.allSynths.length > 0) {
-    const lastIndex = sequencerStore.allSynths.length - 1
-    const lastSynth = sequencerStore.allSynths[lastIndex]
+  sequencerStore.deleteSynth(selectedSynthId.value);
+  if (
+    sequencerStore.allSynths &&
+    sequencerStore.allSynths.length > 0
+  ) {
+    const lastIndex = sequencerStore.allSynths.length - 1;
+    const lastSynth = sequencerStore.allSynths[lastIndex];
     if (lastSynth) {
-      selectedSynthId.value = lastSynth.getId()
+      selectedSynthId.value = lastSynth.getId();
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

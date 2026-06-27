@@ -6,7 +6,8 @@
       class="mapframe"
     />
     <div class="banner-overlay">
-      <span class="light">Server IP: </span><span class="highlight">minecraft.markmetcalfe.com</span>
+      <span class="light">Server IP: </span
+      ><span class="highlight">minecraft.markmetcalfe.com</span>
     </div>
   </div>
 </template>

@@ -16,15 +16,15 @@
 
 <script setup lang="ts">
 interface Props {
-  title: string
-  backHref?: string
-  backLabel?: string
+  title: string;
+  backHref?: string;
+  backLabel?: string;
 }
 
 withDefaults(defineProps<Props>(), {
-  backHref: '/',
-  backLabel: 'Back',
-})
+  backHref: "/",
+  backLabel: "Back",
+});
 </script>
 
 <style lang="scss">

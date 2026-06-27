@@ -1,52 +1,43 @@
-import { buildLocalDevProxy } from './dev-proxy'
+import { buildLocalDevProxy } from "./dev-proxy";
 
-const isPlaywrightTest = process.env.IS_PLAYWRIGHT === '1'
-const isApiLocal = process.env.API_LOCAL === '1'
-const siteDomain = 'markmetcalfe.com'
+const isPlaywrightTest = process.env.IS_PLAYWRIGHT === "1";
+const isApiLocal = process.env.API_LOCAL === "1";
+const siteDomain = "markmetcalfe.com";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   extends: [
-    './modules/doodle',
-    './modules/minecraft',
-    './modules/network-status',
-    './modules/resume',
-    './modules/sequencer',
-    './modules/visuals',
+    "./modules/doodle",
+    "./modules/minecraft",
+    "./modules/network-status",
+    "./modules/resume",
+    "./modules/sequencer",
+    "./modules/visuals",
   ],
   modules: [
-    '@nuxt/eslint',
-    '@nuxt/fonts',
-    '@nuxt/icon',
-    '@nuxt/image',
-    '@nuxt/test-utils',
-    '@pinia/nuxt',
+    "@nuxt/fonts",
+    "@nuxt/icon",
+    "@nuxt/image",
+    "@nuxt/test-utils",
+    "@pinia/nuxt",
   ],
   devtools: { enabled: true },
   app: {
     head: {
-      title: 'Mark Metcalfe',
+      title: "Mark Metcalfe",
       htmlAttrs: {
-        lang: 'en',
+        lang: "en",
       },
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.svg' },
+        { rel: "icon", type: "image/x-icon", href: "/favicon.svg" },
       ],
     },
   },
   appConfig: {
-    siteDomain: 'markmetcalfe.com',
-    mailtoLink: 'mailto:mark@markmetcalfe.com',
+    siteDomain: "markmetcalfe.com",
+    mailtoLink: "mailto:mark@markmetcalfe.com",
   },
-  compatibilityDate: '2025-05-28',
-  eslint: {
-    config: {
-      stylistic: {
-        quotes: 'single',
-        semi: false,
-      },
-    },
-  },
+  compatibilityDate: "2025-05-28",
   icon: {
     clientBundle: {
       scan: true,
@@ -54,13 +45,13 @@ export default defineNuxtConfig({
     },
     customCollections: [
       {
-        prefix: 'custom',
-        dir: './assets/icons',
+        prefix: "custom",
+        dir: "./assets/icons",
       },
     ],
   },
   pinia: {
-    storesDirs: ['stores'],
+    storesDirs: ["stores"],
   },
   ...(isPlaywrightTest
     ? {}
@@ -69,7 +60,7 @@ export default defineNuxtConfig({
           devProxy: isApiLocal
             ? buildLocalDevProxy()
             : {
-                '/api': {
+                "/api": {
                   target: `https://${siteDomain}/api`,
                   changeOrigin: true,
                   prependPath: true,
@@ -77,4 +68,4 @@ export default defineNuxtConfig({
               },
         },
       }),
-})
+});

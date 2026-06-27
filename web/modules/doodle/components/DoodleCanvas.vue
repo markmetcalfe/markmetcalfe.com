@@ -11,15 +11,17 @@
     </div>
 
     <!-- Toolbar shown only for the current drawer -->
-    <div
-      v-if="store.amIDrawing"
-      class="doodlecanvas-toolbar"
-    >
+    <div v-if="store.amIDrawing" class="doodlecanvas-toolbar">
       <div class="doodlecanvas-toolbar-colors">
         <button
           v-for="color in COLORS"
           :key="color"
-          :class="['doodlecanvas-color', { 'doodlecanvas-color-active': store.drawColor === color }]"
+          :class="[
+            'doodlecanvas-color',
+            {
+              'doodlecanvas-color-active': store.drawColor === color,
+            },
+          ]"
           :style="{ background: color }"
           :title="color"
           @click="store.drawColor = color"
@@ -30,7 +32,10 @@
         <button
           v-for="size in SIZES"
           :key="size"
-          :class="['doodlecanvas-size', { 'doodlecanvas-size-active': store.drawSize === size }]"
+          :class="[
+            'doodlecanvas-size',
+            { 'doodlecanvas-size-active': store.drawSize === size },
+          ]"
           :title="`Size ${size}`"
           @click="store.drawSize = size"
         >
@@ -42,18 +47,10 @@
       </div>
 
       <div class="doodlecanvas-toolbar-actions">
-        <LinkButton
-          text="Eraser"
-          small
-          @click="eraser"
-        >
+        <LinkButton text="Eraser" small @click="eraser">
           <Icon name="bx:eraser" />
         </LinkButton>
-        <LinkButton
-          text="Clear"
-          small
-          @click="store.clearCanvas()"
-        >
+        <LinkButton text="Clear" small @click="store.clearCanvas()">
           <Icon name="bx:trash" />
         </LinkButton>
       </div>
@@ -62,126 +59,164 @@
 </template>
 
 <script setup lang="ts">
-import type { DrawEvent } from '@doodle/stores/doodle'
+import type { DrawEvent } from "@doodle/stores/doodle";
 
-const store = useDoodleStore()
+const store = useDoodleStore();
 
 const COLORS = [
-  '#000000', '#6b7280', '#ef4444', '#f97316',
-  '#eab308', '#22c55e', '#06b6d4', '#3b82f6',
-  '#8b5cf6', '#ec4899', '#ffffff', '#854d0e',
-]
-const SIZES = [3, 8, 16, 26]
+  "#000000",
+  "#6b7280",
+  "#ef4444",
+  "#f97316",
+  "#eab308",
+  "#22c55e",
+  "#06b6d4",
+  "#3b82f6",
+  "#8b5cf6",
+  "#ec4899",
+  "#ffffff",
+  "#854d0e",
+];
+const SIZES = [3, 8, 16, 26];
 
-const canvasEl = ref<HTMLCanvasElement>()
-let ctx: CanvasRenderingContext2D | null = null
-let isDrawing = false
+const canvasEl = ref<HTMLCanvasElement>();
+let ctx: CanvasRenderingContext2D | null = null;
+let isDrawing = false;
 
 function applyEvent(event: DrawEvent): void {
-  if (!ctx || !canvasEl.value) return
-  const c = canvasEl.value
+  if (!ctx || !canvasEl.value) {
+    return;
+  }
+  const c = canvasEl.value;
   switch (event.kind) {
-    case 'begin':
-      ctx.beginPath()
-      ctx.moveTo(event.x * c.width, event.y * c.height)
-      ctx.strokeStyle = event.color
-      ctx.lineWidth = event.size
-      ctx.lineCap = 'round'
-      ctx.lineJoin = 'round'
-      break
-    case 'move':
-      ctx.lineTo(event.x * c.width, event.y * c.height)
-      ctx.stroke()
-      break
-    case 'end':
-      ctx.closePath()
-      break
-    case 'clear':
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, c.width, c.height)
-      break
+    case "begin":
+      ctx.beginPath();
+      ctx.moveTo(event.x * c.width, event.y * c.height);
+      ctx.strokeStyle = event.color;
+      ctx.lineWidth = event.size;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      break;
+    case "move":
+      ctx.lineTo(event.x * c.width, event.y * c.height);
+      ctx.stroke();
+      break;
+    case "end":
+      ctx.closePath();
+      break;
+    case "clear":
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, c.width, c.height);
+      break;
   }
 }
 
 function replayHistory(history: DrawEvent[]): void {
-  if (!ctx || !canvasEl.value) return
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, canvasEl.value.width, canvasEl.value.height)
-  for (const ev of history) applyEvent(ev)
-}
-
-function normPos(e: MouseEvent | Touch): { x: number, y: number } {
-  const c = canvasEl.value!
-  const rect = c.getBoundingClientRect()
-  return {
-    x: ((e.clientX - rect.left) * (c.width / rect.width)) / c.width,
-    y: ((e.clientY - rect.top) * (c.height / rect.height)) / c.height,
+  if (!ctx || !canvasEl.value) {
+    return;
+  }
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvasEl.value.width, canvasEl.value.height);
+  for (const ev of history) {
+    applyEvent(ev);
   }
 }
 
-function onStart(pos: { x: number, y: number }): void {
-  if (!store.amIDrawing) return
-  isDrawing = true
-  const event: DrawEvent = { kind: 'begin', ...pos, color: store.drawColor, size: store.drawSize }
-  applyEvent(event)
-  store.sendDraw(event)
+function normPos(e: MouseEvent | Touch): { x: number; y: number } {
+  const c = canvasEl.value!;
+  const rect = c.getBoundingClientRect();
+  return {
+    x: ((e.clientX - rect.left) * (c.width / rect.width)) / c.width,
+    y: ((e.clientY - rect.top) * (c.height / rect.height)) / c.height,
+  };
 }
 
-function onMove(pos: { x: number, y: number }): void {
-  if (!isDrawing || !store.amIDrawing) return
-  const event: DrawEvent = { kind: 'move', ...pos }
-  applyEvent(event)
-  store.sendDraw(event)
+function onStart(pos: { x: number; y: number }): void {
+  if (!store.amIDrawing) {
+    return;
+  }
+  isDrawing = true;
+  const event: DrawEvent = {
+    kind: "begin",
+    ...pos,
+    color: store.drawColor,
+    size: store.drawSize,
+  };
+  applyEvent(event);
+  store.sendDraw(event);
+}
+
+function onMove(pos: { x: number; y: number }): void {
+  if (!isDrawing || !store.amIDrawing) {
+    return;
+  }
+  const event: DrawEvent = { kind: "move", ...pos };
+  applyEvent(event);
+  store.sendDraw(event);
 }
 
 function onEnd(): void {
-  if (!isDrawing) return
-  isDrawing = false
-  const event: DrawEvent = { kind: 'end' }
-  applyEvent(event)
-  store.sendDraw(event)
+  if (!isDrawing) {
+    return;
+  }
+  isDrawing = false;
+  const event: DrawEvent = { kind: "end" };
+  applyEvent(event);
+  store.sendDraw(event);
 }
 
 function eraser(): void {
-  store.drawColor = '#ffffff'
-  store.drawSize = 24
+  store.drawColor = "#ffffff";
+  store.drawSize = 24;
 }
 
 onMounted(() => {
-  const c = canvasEl.value!
-  ctx = c.getContext('2d')!
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, c.width, c.height)
+  const c = canvasEl.value!;
+  ctx = c.getContext("2d")!;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, c.width, c.height);
 
   store.registerCanvasCallbacks(
     event => applyEvent(event),
     history => replayHistory(history),
-  )
+  );
 
   // Mouse
-  c.addEventListener('mousedown', e => onStart(normPos(e)))
-  c.addEventListener('mousemove', e => onMove(normPos(e)))
-  c.addEventListener('mouseup', onEnd)
-  c.addEventListener('mouseleave', onEnd)
+  c.addEventListener("mousedown", e => onStart(normPos(e)));
+  c.addEventListener("mousemove", e => onMove(normPos(e)));
+  c.addEventListener("mouseup", onEnd);
+  c.addEventListener("mouseleave", onEnd);
 
   // Touch
-  c.addEventListener('touchstart', (e) => {
-    e.preventDefault()
-    onStart(normPos(e.touches[0]!))
-  }, { passive: false })
-  c.addEventListener('touchmove', (e) => {
-    e.preventDefault()
-    onMove(normPos(e.touches[0]!))
-  }, { passive: false })
-  c.addEventListener('touchend', (e) => {
-    e.preventDefault()
-    onEnd()
-  }, { passive: false })
-})
+  c.addEventListener(
+    "touchstart",
+    e => {
+      e.preventDefault();
+      onStart(normPos(e.touches[0]!));
+    },
+    { passive: false },
+  );
+  c.addEventListener(
+    "touchmove",
+    e => {
+      e.preventDefault();
+      onMove(normPos(e.touches[0]!));
+    },
+    { passive: false },
+  );
+  c.addEventListener(
+    "touchend",
+    e => {
+      e.preventDefault();
+      onEnd();
+    },
+    { passive: false },
+  );
+});
 
 onUnmounted(() => {
-  store.unregisterCanvasCallbacks()
-})
+  store.unregisterCanvasCallbacks();
+});
 </script>
 
 <style lang="scss">

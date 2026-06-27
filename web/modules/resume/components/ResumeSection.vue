@@ -12,10 +12,10 @@
 
 <script setup lang="ts">
 interface Props {
-  title: string
+  title: string;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 </script>
 
 <style lang="scss">
@@ -48,7 +48,8 @@ defineProps<Props>()
       margin-right: 0.25rem;
     }
 
-    &::before, &::after {
+    &::before,
+    &::after {
       content: "";
       display: block;
       height: 1px;

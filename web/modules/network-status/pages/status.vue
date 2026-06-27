@@ -1,8 +1,6 @@
 <template>
   <PageCard back-button-page="/">
-    <template #title>
-      Connection Status
-    </template>
+    <template #title> Connection Status </template>
     <div class="networkstatus">
       <p
         v-if="status === 'pending'"
@@ -19,10 +17,7 @@
         <p>Your IP: {{ networkStatus.yourIp }}</p>
       </template>
 
-      <p
-        v-else
-        class="networkstatus-status networkstatus-error"
-      >
+      <p v-else class="networkstatus-status networkstatus-error">
         Not Connected To Local Network
       </p>
 
@@ -39,16 +34,18 @@
 
 <script setup lang="ts">
 interface NetworkStatus {
-  isConnected: boolean
-  yourIp?: string
-  homeIp?: string
+  isConnected: boolean;
+  yourIp?: string;
+  homeIp?: string;
 }
 
 const {
   data: networkStatus,
   status,
   refresh,
-} = await useFetch<NetworkStatus>('/api/get-network-status', { server: false })
+} = await useFetch<NetworkStatus>("/api/get-network-status", {
+  server: false,
+});
 </script>
 
 <style lang="scss">

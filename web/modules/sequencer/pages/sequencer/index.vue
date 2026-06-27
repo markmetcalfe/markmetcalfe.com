@@ -1,8 +1,6 @@
 <template>
   <PageCard back-button-page="/">
-    <template #title>
-      Step Sequencer
-    </template>
+    <template #title> Step Sequencer </template>
 
     <div class="sequencerpage">
       <div class="sequencerpage-buttons">
@@ -10,20 +8,11 @@
           :title="sequencerStore.isPlaying ? 'Pause' : 'Play'"
           @click="sequencerStore.togglePlay"
         >
-          <Icon
-            v-if="sequencerStore.isPlaying"
-            name="fad:pause"
-          />
-          <Icon
-            v-else
-            name="fad:play"
-          />
+          <Icon v-if="sequencerStore.isPlaying" name="fad:pause" />
+          <Icon v-else name="fad:play" />
         </LinkButton>
 
-        <LinkButton
-          href="/sequencer/synths"
-          title="Edit Synths"
-        >
+        <LinkButton href="/sequencer/synths" title="Edit Synths">
           <Icon name="bx:pencil" />
         </LinkButton>
 
@@ -56,7 +45,8 @@
                 @update:model-value="
                   (id: string | number) => {
                     if (sequencerStore.grid?.[rowIndex]) {
-                      sequencerStore.grid[rowIndex].synthId = id.toString()
+                      sequencerStore.grid[rowIndex].synthId =
+                        id.toString();
                     }
                   }
                 "
@@ -76,14 +66,8 @@
                 :title="row.muted ? 'Unmute' : 'Mute'"
                 @click="row.muted = !row.muted"
               >
-                <Icon
-                  v-if="row.muted"
-                  name="bx:volume-mute"
-                />
-                <Icon
-                  v-else
-                  name="bx:volume-full"
-                />
+                <Icon v-if="row.muted" name="bx:volume-mute" />
+                <Icon v-else name="bx:volume-full" />
               </LinkButton>
 
               <LinkButton
@@ -137,7 +121,9 @@
                 },
               ]"
             >
-              <button @click="row.beats[beatIndex] = !row.beats[beatIndex]" />
+              <button
+                @click="row.beats[beatIndex] = !row.beats[beatIndex]"
+              />
             </div>
           </div>
         </div>
@@ -171,33 +157,33 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, ref } from 'vue'
-import { isIOS } from 'react-device-detect'
+import { computed, onUnmounted, ref } from "vue";
+import { isIOS } from "react-device-detect";
 
-const sequencerStore = useSequencerStore()
+const sequencerStore = useSequencerStore();
 
-const synthToAddId = ref('')
+const synthToAddId = ref("");
 
 const synthOptions = computed(() =>
   sequencerStore.allSynths?.map(synth => ({
     value: synth.getId(),
     label: synth.name,
   })),
-)
+);
 
 onMounted(() => {
-  sequencerStore.init()
-  const firstSynth = sequencerStore.allSynths?.[0]
+  sequencerStore.init();
+  const firstSynth = sequencerStore.allSynths?.[0];
   if (firstSynth) {
-    synthToAddId.value = firstSynth.getId()
+    synthToAddId.value = firstSynth.getId();
   }
-})
+});
 
 onUnmounted(() => {
   if (sequencerStore.isPlaying && !sequencerStore.gridHasEntry) {
-    sequencerStore.stop()
+    sequencerStore.stop();
   }
-})
+});
 </script>
 
 <style lang="scss">

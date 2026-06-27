@@ -1,34 +1,23 @@
 <template>
   <PageCard back-button-page="/visuals">
-    <template #title>
-      Edit Shapes
-    </template>
+    <template #title> Edit Shapes </template>
 
     <DropdownSelect
       v-model="selectedShapeIndex"
       :options="geometryItems"
     />
 
-    <div
-      v-if="selectedShape"
-      class="editshapes-settings"
-    >
+    <div v-if="selectedShape" class="editshapes-settings">
       <DropdownSelect
         v-model="selectedShape.type"
         label="Type"
         :options="geometryTypes"
       />
 
-      <TextField
-        v-model="selectedShape.color"
-        label="Colour"
-      />
+      <TextField v-model="selectedShape.color" label="Colour" />
 
       <div class="editshapes-toggles">
-        <ToggleSwitch
-          v-model="selectedShape.solid"
-          label="Solid"
-        />
+        <ToggleSwitch v-model="selectedShape.solid" label="Solid" />
 
         <ToggleSwitch
           v-model="selectedShape.reverseRotation"
@@ -51,26 +40,22 @@
     </div>
 
     <div class="editshapes-buttons">
-      <LinkButton
-        text="Add"
-        @click="addShape"
-      >
+      <LinkButton text="Add" @click="addShape">
         <Icon name="bx:plus" />
       </LinkButton>
       <LinkButton
         text="Delete"
         :style="{
           visibility:
-            visualsStore.geometryConfig.length > 1 ? undefined : 'hidden',
+            visualsStore.geometryConfig.length > 1
+              ? undefined
+              : 'hidden',
         }"
         @click="deleteShape"
       >
         <Icon name="bx:trash-alt" />
       </LinkButton>
-      <LinkButton
-        text="Save"
-        @click="save"
-      >
+      <LinkButton text="Save" @click="save">
         <Icon name="bx:save" />
       </LinkButton>
     </div>
@@ -78,74 +63,77 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { type GeometryAttributes, geometryClasses } from '@visuals/util/geometry'
-import { getColorName } from '@visuals/util/color'
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import {
+  type GeometryAttributes,
+  geometryClasses,
+} from "@visuals/util/geometry";
+import { getColorName } from "@visuals/util/color";
 
-const visualsStore = useVisualsStore()
+const visualsStore = useVisualsStore();
 
-const loading = ref(false)
-const selectedShapeIndex = ref(0)
+const loading = ref(false);
+const selectedShapeIndex = ref(0);
 
 const selectedShape = computed(() => {
-  return visualsStore.geometryConfig[selectedShapeIndex.value]
-})
+  return visualsStore.geometryConfig[selectedShapeIndex.value];
+});
 
 const geometryItems = computed(() => {
   return visualsStore.geometryConfig.map((geometry, index) => ({
     value: index,
     label: getShapeName(geometry),
-  }))
-})
+  }));
+});
 
 const geometryTypes = computed(() => {
   return geometryClasses.map(geometryClass => ({
     value: geometryClass.getName(),
     label: geometryClass.getName(),
-  }))
-})
+  }));
+});
 
 const getShapeName = (shape: GeometryAttributes): string => {
-  return `${getColorName(shape.color)} ${shape.type}`
-}
+  return `${getColorName(shape.color)} ${shape.type}`;
+};
 
 const addShape = (): void => {
-  visualsStore.addRandomGeometryConfig()
-  selectedShapeIndex.value = visualsStore.geometryConfig.length - 1
-}
+  visualsStore.addRandomGeometryConfig();
+  selectedShapeIndex.value = visualsStore.geometryConfig.length - 1;
+};
 
 const deleteShape = (): void => {
-  const shapeToDelete = selectedShapeIndex.value
+  const shapeToDelete = selectedShapeIndex.value;
   if (selectedShapeIndex.value > 0) {
-    selectedShapeIndex.value = selectedShapeIndex.value - 1
+    selectedShapeIndex.value = selectedShapeIndex.value - 1;
   }
-  visualsStore.deleteGeometryConfig(shapeToDelete)
-}
+  visualsStore.deleteGeometryConfig(shapeToDelete);
+};
 
 const save = (): void => {
-  loading.value = true
+  loading.value = true;
   setTimeout(() => {
-    loading.value = false
-  }, 250)
-  visualsStore.generateGeometry()
-}
+    loading.value = false;
+  }, 250);
+  visualsStore.generateGeometry();
+};
 
 const updateSelectedShapeRadius = (radius: string | number): void => {
   if (!selectedShape.value) {
-    return
+    return;
   }
-  selectedShape.value.radius = parseFloat(radius.toString())
-}
+  selectedShape.value.radius = parseFloat(radius.toString());
+};
 
 onMounted(() => {
-  visualsStore.setListener('onRandomise', () => {
-    selectedShapeIndex.value = 0
-  })
-})
+  visualsStore.setListener("onRandomise", () => {
+    selectedShapeIndex.value = 0;
+  });
+});
 
 onUnmounted(() => {
-  visualsStore.removeListener('onRandomise')
-})
+  visualsStore.removeListener("onRandomise");
+});
 </script>
 
 <style lang="scss">

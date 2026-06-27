@@ -1,12 +1,7 @@
 <template>
   <div class="doodlegameresult">
-    <h2 class="doodlegameresult-heading">
-      Game Over!
-    </h2>
-    <p
-      v-if="winner"
-      class="doodlegameresult-winner"
-    >
+    <h2 class="doodlegameresult-heading">Game Over!</h2>
+    <p v-if="winner" class="doodlegameresult-winner">
       <span class="highlight">{{ winner.name }}</span> wins!
     </p>
 
@@ -18,8 +13,12 @@
         :class="{ 'doodlegameresult-score-top': i === 0 }"
       >
         <span class="doodlegameresult-score-rank">{{ i + 1 }}</span>
-        <span class="doodlegameresult-score-name">{{ player.name }}</span>
-        <span class="doodlegameresult-score-pts">{{ player.score }}</span>
+        <span class="doodlegameresult-score-name">{{
+          player.name
+        }}</span>
+        <span class="doodlegameresult-score-pts">{{
+          player.score
+        }}</span>
       </li>
     </ul>
 
@@ -30,13 +29,13 @@
 </template>
 
 <script setup lang="ts">
-const store = useDoodleStore()
+const store = useDoodleStore();
 
 const sorted = computed(() =>
   [...store.players].sort((a, b) => b.score - a.score),
-)
+);
 
-const winner = computed(() => sorted.value[0])
+const winner = computed(() => sorted.value[0]);
 </script>
 
 <style lang="scss">

@@ -1,24 +1,13 @@
 <template>
-  <PageCard
-    v-show="!isFullscreen"
-    back-button-page="/"
-  >
-    <template #title>
-      3D Visuals
-    </template>
+  <PageCard v-show="!isFullscreen" back-button-page="/">
+    <template #title> 3D Visuals </template>
 
     <div class="visualspage">
       <div class="visualspage-buttons">
-        <LinkButton
-          text="Randomise"
-          @click="visualsStore.randomise"
-        >
+        <LinkButton text="Randomise" @click="visualsStore.randomise">
           <Icon name="bx:shuffle" />
         </LinkButton>
-        <LinkButton
-          href="/visuals/shapes"
-          text="Edit Shapes"
-        >
+        <LinkButton href="/visuals/shapes" text="Edit Shapes">
           <Icon name="bx:pencil" />
         </LinkButton>
         <LinkButton
@@ -130,61 +119,60 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { isMobile } from 'is-mobile'
-import { AutoZoomMode } from '@visuals/stores/visuals'
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { isMobile } from "is-mobile";
+import { AutoZoomMode } from "@visuals/stores/visuals";
 
-const visualsStore = useVisualsStore()
+const visualsStore = useVisualsStore();
 
-const isFullscreen = ref(false)
+const isFullscreen = ref(false);
 
 const autoZoomOptions = computed(() => {
   const options = visualsStore.beatMatch.enabled
     ? Object.values(AutoZoomMode)
-    : [AutoZoomMode.DISABLED, AutoZoomMode.SMOOTH]
+    : [AutoZoomMode.DISABLED, AutoZoomMode.SMOOTH];
   return options.map(value => ({
     value,
     label: value,
-  }))
-})
+  }));
+});
 
 const autoZoomDisabled = computed(() => {
-  return visualsStore.autoZoom.mode === AutoZoomMode.DISABLED
-})
+  return visualsStore.autoZoom.mode === AutoZoomMode.DISABLED;
+});
 
 const autoZoomIsSmooth = computed(() => {
-  return visualsStore.autoZoom.mode === AutoZoomMode.SMOOTH
-})
+  return visualsStore.autoZoom.mode === AutoZoomMode.SMOOTH;
+});
 
 const requestFullscreen = (): void => {
-  document.body.requestFullscreen()
-}
+  void document.body.requestFullscreen();
+};
 
 const fullscreenEvent = (): void => {
   const dynamicBackground = document.querySelector(
-    '.dynamicbackground',
-  ) as HTMLElement
+    ".dynamicbackground",
+  ) as HTMLElement;
 
   if (isFullscreen.value) {
-    isFullscreen.value = false
-    document.body.style.cursor = ''
-    dynamicBackground.style.cursor = ''
+    isFullscreen.value = false;
+    document.body.style.cursor = "";
+    dynamicBackground.style.cursor = "";
+  } else {
+    isFullscreen.value = true;
+    document.body.style.cursor = "none";
+    dynamicBackground.style.cursor = "none";
   }
-  else {
-    isFullscreen.value = true
-    document.body.style.cursor = 'none'
-    dynamicBackground.style.cursor = 'none'
-  }
-}
+};
 
 onMounted(() => {
-  document.addEventListener('fullscreenchange', fullscreenEvent)
-})
+  document.addEventListener("fullscreenchange", fullscreenEvent);
+});
 
 onUnmounted(() => {
-  document.removeEventListener('fullscreenchange', fullscreenEvent)
-  document.body.style.cursor = 'auto'
-})
+  document.removeEventListener("fullscreenchange", fullscreenEvent);
+  document.body.style.cursor = "auto";
+});
 </script>
 
 <style lang="scss">

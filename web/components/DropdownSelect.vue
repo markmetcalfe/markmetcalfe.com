@@ -1,16 +1,12 @@
 <template>
-  <div
-    class="dropdownselect"
-    :class="{ disabled: disabled }"
-  >
+  <div class="dropdownselect" :class="{ disabled: disabled }">
     <label
       v-if="label"
       :id="labelId"
       class="dropdownselect-label"
       :for="id"
-    >{{
-      label
-    }}</label>
+      >{{ label }}</label
+    >
     <div
       :id="id"
       ref="dropdownContainer"
@@ -32,8 +28,12 @@
         class="dropdownselect-selected-option"
         @click="toggleDropdown"
       >
-        <span>{{ selectedOption ? selectedOption.label : placeholder }}</span>
-        <span class="dropdownselect-arrow"><Icon name="bx:caret-down" /></span>
+        <span>{{
+          selectedOption ? selectedOption.label : placeholder
+        }}</span>
+        <span class="dropdownselect-arrow"
+          ><Icon name="bx:caret-down"
+        /></span>
       </div>
 
       <ul
@@ -63,156 +63,158 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, nextTick, useId } from 'vue'
+import {
+  ref,
+  watch,
+  onMounted,
+  onUnmounted,
+  nextTick,
+  useId,
+} from "vue";
 
 export interface Option {
-  label: string
-  value: string | number
+  label: string;
+  value: string | number;
 }
 
 interface Props {
-  options: Option[]
-  modelValue?: string | number | null
-  label?: string | null
-  placeholder?: string
-  disabled?: boolean
-  maxHeight?: number
+  options: Option[];
+  modelValue?: string | number | null;
+  label?: string | null;
+  placeholder?: string;
+  disabled?: boolean;
+  maxHeight?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: null,
   label: null,
-  placeholder: 'Select an option',
+  placeholder: "Select an option",
   disabled: false,
   maxHeight: 300,
-})
+});
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | number]
-  'change': [value: string | number]
-}>()
+  "update:modelValue": [value: string | number];
+  change: [value: string | number];
+}>();
 
-const isOpen = ref(false)
-const selectedOption = ref<Option | null>(null)
-const id = useId()
-const labelId = useId()
-const listboxId = useId()
-const showAbove = ref(false)
-const dropdownContainer = ref<HTMLElement | null>(null)
-const optionsList = ref<HTMLElement | null>(null)
+const isOpen = ref(false);
+const selectedOption = ref<Option | null>(null);
+const id = useId();
+const labelId = useId();
+const listboxId = useId();
+const showAbove = ref(false);
+const dropdownContainer = ref<HTMLElement | null>(null);
+const optionsList = ref<HTMLElement | null>(null);
 
 watch(
   () => props.modelValue,
-  (newValue) => {
-    selectedOption.value
-      = props.options.find(option => option.value === newValue)
-        ?? props.options[0]
-        ?? null
+  newValue => {
+    selectedOption.value =
+      props.options.find(option => option.value === newValue) ??
+      props.options[0] ??
+      null;
   },
   { immediate: true },
-)
+);
 
 watch(
   () => props.options,
-  (newOptions) => {
+  newOptions => {
     if (selectedOption.value) {
-      selectedOption.value
-        = newOptions.find(
+      selectedOption.value =
+        newOptions.find(
           option => option.value === selectedOption.value?.value,
-        )
-        ?? newOptions[0]
-        ?? null
-    }
-    else {
-      selectedOption.value = newOptions[0] ?? null
+        ) ??
+        newOptions[0] ??
+        null;
+    } else {
+      selectedOption.value = newOptions[0] ?? null;
     }
   },
   { immediate: true },
-)
+);
 
-watch(isOpen, (newVal) => {
+watch(isOpen, newVal => {
   if (newVal) {
-    nextTick(() => {
-      checkPosition()
-      window.addEventListener('scroll', checkPosition)
-      window.addEventListener('resize', checkPosition)
-    })
+    void nextTick(() => {
+      checkPosition();
+      window.addEventListener("scroll", checkPosition);
+      window.addEventListener("resize", checkPosition);
+    });
+  } else {
+    window.removeEventListener("scroll", checkPosition);
+    window.removeEventListener("resize", checkPosition);
   }
-  else {
-    window.removeEventListener('scroll', checkPosition)
-    window.removeEventListener('resize', checkPosition)
-  }
-})
+});
 
 const toggleDropdown = () => {
   if (props.disabled || props.options.length < 2) {
-    return
+    return;
   }
-  isOpen.value = !isOpen.value
-}
+  isOpen.value = !isOpen.value;
+};
 
 const selectOption = (option: Option) => {
-  selectedOption.value = option
-  isOpen.value = false
-  emit('update:modelValue', option.value)
-  emit('change', option.value)
-}
+  selectedOption.value = option;
+  isOpen.value = false;
+  emit("update:modelValue", option.value);
+  emit("change", option.value);
+};
 
 const handleClickOutside = (event: MouseEvent) => {
-  const target = event.target as Node
-  if (dropdownContainer.value && !dropdownContainer.value.contains(target)) {
-    isOpen.value = false
+  const target = event.target as Node;
+  if (
+    dropdownContainer.value &&
+    !dropdownContainer.value.contains(target)
+  ) {
+    isOpen.value = false;
   }
-}
+};
 
 const checkPosition = () => {
-  if (!optionsList.value || !dropdownContainer.value) return
+  if (!optionsList.value || !dropdownContainer.value) {
+    return;
+  }
 
-  const optionsListEl = optionsList.value
-  const container = dropdownContainer.value
-  const rect = container.getBoundingClientRect()
+  const optionsListEl = optionsList.value;
+  const container = dropdownContainer.value;
+  const rect = container.getBoundingClientRect();
 
-  const spaceBelow = window.innerHeight - rect.bottom
-  const spaceAbove = rect.top
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceAbove = rect.top;
 
-  const listHeight = optionsListEl.scrollHeight
+  const listHeight = optionsListEl.scrollHeight;
 
-  const effectiveHeight = Math.min(listHeight, props.maxHeight)
+  const effectiveHeight = Math.min(listHeight, props.maxHeight);
 
   if (spaceBelow < effectiveHeight && spaceAbove > spaceBelow) {
-    showAbove.value = true
-    optionsListEl.style.maxHeight = `${Math.min(
-      spaceAbove,
-      props.maxHeight,
-    )}px`
-  }
-  else {
-    showAbove.value = false
-    optionsListEl.style.maxHeight = `${Math.min(
-      spaceBelow,
-      props.maxHeight,
-    )}px`
+    showAbove.value = true;
+    optionsListEl.style.maxHeight = `${Math.min(spaceAbove, props.maxHeight)}px`;
+  } else {
+    showAbove.value = false;
+    optionsListEl.style.maxHeight = `${Math.min(spaceBelow, props.maxHeight)}px`;
   }
 
-  const rightEdge = rect.left + optionsListEl.offsetWidth
+  const rightEdge = rect.left + optionsListEl.offsetWidth;
   if (rightEdge > window.innerWidth) {
-    const overflow = rightEdge - window.innerWidth
-    optionsListEl.style.left = `-${overflow}px`
+    const overflow = rightEdge - window.innerWidth;
+    optionsListEl.style.left = `-${overflow}px`;
+  } else {
+    optionsListEl.style.left = "0";
   }
-  else {
-    optionsListEl.style.left = '0'
-  }
-}
+};
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
+  document.addEventListener("click", handleClickOutside);
+});
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-  window.removeEventListener('scroll', checkPosition)
-  window.removeEventListener('resize', checkPosition)
-})
+  document.removeEventListener("click", handleClickOutside);
+  window.removeEventListener("scroll", checkPosition);
+  window.removeEventListener("resize", checkPosition);
+});
 </script>
 
 <style lang="scss">

@@ -1,10 +1,6 @@
 <template>
   <div class="doodleroom">
-    <HeaderBar
-      title="Doodle"
-      back-href="/"
-      back-label="Leave game"
-    >
+    <HeaderBar title="Doodle" back-href="/" back-label="Leave game">
       <span
         v-if="store.totalRounds > 0"
         class="doodleroom-header-round"
@@ -35,12 +31,8 @@
         <div class="doodleroom-canvas-wrap">
           <DoodleCanvas />
 
-          <RoundResult
-            v-if="store.phase === 'round_end'"
-          />
-          <GameResult
-            v-if="store.phase === 'game_end'"
-          />
+          <RoundResult v-if="store.phase === 'round_end'" />
+          <GameResult v-if="store.phase === 'game_end'" />
         </div>
       </template>
     </main>
@@ -52,10 +44,7 @@
     </aside>
 
     <!-- Name prompt modal -->
-    <div
-      v-if="showNamePrompt"
-      class="doodleroom-modal-overlay"
-    >
+    <div v-if="showNamePrompt" class="doodleroom-modal-overlay">
       <div class="doodleroom-modal">
         <h2>Enter your name</h2>
         <form @submit.prevent="submitName">
@@ -66,11 +55,8 @@
             maxlength="24"
             placeholder="Your name..."
             autocomplete="off"
-          >
-          <LinkButton
-            type="submit"
-            text="Join Game"
-          >
+          />
+          <LinkButton type="submit" text="Join Game">
             <Icon name="bx:log-in" />
           </LinkButton>
         </form>
@@ -80,50 +66,60 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ ssr: false })
+definePageMeta({ ssr: false });
 
-const route = useRoute()
-const config = useRuntimeConfig()
-const store = useDoodleStore()
+const route = useRoute();
+const config = useRuntimeConfig();
+const store = useDoodleStore();
 
-const roomId = computed(() => route.params.room as string)
-const showNamePrompt = ref(false)
-const nameValue = ref(store.myName)
-const nameInput = ref<HTMLInputElement>()
+const roomId = computed(() => route.params.room as string);
+const showNamePrompt = ref(false);
+const nameValue = ref(store.myName);
+const nameInput = ref<HTMLInputElement>();
 
 const timerClass = computed(() => {
-  if (store.timeLeft > 30) return 'doodleroom-header-timer-ok'
-  if (store.timeLeft > 10) return 'doodleroom-header-timer-warn'
-  return 'doodleroom-header-timer-danger'
-})
+  if (store.timeLeft > 30) {
+    return "doodleroom-header-timer-ok";
+  }
+  if (store.timeLeft > 10) {
+    return "doodleroom-header-timer-warn";
+  }
+  return "doodleroom-header-timer-danger";
+});
 
 // Wait for you_are then show name prompt (if no name saved)
-watch(() => store.myId, (id) => {
-  if (!id) return
-  if (store.myName) {
-    store.send({ type: 'join', name: store.myName })
-  }
-  else {
-    showNamePrompt.value = true
-    nextTick(() => nameInput.value?.focus())
-  }
-})
+watch(
+  () => store.myId,
+  id => {
+    if (!id) {
+      return;
+    }
+    if (store.myName) {
+      store.send({ type: "join", name: store.myName });
+    } else {
+      showNamePrompt.value = true;
+      void nextTick(() => nameInput.value?.focus());
+    }
+  },
+);
 
 function submitName() {
-  const name = nameValue.value.trim()
-  if (!name) return
-  store.myName = name
-  showNamePrompt.value = false
-  store.send({ type: 'join', name })
+  const name = nameValue.value.trim();
+  if (!name) {
+    return;
+  }
+  store.myName = name;
+  showNamePrompt.value = false;
+  store.send({ type: "join", name });
 }
 
 onMounted(() => {
-  store.connect(roomId.value, config.public.doodleApiUrl as string)
-})
+  store.connect(roomId.value, config.public.doodleApiUrl as string);
+});
 
 onUnmounted(() => {
-  store.disconnect()
-})
+  store.disconnect();
+});
 </script>
 
 <style lang="scss">
@@ -167,9 +163,17 @@ onUnmounted(() => {
       text-align: right;
       flex-shrink: 0;
 
-      &-ok { color: var(--color-light); }
-      &-warn { color: #ffb300; }
-      &-danger { color: var(--color-error); }
+      &-ok {
+        color: var(--color-light);
+      }
+
+      &-warn {
+        color: #ffb300;
+      }
+
+      &-danger {
+        color: var(--color-error);
+      }
     }
   }
 
@@ -237,7 +241,7 @@ onUnmounted(() => {
       gap: 0.75rem;
     }
 
-    input[type='text'] {
+    input[type="text"] {
       background: transparent;
       border: 1px solid var(--color-light);
       color: var(--color-light);

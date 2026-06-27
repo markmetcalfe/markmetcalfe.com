@@ -12,13 +12,12 @@
         'linkbutton-large': large,
         'linkbutton-small': small,
         'linkbutton-hidetext': !text,
-        'disabled': disabled,
+        disabled: disabled,
       }"
     >
-      <span
-        v-if="$slots.default"
-        class="linkbutton-icon"
-      ><slot /></span>
+      <span v-if="$slots.default" class="linkbutton-icon"
+        ><slot
+      /></span>
       <span v-if="text">{{ text }}</span>
     </a>
     <NuxtLink
@@ -31,13 +30,12 @@
         'linkbutton-large': large,
         'linkbutton-small': small,
         'linkbutton-hidetext': !text,
-        'disabled': disabled,
+        disabled: disabled,
       }"
     >
-      <span
-        v-if="$slots.default"
-        class="linkbutton-icon"
-      ><slot /></span>
+      <span v-if="$slots.default" class="linkbutton-icon"
+        ><slot
+      /></span>
       <span v-if="text">{{ text }}</span>
     </NuxtLink>
     <button
@@ -51,14 +49,13 @@
         'linkbutton-small': small,
         'linkbutton-hidetext': !text,
         'linkbutton-on': on,
-        'disabled': disabled,
+        disabled: disabled,
       }"
       @click="handleClick"
     >
-      <span
-        v-if="$slots.default"
-        class="linkbutton-icon"
-      ><slot /></span>
+      <span v-if="$slots.default" class="linkbutton-icon"
+        ><slot
+      /></span>
       <span v-if="text">{{ text }}</span>
     </button>
   </span>
@@ -66,34 +63,34 @@
 
 <script setup lang="ts">
 interface Props {
-  external?: boolean
-  href?: string
-  text?: string
-  title?: string
-  disabled?: boolean
-  large?: boolean
-  small?: boolean
-  on?: boolean
-  type?: 'button' | 'submit' | 'reset'
+  external?: boolean;
+  href?: string;
+  text?: string;
+  title?: string;
+  disabled?: boolean;
+  large?: boolean;
+  small?: boolean;
+  on?: boolean;
+  type?: "button" | "submit" | "reset";
 }
 
 withDefaults(defineProps<Props>(), {
   external: false,
-  href: '',
+  href: "",
   disabled: false,
   large: false,
   small: false,
   on: false,
-  type: 'button',
-})
+  type: "button",
+});
 
 const emit = defineEmits<{
-  click: [event: MouseEvent]
-}>()
+  click: [event: MouseEvent];
+}>();
 
 const handleClick = (event: MouseEvent) => {
-  emit('click', event)
-}
+  emit("click", event);
+};
 </script>
 
 <style lang="scss">
@@ -140,7 +137,9 @@ const handleClick = (event: MouseEvent) => {
   button {
     display: flex;
     align-items: center;
-    transition: border 0.4s, color 0.4s;
+    transition:
+      border 0.4s,
+      color 0.4s;
     padding: 0.5rem;
     color: var(--color-light);
     background-color: var(--color-dark);

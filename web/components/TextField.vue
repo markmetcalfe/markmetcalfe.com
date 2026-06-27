@@ -1,7 +1,7 @@
 <template>
   <div
     class="textfield"
-    :class="{ 'textfield--small': small, 'disabled': disabled }"
+    :class="{ 'textfield--small': small, disabled: disabled }"
   >
     <label
       v-if="label"
@@ -23,48 +23,54 @@
         @input="onInput"
         @focus="isFocused = true"
         @blur="isFocused = false"
-      >
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, useId } from 'vue'
+import { ref, useId } from "vue";
 
-type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url'
+type InputType =
+  | "text"
+  | "email"
+  | "password"
+  | "number"
+  | "tel"
+  | "url";
 
 interface Props {
-  modelValue?: string | number
-  label?: string | null
-  placeholder?: string
-  type?: InputType
-  small?: boolean
-  disabled?: boolean
+  modelValue?: string | number;
+  label?: string | null;
+  placeholder?: string;
+  type?: InputType;
+  small?: boolean;
+  disabled?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
-  modelValue: '',
+  modelValue: "",
   label: null,
-  placeholder: 'Enter text...',
-  type: 'text',
+  placeholder: "Enter text...",
+  type: "text",
   small: false,
   disabled: false,
-})
+});
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | number]
-  'change': [value: string | number]
-}>()
+  "update:modelValue": [value: string | number];
+  change: [value: string | number];
+}>();
 
-const isFocused = ref(false)
-const id = useId()
-const labelId = useId()
+const isFocused = ref(false);
+const id = useId();
+const labelId = useId();
 
 const onInput = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  emit('update:modelValue', target.value)
-  emit('change', target.value)
-}
+  const target = event.target as HTMLInputElement;
+  emit("update:modelValue", target.value);
+  emit("change", target.value);
+};
 </script>
 
 <style lang="scss">

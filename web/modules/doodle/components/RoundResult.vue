@@ -1,10 +1,9 @@
 <template>
   <div class="doodleroundresult">
-    <h2 class="doodleroundresult-heading">
-      Round Over!
-    </h2>
+    <h2 class="doodleroundresult-heading">Round Over!</h2>
     <p class="doodleroundresult-word">
-      The word was: <strong class="highlight">{{ store.wordHint }}</strong>
+      The word was:
+      <strong class="highlight">{{ store.wordHint }}</strong>
     </p>
 
     <ul class="doodleroundresult-scores">
@@ -14,8 +13,12 @@
         class="doodleroundresult-score"
         :class="{ 'doodleroundresult-score-top': i === 0 }"
       >
-        <span class="doodleroundresult-score-name">{{ player.name }}</span>
-        <span class="doodleroundresult-score-pts">{{ player.score }}</span>
+        <span class="doodleroundresult-score-name">{{
+          player.name
+        }}</span>
+        <span class="doodleroundresult-score-pts">{{
+          player.score
+        }}</span>
       </li>
     </ul>
 
@@ -26,11 +29,11 @@
 </template>
 
 <script setup lang="ts">
-const store = useDoodleStore()
+const store = useDoodleStore();
 
 const sorted = computed(() =>
   [...store.players].sort((a, b) => b.score - a.score),
-)
+);
 </script>
 
 <style lang="scss">

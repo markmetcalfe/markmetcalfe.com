@@ -1,8 +1,6 @@
 <template>
   <div class="doodlelobby">
-    <h3 class="doodlelobby-heading">
-      Waiting for players&hellip;
-    </h3>
+    <h3 class="doodlelobby-heading">Waiting for players&hellip;</h3>
 
     <div class="doodlelobby-players">
       <div
@@ -20,19 +18,13 @@
         >
           word ready
         </span>
-        <span
-          v-else-if="player.isHost"
-          class="highlight"
-        >
+        <span v-else-if="player.isHost" class="highlight">
           host
         </span>
       </div>
     </div>
 
-    <form
-      class="doodlelobby-suggest"
-      @submit.prevent="submitWord"
-    >
+    <form class="doodlelobby-suggest" @submit.prevent="submitWord">
       <TextField
         v-model="wordInput"
         placeholder="Suggest a word to draw…"
@@ -40,17 +32,13 @@
       />
       <LinkButton
         type="submit"
-        :text="store.iHaveSubmittedWord ? 'Word submitted!' : 'Submit'"
+        :text="
+          store.iHaveSubmittedWord ? 'Word submitted!' : 'Submit'
+        "
         :disabled="!canSubmitWord"
       >
-        <Icon
-          v-if="store.iHaveSubmittedWord"
-          name="bx:check"
-        />
-        <Icon
-          v-else
-          name="bx:send"
-        />
+        <Icon v-if="store.iHaveSubmittedWord" name="bx:check" />
+        <Icon v-else name="bx:send" />
       </LinkButton>
     </form>
 
@@ -61,14 +49,8 @@
         small
         @click="copyLink"
       >
-        <Icon
-          v-if="copied"
-          name="bx:check"
-        />
-        <Icon
-          v-else
-          name="bx:copy"
-        />
+        <Icon v-if="copied" name="bx:check" />
+        <Icon v-else name="bx:copy" />
       </LinkButton>
     </div>
 
@@ -84,45 +66,50 @@
 
     <LinkButton
       v-if="store.isHost"
-      :text="store.players.length < 2 ? 'Need at least 2 players' : 'Start Game'"
+      :text="
+        store.players.length < 2
+          ? 'Need at least 2 players'
+          : 'Start Game'
+      "
       :disabled="store.players.length < 2"
       @click="store.startGame()"
     >
       <Icon name="bx:play" />
     </LinkButton>
-    <p
-      v-else
-      class="doodlelobby-waiting"
-    >
+    <p v-else class="doodlelobby-waiting">
       Waiting for the host to start&hellip;
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-const store = useDoodleStore()
-const copied = ref(false)
-const wordInput = ref('')
+const store = useDoodleStore();
+const copied = ref(false);
+const wordInput = ref("");
 
-const roomUrl = computed(() => typeof window !== 'undefined' ? window.location.href : '')
+const roomUrl = computed(() =>
+  typeof window !== "undefined" ? window.location.href : "",
+);
 
 const canSubmitWord = computed(() => {
-  const len = wordInput.value.trim().length
-  return !store.iHaveSubmittedWord && len >= 3 && len <= 15
-})
+  const len = wordInput.value.trim().length;
+  return !store.iHaveSubmittedWord && len >= 3 && len <= 15;
+});
 
 function copyLink() {
-  navigator.clipboard.writeText(roomUrl.value).then(() => {
-    copied.value = true
+  void navigator.clipboard.writeText(roomUrl.value).then(() => {
+    copied.value = true;
     setTimeout(() => {
-      copied.value = false
-    }, 2000)
-  })
+      copied.value = false;
+    }, 2000);
+  });
 }
 
 function submitWord() {
-  if (!canSubmitWord.value) return
-  store.suggestWord(wordInput.value.trim())
+  if (!canSubmitWord.value) {
+    return;
+  }
+  store.suggestWord(wordInput.value.trim());
 }
 </script>
 
