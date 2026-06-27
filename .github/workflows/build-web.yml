@@ -1,16 +1,22 @@
-name: Tests
+name: Build and Test web
 
 on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'web/**'
+      - '.github/workflows/build-web.yml'
   push:
     branches:
       - main
+    paths:
+      - 'web/**'
+      - '.github/workflows/build-web.yml'
 
 jobs:
-  lint:
-    name: Build and lint the Project
+  build:
+    name: Build and lint the web project
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -47,9 +53,9 @@ jobs:
 
   playwright:
     name: Playwright E2E Tests
-    needs: lint
+    needs: build
     timeout-minutes: 60
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
