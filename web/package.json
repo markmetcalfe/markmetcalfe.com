@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@markmetcalfe/resume": "^1.0.0",
-    "@nuxt/fonts": "0.11.0",
-    "@nuxt/icon": "2.2.2",
+    "@nuxt/fonts": "0.14.0",
+    "@nuxt/icon": "2.2.3",
     "@nuxt/image": "2.0.0",
     "@nuxt/test-utils": "4.0.3",
     "@pinia/nuxt": "0.11.3",
