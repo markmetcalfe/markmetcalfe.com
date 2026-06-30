@@ -13,8 +13,8 @@
     "oxfmt": "^0.56.0",
     "oxlint": "^1.71.0",
     "oxlint-tsgolint": "^0.23.0",
-    "typescript": "^5.9.3",
-    "wrangler": "^3.114.17"
+    "typescript": "^6.0.0",
+    "wrangler": "^4.0.0"
   },
   "lint-staged": {
     "**/*.ts": [
