@@ -51,7 +51,7 @@
     "oxlint-tsgolint": "^0.23.0",
     "sass": "^1.86.0",
     "stylelint": "^16.16.0",
-    "stylelint-config-recommended-scss": "^14.1.0",
+    "stylelint-config-recommended-scss": "^17.0.0",
     "stylelint-config-recommended-vue": "^1.6.0",
     "stylelint-config-standard-scss": "^14.0.0",
     "typescript": "^5.8.2",
