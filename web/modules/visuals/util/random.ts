@@ -1,5 +1,9 @@
-import { getRandomColor } from "./color";
-import { type GeometryAttributes, geometryClasses } from "./geometry";
+import { getRandomColor, toColorString } from "./color";
+import {
+  geometryClasses,
+  type GeometryAttributes,
+  type GeometryClass,
+} from "./geometry";
 
 export const getRandomNum = (min: number, max: number) =>
   Math.random() * (max - min) + min;
@@ -19,12 +23,15 @@ export function getRandomValue<T>(values: object | T[]): T {
   }
 }
 
-export const getRandomGeometry = (): GeometryAttributes => {
-  const [red, green, blue] = getRandomColor();
-  const type = getRandomValue(geometryClasses);
+export const getRandomGeometry = (
+  randomGeometryClasses?: GeometryClass[],
+): GeometryAttributes => {
+  const type = getRandomValue(
+    randomGeometryClasses ?? geometryClasses,
+  );
   return {
     type: type.getName(),
-    color: `rgb(${red}, ${green}, ${blue})`,
+    color: toColorString(getRandomColor()),
     solid: false,
     radius: getRandomNum(4, 8),
     detail: getRandomInt(type.getMinDetail(), type.getMaxDetail()),

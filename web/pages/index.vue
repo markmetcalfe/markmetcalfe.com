@@ -54,7 +54,7 @@
       <LinkButton text="Resume" href="/resume" large>
         <Icon name="bx:file" />
       </LinkButton>
-      <LinkButton text="Visuals" href="/visuals" large>
+      <LinkButton text="Visualiser" href="/visuals" large>
         <Icon name="custom:octohedron" />
       </LinkButton>
       <LinkButton text="Sequencer" href="/sequencer" large>
