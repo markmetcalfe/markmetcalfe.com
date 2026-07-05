@@ -73,11 +73,11 @@ test.describe("HomePage", () => {
   test("can navigate to the visuals page", async ({ page }) => {
     await page.goto("/");
 
-    const link = page.locator('a:has-text("Visuals")');
+    const link = page.locator('a:has-text("Visualiser")');
 
     await Promise.all([page.waitForURL("/visuals"), link.click()]);
 
-    await expect(page.locator("body")).toContainText("3D Visuals");
+    await expect(page.locator("body")).toContainText("Visualiser");
   });
 
   test("can navigate to the sequencer page", async ({ page }) => {

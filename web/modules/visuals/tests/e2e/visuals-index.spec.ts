@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("VisualsPage", () => {
   test("can load page", async ({ page }, testInfo) => {
-    await expect(page.locator('text="3D Visuals"')).toBeVisible();
+    await expect(page.locator('text="Visualiser"')).toBeVisible();
     await takeSnapshot(page, "Visuals Page", testInfo);
   });
 

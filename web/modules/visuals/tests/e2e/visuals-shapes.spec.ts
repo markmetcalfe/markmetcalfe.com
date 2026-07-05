@@ -19,6 +19,6 @@ test.describe("EditShapesPage", () => {
 
     await Promise.all([page.waitForURL("/visuals"), link.click()]);
 
-    await expect(page.locator("body")).toContainText("3D Visuals");
+    await expect(page.locator("body")).toContainText("Visualiser");
   });
 });

@@ -40,6 +40,18 @@ export abstract class Geometry {
     return this;
   }
 
+  public setOpacity(opacity: number) {
+    const clamped = Math.max(0, opacity);
+    const transparent = clamped < 1;
+    this.getMaterials().forEach(material => {
+      if (material.transparent !== transparent) {
+        material.transparent = transparent;
+      }
+      material.opacity = clamped;
+    });
+    return this;
+  }
+
   public setColor(r: number, g: number, b: number) {
     this.getMaterials().forEach(material => {
       material.color.setRGB(r / 255, g / 255, b / 255);
@@ -129,6 +141,22 @@ export abstract class Geometry {
           | THREE.LineBasicMaterial[]);
   }
 
+  public getOpacity(): number {
+    return this.getMaterials()[0]?.opacity ?? 1;
+  }
+
+  public getColorRGB(): { r: number; g: number; b: number } {
+    const material = this.getMaterials()[0];
+    if (!material) {
+      return { r: 255, g: 255, b: 255 };
+    }
+    return {
+      r: material.color.r * 255,
+      g: material.color.g * 255,
+      b: material.color.b * 255,
+    };
+  }
+
   public static getName(): string {
     throw new Error("Can not call getName() on class Geometry");
   }
@@ -192,20 +220,36 @@ export class Sphere extends Geometry {
 }
 
 export class PartialSphere extends Geometry {
+  /**
+   * Building the polyhedron and its edges is expensive at high detail
+   * levels, but the result only depends on radius/detail, so identical
+   * shapes (eg. the infinite mode shape trail) can share one instance.
+   */
+  private static geometryCache = new Map<
+    string,
+    THREE.BufferGeometry
+  >();
+
   constructor(attributes: GeometryAttributes) {
-    const geometry = new THREE.PolyhedronGeometry(
-      [
-        -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, -1,
-        1, 1, 1, 1, -1, 1, 1,
-      ],
-      [
-        2, 1, 0, 0, 3, 2, 0, 4, 7, 7, 3, 0, 0, 1, 5, 5, 4, 0, 1, 2, 6,
-        6, 5, 1, 2, 3, 7, 7, 6, 2, 4, 5, 6, 6, 7, 4,
-      ],
-      attributes.radius,
-      attributes.detail,
-    );
-    super(new THREE.EdgesGeometry(geometry), attributes);
+    const cacheKey = `${attributes.radius}-${attributes.detail}`;
+    let geometry = PartialSphere.geometryCache.get(cacheKey);
+    if (!geometry) {
+      const polyhedron = new THREE.PolyhedronGeometry(
+        [
+          -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1,
+          -1, 1, 1, 1, 1, -1, 1, 1,
+        ],
+        [
+          2, 1, 0, 0, 3, 2, 0, 4, 7, 7, 3, 0, 0, 1, 5, 5, 4, 0, 1, 2,
+          6, 6, 5, 1, 2, 3, 7, 7, 6, 2, 4, 5, 6, 6, 7, 4,
+        ],
+        attributes.radius,
+        attributes.detail,
+      );
+      geometry = new THREE.EdgesGeometry(polyhedron);
+      PartialSphere.geometryCache.set(cacheKey, geometry);
+    }
+    super(geometry, attributes);
   }
 
   public static override getName() {
@@ -297,6 +341,8 @@ export const geometryClasses = [
   Dodecahedron,
   TorusKnot,
 ];
+
+export type GeometryClass = (typeof geometryClasses)[number];
 
 const getGeometryClassFromName = (name: string) => {
   const geometryClass = geometryClasses.find(

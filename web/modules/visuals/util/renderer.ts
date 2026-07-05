@@ -16,19 +16,25 @@ export class Renderer {
   protected hasUserMovedMouse = false;
   protected isMouseInViewport = true;
 
-  protected onClick = (_renderer: this, _event: MouseEvent) => {};
-  protected onScroll = (_renderer: this, _event: WheelEvent) => {};
-  protected onMouseMove = (_renderer: this, event: MouseEvent) => {
+  protected onClick = (_renderer: Renderer, _event: MouseEvent) => {};
+  protected onScroll = (
+    _renderer: Renderer,
+    _event: WheelEvent,
+  ) => {};
+  protected onMouseMove = (
+    _renderer: Renderer,
+    event: MouseEvent,
+  ) => {
     this.mousePosX = event.clientX;
     this.mousePosY = event.clientY;
   };
 
   protected onKeyDown = (
-    _renderer: this,
+    _renderer: Renderer,
     _event: KeyboardEvent,
   ) => {};
   protected onRenderTick = (
-    _renderer: this,
+    _renderer: Renderer,
     _positionData: {
       mousePosition: THREE.Vector3 | undefined;
       startingPosition: THREE.Vector3 | undefined;
@@ -41,7 +47,7 @@ export class Renderer {
     },
   ) => {};
 
-  protected onInit = (_renderer: this) => {};
+  protected onInit = (_renderer: Renderer) => {};
 
   protected getZoom = () => 1;
   protected getWidth = () => this.container.clientWidth;
@@ -54,28 +60,28 @@ export class Renderer {
   }
 
   public setOnMouseMove(
-    onMouseMove: (renderer: this, event: MouseEvent) => void,
+    onMouseMove: (renderer: Renderer, event: MouseEvent) => void,
   ): this {
     this.onMouseMove = onMouseMove;
     return this;
   }
 
   public setOnClick(
-    onClick: (renderer: this, event: MouseEvent) => void,
+    onClick: (renderer: Renderer, event: MouseEvent) => void,
   ): this {
     this.onClick = onClick;
     return this;
   }
 
   public setOnScroll(
-    onScroll: (renderer: this, event: WheelEvent) => void,
+    onScroll: (renderer: Renderer, event: WheelEvent) => void,
   ): this {
     this.onScroll = onScroll;
     return this;
   }
 
   public setOnKeyDown(
-    onKeyDown: (renderer: this, event: KeyboardEvent) => void,
+    onKeyDown: (renderer: Renderer, event: KeyboardEvent) => void,
   ): this {
     this.onKeyDown = onKeyDown;
     return this;
@@ -83,7 +89,7 @@ export class Renderer {
 
   public setOnRenderTick(
     onRenderTick: (
-      renderer: this,
+      renderer: Renderer,
       positionData: {
         mousePosition: THREE.Vector3 | undefined;
         startingPosition: THREE.Vector3 | undefined;
@@ -100,7 +106,7 @@ export class Renderer {
     return this;
   }
 
-  public setOnInit(onInit: (_renderer: this) => void) {
+  public setOnInit(onInit: (_renderer: Renderer) => void) {
     this.onInit = onInit;
     return this;
   }
@@ -195,6 +201,16 @@ export class Renderer {
     );
   }
 
+  public addGeometryObject(geometry: Geometry): void {
+    this.scene!.add(geometry.getObject());
+    this.geometry = [...(this.geometry ?? []), geometry];
+  }
+
+  public removeGeometryObject(geometry: Geometry): void {
+    this.scene!.remove(geometry.getObject());
+    this.geometry = (this.geometry ?? []).filter(g => g !== geometry);
+  }
+
   public placeGeometry(geometry: Geometry[]): void {
     const startingPosition = this.getStartingPosition();
     geometry.forEach(object => {
@@ -207,8 +223,12 @@ export class Renderer {
     this.geometry = geometry;
   }
 
+  protected isReady(): boolean {
+    return !!this.renderer;
+  }
+
   public animate() {
-    if (!this.renderer) {
+    if (!this.isReady()) {
       return;
     }
     this.onRenderTick(this, {
@@ -277,7 +297,7 @@ export class Renderer {
     };
   }
 
-  private getMousePosition() {
+  protected getMousePosition() {
     if (this.mousePosX === 0 && this.mousePosY === 0) {
       return undefined;
     }

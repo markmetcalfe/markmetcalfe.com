@@ -63,6 +63,8 @@ const toggle = () => {
 .toggleswitch {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
 
   &__switch {
     display: inline-flex;
@@ -72,7 +74,6 @@ const toggle = () => {
   }
 
   &__label {
-    margin-right: 0.5rem;
     white-space: nowrap;
   }
 

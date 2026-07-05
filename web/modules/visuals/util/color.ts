@@ -49,3 +49,9 @@ export const getRandomColor = (): [number, number, number] => {
   }
   return [red, green, blue];
 };
+
+export const toColorString = ([red, green, blue]: [
+  number,
+  number,
+  number,
+]): string => `rgb(${red}, ${green}, ${blue})`;

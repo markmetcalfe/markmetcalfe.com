@@ -1,10 +1,13 @@
 import { defineStore } from "pinia";
+import { markRaw } from "vue";
 import { isMobile } from "is-mobile";
 import { Vector3 } from "three";
 import {
   Octahedron,
+  type Geometry,
   type GeometryAttributes,
   mapGeometryAttributes,
+  PartialSphere,
 } from "@visuals/util/geometry";
 import type { Renderer } from "@visuals/util/renderer";
 import {
@@ -14,7 +17,7 @@ import {
   getRandomNum,
   getRandomValue,
 } from "@visuals/util/random";
-import { getRandomColor } from "@visuals/util/color";
+import { getRandomColor, toColorString } from "@visuals/util/color";
 
 export enum AutoZoomMode {
   DISABLED = "Disabled",
@@ -23,9 +26,36 @@ export enum AutoZoomMode {
   RANDOM = "Random",
 }
 
-export interface VisualStore {
-  renderer: Renderer | undefined;
+export interface VisualSettings {
   geometryConfig: GeometryAttributes[];
+  followCursor: boolean;
+  edgeBounce: { enabled: boolean };
+  zoom: { min: number; max: number; current: number };
+  autoZoom: {
+    mode: AutoZoomMode;
+    speed: number;
+    direction: "in" | "out";
+    beat: number;
+  };
+  scrollToZoom: boolean;
+  rotationSpeed: { x: number; y: number };
+  beatMatch: {
+    enabled: boolean;
+    randomizeColors: boolean;
+    syncToBar: boolean;
+  };
+  filters: {
+    enabled: boolean;
+    brightness: number;
+    contrast: number;
+    saturate: number;
+    blur: number;
+  };
+}
+
+export interface VisualStore extends VisualSettings {
+  renderer: Renderer | undefined;
+  _snapshot: VisualSettings | undefined;
   followCursor: boolean;
   edgeBounce: {
     enabled: boolean;
@@ -36,27 +66,14 @@ export interface VisualStore {
     };
     speed: number;
   };
-  zoom: {
-    min: number;
-    max: number;
-    current: number;
-  };
-  autoZoom: {
-    mode: AutoZoomMode;
-    speed: number;
-    direction: "in" | "out";
-    beat: number;
-  };
-  scrollToZoom: boolean;
-  rotationSpeed: {
-    x: number;
-    y: number;
-  };
-  beatMatch: {
+  infinite: {
     enabled: boolean;
-    randomizeColors: boolean;
-    syncToBar: boolean;
+    shapeCount: number;
+    shapeSpacing: number;
+    passOffset: number;
+    popInDistance: number;
   };
+  _infiniteBuildGeneration: number;
   listeners: {
     onRandomise: (() => void) | undefined;
   };
@@ -76,6 +93,7 @@ export const defaultGeometry: GeometryAttributes[] = [
 const initialState: VisualStore = {
   renderer: undefined,
   geometryConfig: defaultGeometry,
+  _snapshot: undefined,
   followCursor: false,
   edgeBounce: {
     enabled: true,
@@ -97,6 +115,14 @@ const initialState: VisualStore = {
     direction: "in",
     beat: 0,
   },
+  infinite: {
+    enabled: false,
+    shapeCount: 15,
+    shapeSpacing: 10,
+    passOffset: 25,
+    popInDistance: 40,
+  },
+  _infiniteBuildGeneration: 0,
   scrollToZoom: false,
   rotationSpeed: {
     x: 100,
@@ -106,6 +132,13 @@ const initialState: VisualStore = {
     enabled: false,
     randomizeColors: false,
     syncToBar: false,
+  },
+  filters: {
+    enabled: false,
+    brightness: 100,
+    contrast: 100,
+    saturate: 100,
+    blur: 0,
   },
   listeners: {
     onRandomise: undefined,
@@ -117,7 +150,7 @@ export const useVisualsStore = defineStore("visuals", {
   actions: {
     generateGeometry() {
       const geometry = this.geometryConfig.map(mapGeometryAttributes);
-      this.renderer!.placeGeometry(geometry);
+      this.renderer?.placeGeometry(geometry);
       this.syncRotationSpeed();
     },
     addRandomGeometryConfig() {
@@ -135,6 +168,10 @@ export const useVisualsStore = defineStore("visuals", {
     },
 
     randomise() {
+      if (this.infinite.enabled) {
+        return;
+      }
+
       const siteStore = useSiteStore();
 
       this.randomiseZoom();
@@ -196,9 +233,50 @@ export const useVisualsStore = defineStore("visuals", {
         maxY: number;
       };
     }) {
-      this.movementTick(positionData);
-      this.autoZoomTick();
+      if (this.infinite.enabled) {
+        this.infiniteTick();
+      } else {
+        this.movementTick(positionData);
+        this.autoZoomTick();
+      }
       this.beatMatchTick();
+    },
+
+    infiniteTick() {
+      const mobile = isMobile();
+      const passThreshold =
+        this.zoom.current + this.infinite.passOffset;
+      const toRecycle: Geometry[] = [];
+
+      this.renderer?.getGeometry()?.forEach(g => {
+        g.rotate();
+        g.setSize(mobile ? 0.9 : 1);
+        g.getObject().position.z += this.autoZoom.speed / 100;
+        if (g.getObject().position.z > passThreshold) {
+          toRecycle.push(g);
+        }
+      });
+
+      const farthestZ =
+        passThreshold -
+        this.infinite.shapeCount * this.infinite.shapeSpacing;
+      for (const old of toRecycle) {
+        const [r, g, b] = getRandomColor();
+        old.setColor(r, g, b);
+        const obj = old.getObject();
+        obj.position.x = 0;
+        obj.position.y = 0;
+        obj.position.z = farthestZ;
+      }
+
+      const opacityRange = this.zoom.current - farthestZ;
+      this.renderer?.getGeometry()?.forEach(g => {
+        const linear = Math.max(
+          0,
+          (g.getObject().position.z - farthestZ) / opacityRange,
+        );
+        g.setOpacity(Math.pow(linear, this.infinite.popInDistance));
+      });
     },
 
     movementTick({
@@ -340,26 +418,20 @@ export const useVisualsStore = defineStore("visuals", {
         }
       }
 
-      this.renderer?.getGeometry()!.forEach((geometry, index) => {
-        const randomRotationPosition = getRandomNum(0, 100);
-        geometry.setRotation(randomRotationPosition);
+      this.randomiseShapeRotations(this.beatMatch.randomizeColors);
 
-        if (this.beatMatch.randomizeColors) {
-          const randomColor = getRandomColor();
-          const config = this.geometryConfig[index];
-          if (config) {
-            config.color = `rgb(${randomColor.join(", ")})`;
-          }
-          geometry.setColor(...randomColor);
-        }
-      });
-
-      if (this.autoZoom.mode === AutoZoomMode.RANDOM) {
+      if (
+        !this.infinite.enabled &&
+        this.autoZoom.mode === AutoZoomMode.RANDOM
+      ) {
         this.zoom.current = getRandomNum(
           this.zoom.min,
           this.zoom.max,
         );
-      } else if (this.autoZoom.mode === AutoZoomMode.JUMP) {
+      } else if (
+        !this.infinite.enabled &&
+        this.autoZoom.mode === AutoZoomMode.JUMP
+      ) {
         const zoomIncrement = (this.zoom.max - this.zoom.min) / 3;
         this.zoom.current =
           this.zoom.max - zoomIncrement * this.autoZoom.beat;
@@ -370,6 +442,21 @@ export const useVisualsStore = defineStore("visuals", {
       }
 
       siteStore.updateLastBeatTime();
+    },
+    randomiseShapeRotations(randomizeColors = false) {
+      this.renderer?.getGeometry()!.forEach((geometry, index) => {
+        const randomRotationPosition = getRandomNum(0, 100);
+        geometry.setRotation(randomRotationPosition);
+
+        if (randomizeColors) {
+          const randomColor = getRandomColor();
+          const config = this.geometryConfig[index];
+          if (config) {
+            config.color = toColorString(randomColor);
+          }
+          geometry.setColor(...randomColor);
+        }
+      });
     },
     setBeatMatchEnabled(enabled: boolean | null) {
       const siteStore = useSiteStore();
@@ -402,6 +489,104 @@ export const useVisualsStore = defineStore("visuals", {
       }
     },
 
+    setInfiniteEnabled(enabled: boolean) {
+      this.infinite.enabled = enabled;
+      if (enabled) {
+        this._snapshot = {
+          geometryConfig: JSON.parse(
+            JSON.stringify(this.geometryConfig),
+          ),
+          followCursor: this.followCursor,
+          edgeBounce: { enabled: this.edgeBounce.enabled },
+          zoom: { ...this.zoom },
+          autoZoom: { ...this.autoZoom },
+          scrollToZoom: this.scrollToZoom,
+          rotationSpeed: { ...this.rotationSpeed },
+          beatMatch: { ...this.beatMatch },
+          filters: { ...this.filters },
+        };
+        this.filters.enabled = true;
+        this.filters.brightness = 200;
+        this.filters.saturate = 400;
+        this.zoom.current = 5;
+        this.rotationSpeed = {
+          x: 20,
+          y: 10,
+        };
+        this.autoZoom.speed = 5;
+        this.initInfiniteShapes();
+      } else if (this._snapshot) {
+        this._infiniteBuildGeneration++;
+        const snap = this._snapshot;
+        this._snapshot = undefined;
+        this.geometryConfig = snap.geometryConfig;
+        this.followCursor = snap.followCursor;
+        this.edgeBounce.enabled = snap.edgeBounce.enabled;
+        this.edgeBounce.target = undefined;
+        this.zoom = { ...snap.zoom };
+        this.autoZoom = { ...snap.autoZoom };
+        this.scrollToZoom = snap.scrollToZoom;
+        this.rotationSpeed = { ...snap.rotationSpeed };
+        this.setBeatMatchEnabled(snap.beatMatch.enabled);
+        this.beatMatch.randomizeColors =
+          snap.beatMatch.randomizeColors;
+        this.beatMatch.syncToBar = snap.beatMatch.syncToBar;
+        this.filters = { ...snap.filters };
+        this.generateGeometry();
+      }
+    },
+
+    initInfiniteShapes() {
+      if (!this.renderer) {
+        return;
+      }
+      this.renderer.placeGeometry([]);
+      const passThreshold =
+        this.zoom.current + this.infinite.passOffset;
+
+      const generation = ++this._infiniteBuildGeneration;
+      const detailLevels = [70, 80, 90];
+      const buildShape = (row: number, detailIndex: number) => {
+        if (
+          row >= this.infinite.shapeCount ||
+          generation !== this._infiniteBuildGeneration ||
+          !this.renderer
+        ) {
+          return;
+        }
+
+        const reverseRotation = row % 2 === 0;
+        const geo = mapGeometryAttributes({
+          type: PartialSphere.getName(),
+          color: toColorString(getRandomColor()),
+          solid: false,
+          radius: 5,
+          detail: detailLevels[detailIndex]!,
+          reverseRotation:
+            detailIndex % 2 === 0
+              ? reverseRotation
+              : !reverseRotation,
+        });
+        geo.setRotationSpeed(this.rotationSpeed);
+        const obj = geo.getObject();
+        obj.position.x = 0;
+        obj.position.y = 0;
+        obj.position.z =
+          passThreshold - (row + 1) * this.infinite.shapeSpacing;
+        this.renderer.addGeometryObject(geo);
+
+        const nextDetailIndex = detailIndex + 1;
+        const [nextRow, nextDetailIdx] =
+          nextDetailIndex < detailLevels.length
+            ? [row, nextDetailIndex]
+            : [row + 1, 0];
+        requestAnimationFrame(() =>
+          buildShape(nextRow, nextDetailIdx),
+        );
+      };
+      buildShape(0, 0);
+    },
+
     setMinZoom(zoom: number) {
       this.zoom.min = zoom;
       if (this.zoom.max < zoom) {
@@ -427,7 +612,7 @@ export const useVisualsStore = defineStore("visuals", {
     },
 
     syncRotationSpeed() {
-      this.renderer!.getGeometry()!.forEach(geometry => {
+      this.renderer?.getGeometry()?.forEach(geometry => {
         geometry.setRotationSpeed(this.rotationSpeed);
       });
     },
@@ -448,20 +633,25 @@ export const useVisualsStore = defineStore("visuals", {
     },
 
     setAllRotation(x: number, y: number, z: number) {
-      this.renderer!.getGeometry()!.forEach(geometry => {
+      this.renderer?.getGeometry()?.forEach(geometry => {
         geometry.setRotation(x, y, z);
       });
     },
 
     setRenderer(renderer: Renderer) {
       const siteStore = useSiteStore();
-      this.renderer = renderer;
+      this.renderer = markRaw(renderer);
       this.renderer
         .setGetZoom(() => this.zoom.current)
         .setOnRenderTick((_, positionData) => {
           this.tick(positionData);
         })
-        .setOnInit(() => this.syncRotationSpeed())
+        .setOnInit(() => {
+          this.syncRotationSpeed();
+          if (this.infinite.enabled) {
+            this.initInfiniteShapes();
+          }
+        })
         .setOnClick(() => this.randomise())
         .setOnKeyDown((renderer, event) => {
           if (event.code === "Space") {

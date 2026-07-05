@@ -1,16 +1,44 @@
 <template>
-  <div>
-    <div class="dynamicbackground" />
+  <div :style="{ filter: blurString }">
+    <div
+      class="dynamicbackground"
+      :style="{
+        filter: filterString,
+      }"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { isSafari } from "react-device-detect";
 import { Renderer } from "@visuals/util/renderer";
 
 const visualsStore = useVisualsStore();
 const renderer = ref<Renderer | undefined>(undefined);
+
+const filterString = computed(() => {
+  const filters = visualsStore.filters;
+  if (!filters.enabled) {
+    return "";
+  }
+  const filterValues = {
+    brightness: `${filters.brightness / 100}`,
+    contrast: `${filters.contrast}%`,
+    saturate: `${filters.saturate}%`,
+  };
+  return Object.entries(filterValues)
+    .map(([key, value]) => `${key}(${value})`)
+    .join(" ");
+});
+
+const blurString = computed(() => {
+  const filters = visualsStore.filters;
+  if (!filters.enabled) {
+    return "";
+  }
+  return `blur(${filters.blur}px)`;
+});
 
 onMounted(() => {
   setTimeout(
