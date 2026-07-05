@@ -1,7 +1,7 @@
 <template>
   <div>
-    <PageCard back-button-page="/">
-      <template #title> Error {{ error?.statusCode }} </template>
+    <PageCard>
+      <template #title>Error</template>
       <p>Something has gone wrong 🤯</p>
       <p class="no-padding">
         Please <a :href="mailtoLink">contact me</a> so I can fix it

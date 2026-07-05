@@ -1,5 +1,8 @@
 <template>
-  <header class="headerbar">
+  <header
+    class="headerbar"
+    :class="{ 'headerbar--floating': floating }"
+  >
     <NuxtLink
       :to="backHref"
       class="headerbar-back"
@@ -19,11 +22,13 @@ interface Props {
   title: string;
   backHref?: string;
   backLabel?: string;
+  floating?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
   backHref: "/",
   backLabel: "Back",
+  floating: false,
 });
 </script>
 
@@ -37,6 +42,15 @@ withDefaults(defineProps<Props>(), {
   gap: 1rem;
   padding: 0.6rem 1rem;
   border-bottom: 1px solid var(--color-light);
+
+  &--floating {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    border-bottom: none;
+  }
 
   &-back {
     display: flex;

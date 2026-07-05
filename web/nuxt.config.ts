@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "./modules/doodle",
     "./modules/minecraft",
     "./modules/network-status",
+    "./modules/pulsar",
     "./modules/resume",
     "./modules/sequencer",
     "./modules/visuals",
