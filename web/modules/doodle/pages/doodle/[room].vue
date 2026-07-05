@@ -47,23 +47,25 @@
     </aside>
 
     <!-- Name prompt modal -->
-    <div v-if="showNamePrompt" class="doodleroom-modal-overlay">
-      <div class="doodleroom-modal">
-        <h2>Enter your name</h2>
-        <form @submit.prevent="submitName">
-          <TextField
-            ref="nameInput"
-            v-model="nameValue"
-            maxlength="24"
-            placeholder="Your name..."
-            autocomplete="off"
-          />
-          <LinkButton type="submit" text="Join Game">
-            <Icon name="bx:log-in" />
-          </LinkButton>
-        </form>
-      </div>
-    </div>
+    <ModalDialog v-if="showNamePrompt">
+      <h2>Enter your name</h2>
+      <form @submit.prevent="submitName">
+        <TextField
+          ref="nameInput"
+          v-model="nameValue"
+          maxlength="24"
+          placeholder="Your name..."
+          autocomplete="off"
+        />
+        <LinkButton
+          :disabled="!nameValue.trim().length"
+          type="submit"
+          text="Join Game"
+        >
+          <Icon name="bx:log-in" />
+        </LinkButton>
+      </form>
+    </ModalDialog>
   </div>
 </template>
 
@@ -210,7 +212,6 @@ onUnmounted(() => {
     }
   }
 
-  // Name prompt modal
   &-modal-overlay {
     position: fixed;
     inset: 0;
@@ -222,16 +223,7 @@ onUnmounted(() => {
     padding: 1rem;
   }
 
-  &-modal {
-    background: var(--color-dark);
-    border: 1px solid var(--color-highlight);
-    padding: 2rem;
-    width: 100%;
-    max-width: 360px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-
+  .modaldialog {
     h2 {
       font-size: 1.3rem;
       font-weight: 400;
@@ -243,22 +235,6 @@ onUnmounted(() => {
       flex-direction: column;
       align-items: center;
       gap: 0.75rem;
-    }
-
-    input[type="text"] {
-      background: transparent;
-      border: 1px solid var(--color-light);
-      color: var(--color-light);
-      font-size: 1rem;
-      padding: 0.6rem 0.8rem;
-      width: 100%;
-      box-sizing: border-box;
-      outline: none;
-      transition: border-color 150ms;
-
-      &:focus {
-        border-color: var(--color-highlight);
-      }
     }
   }
 }
