@@ -81,7 +81,7 @@ useDoodleSound();
 const roomId = computed(() => route.params.room as string);
 const showNamePrompt = ref(false);
 const nameValue = ref(store.myName);
-const nameInput = ref<HTMLInputElement>();
+const nameInput = ref<{ focus: () => void }>();
 
 const timerClass = computed(() => {
   if (store.timeLeft > 30) {

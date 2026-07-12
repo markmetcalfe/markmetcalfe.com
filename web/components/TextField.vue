@@ -14,12 +14,15 @@
     <div class="textfield-container">
       <input
         :id="id"
+        ref="inputRef"
         class="textfield-field"
         :type="type"
         :value="modelValue"
         :placeholder="placeholder"
         :aria-labelledby="labelId"
         :disabled="disabled"
+        :autocomplete="autocomplete"
+        :spellcheck="spellcheck"
         @input="onInput"
         @focus="isFocused = true"
         @blur="isFocused = false"
@@ -46,6 +49,8 @@ interface Props {
   type?: InputType;
   small?: boolean;
   disabled?: boolean;
+  autocomplete?: string;
+  spellcheck?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
@@ -55,6 +60,8 @@ withDefaults(defineProps<Props>(), {
   type: "text",
   small: false,
   disabled: false,
+  autocomplete: undefined,
+  spellcheck: undefined,
 });
 
 const emit = defineEmits<{
@@ -65,12 +72,17 @@ const emit = defineEmits<{
 const isFocused = ref(false);
 const id = useId();
 const labelId = useId();
+const inputRef = ref<HTMLInputElement>();
 
 const onInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
   emit("update:modelValue", target.value);
   emit("change", target.value);
 };
+
+defineExpose({
+  focus: () => inputRef.value?.focus(),
+});
 </script>
 
 <style lang="scss">
