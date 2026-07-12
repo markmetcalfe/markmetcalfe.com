@@ -10,6 +10,7 @@ The site is a portfolio and creative playground, including:
 - **Resume** — dynamically fetched from the `@markmetcalfe/resume` package
 - **Visuals** — interactive generative graphics using Three.js
 - **Doodle** — a multiplayer drawing and guessing game
+- **Country Guesser** — a singleplayer and multiplayer country name guessing game
 - **Sequencer** — a browser-based music sequencer built with Tone.js
 
 ## Architecture
