@@ -124,7 +124,15 @@
 <script setup lang="ts">
 definePageMeta({ ssr: false });
 
-useSeoMeta({ title: "Country Guesser - Mark Metcalfe" });
+useSeoMeta({
+  title: "Country Guesser - Mark Metcalfe",
+  ogTitle: "Country Guesser - Mark Metcalfe",
+  description:
+    "A singleplayer and multiplayer country name guessing game",
+  ogDescription:
+    "A singleplayer and multiplayer country name guessing game",
+  ogImage: "https://markmetcalfe.com/countries/social-card.jpg?v=1",
+});
 
 const route = useRoute();
 const config = useRuntimeConfig();

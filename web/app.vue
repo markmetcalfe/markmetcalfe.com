@@ -14,7 +14,7 @@ useSeoMeta({
   ogTitle: "Mark Metcalfe",
   description: "Mark Metcalfe: Developer & Visual Artist",
   ogDescription: "Mark Metcalfe: Developer & Visual Artist",
-  ogImage: "https://markmetcalfe.com/social-card.jpg?v=5",
+  ogImage: "https://markmetcalfe.com/social-card.jpg?v=6",
 });
 
 onMounted(() => {
