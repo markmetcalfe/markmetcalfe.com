@@ -60,6 +60,8 @@ const toggle = () => {
 </script>
 
 <style lang="scss">
+@use "/variables" as vars;
+
 .toggleswitch {
   display: flex;
   align-items: center;
@@ -75,6 +77,10 @@ const toggle = () => {
 
   &__label {
     white-space: nowrap;
+
+    @include vars.mobile-only {
+      font-size: 16px;
+    }
   }
 
   &-track {

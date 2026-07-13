@@ -17,8 +17,9 @@
       <TextField
         v-model="inputText"
         :placeholder="inputPlaceholder"
+        aria-label="Chat message"
         maxlength="100"
-        autocomplete="off"
+        :autofill="false"
         @keydown.enter="submit"
       />
       <LinkButton @click="submit">

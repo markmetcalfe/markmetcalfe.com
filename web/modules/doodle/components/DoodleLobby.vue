@@ -28,6 +28,7 @@
       <TextField
         v-model="wordInput"
         placeholder="Suggest a word to draw…"
+        aria-label="Suggest a word"
         :disabled="store.iHaveSubmittedWord"
       />
       <LinkButton

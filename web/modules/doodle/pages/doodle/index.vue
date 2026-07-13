@@ -11,6 +11,8 @@ useSeoMeta({
   ogImage: "https://markmetcalfe.com/doodle/social-card.jpg?v=1",
 });
 
+useHideDynamicBackground();
+
 onBeforeMount(async () => {
   const res = await fetch("/api/doodle/rooms", { method: "POST" });
   const { roomId } = (await res.json()) as { roomId: string };

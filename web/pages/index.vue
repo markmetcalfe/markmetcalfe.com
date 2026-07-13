@@ -61,6 +61,14 @@
         <Icon name="fad:waveform" />
       </LinkButton>
       <LinkButton
+        text="Country Guesser"
+        href="/countries"
+        large
+        class="country-guesser"
+      >
+        <Icon name="bx:world" />
+      </LinkButton>
+      <LinkButton
         v-if="!isMobile()"
         text="Doodle"
         href="/doodle"
@@ -178,6 +186,16 @@ const { mailtoLink } = useAppConfig();
           color: var(--color-highlight);
         }
       }
+    }
+  }
+
+  .country-guesser a {
+    @include vars.desktop-only {
+      font-size: 1.25rem;
+    }
+
+    @include vars.mobile-only {
+      font-size: 0.85rem;
     }
   }
 }

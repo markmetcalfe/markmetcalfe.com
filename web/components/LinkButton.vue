@@ -146,6 +146,10 @@ const handleClick = (event: MouseEvent) => {
     border: var(--color-light) 1px solid;
     text-decoration: none;
 
+    @include vars.mobile-only {
+      font-size: 16px;
+    }
+
     & svg * {
       stroke: var(--color-light);
       transition: stroke 0.4s;
@@ -168,7 +172,6 @@ const handleClick = (event: MouseEvent) => {
       }
 
       @include vars.mobile-only {
-        font-size: 1rem;
         padding: 0.5rem;
       }
     }
@@ -180,7 +183,6 @@ const handleClick = (event: MouseEvent) => {
       }
 
       @include vars.mobile-only {
-        font-size: 0.75rem;
         padding: 0.25rem;
       }
     }

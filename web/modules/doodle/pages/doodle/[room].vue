@@ -55,7 +55,8 @@
           v-model="nameValue"
           maxlength="24"
           placeholder="Your name..."
-          autocomplete="off"
+          aria-label="Your name"
+          :autofill="false"
         />
         <LinkButton
           :disabled="!nameValue.trim().length"
@@ -79,6 +80,8 @@ useSeoMeta({
   ogDescription: "A multiplayer drawing and guessing game",
   ogImage: "https://markmetcalfe.com/doodle/social-card.jpg?v=1",
 });
+
+useHideDynamicBackground();
 
 const route = useRoute();
 const config = useRuntimeConfig();

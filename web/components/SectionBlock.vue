@@ -94,7 +94,7 @@ withDefaults(defineProps<Props>(), {
 
     @include vars.mobile-only {
       max-width: 325px;
-      font-size: 0.9rem;
+      font-size: 16px;
       gap: 0.5rem;
     }
 

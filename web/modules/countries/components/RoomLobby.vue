@@ -81,6 +81,8 @@ function copyLink() {
 </script>
 
 <style lang="scss">
+@use "/variables" as vars;
+
 .roomlobby {
   position: relative;
   z-index: 0;
@@ -131,12 +133,21 @@ function copyLink() {
 
     &-url {
       flex: 1;
+      min-width: 0;
       font-size: 0.8rem;
       color: var(--color-light);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       text-align: left;
+    }
+  }
+
+  @include vars.mobile-only {
+    padding: 1.25rem 1rem;
+
+    &-invite {
+      max-width: none;
     }
   }
 

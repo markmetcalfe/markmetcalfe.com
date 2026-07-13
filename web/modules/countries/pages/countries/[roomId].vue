@@ -107,7 +107,8 @@
           v-model="nameValue"
           maxlength="24"
           placeholder="Your name..."
-          autocomplete="off"
+          aria-label="Your name"
+          :autofill="false"
         />
         <LinkButton
           :disabled="!nameValue.trim().length"
@@ -133,6 +134,10 @@ useSeoMeta({
     "A singleplayer and multiplayer country name guessing game",
   ogImage: "https://markmetcalfe.com/countries/social-card.jpg?v=1",
 });
+
+useHideDynamicBackground();
+
+useFixMobileViewport();
 
 const route = useRoute();
 const config = useRuntimeConfig();
@@ -245,7 +250,10 @@ onUnmounted(() => {
 
 .countryguesserroom {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--cg-viewport-height, 100dvh);
   display: grid;
   grid-template: "header" auto "main" 1fr / 1fr;
   background: var(--color-dark);

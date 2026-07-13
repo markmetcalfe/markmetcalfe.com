@@ -61,6 +61,22 @@ export interface RoomEvent {
 // WebSocket must not be wrapped in Vue reactivity (breaks the object).
 let _ws: WebSocket | null = null;
 
+// Connection details kept outside store state (like `_ws`) purely so
+// reconnect logic can re-dial without the caller passing them again.
+let _roomId: string | null = null;
+let _apiBase = "";
+let _manualDisconnect = true;
+let _reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+const RECONNECT_DELAY_MS = 1500;
+
+// Mobile browsers (iOS Safari in particular) frequently suspend or drop
+// WebSocket connections when the tab is backgrounded or the screen locks
+// -- e.g. the host switching apps to paste the room link into a messaging
+// app. Without reconnecting, that client silently stops receiving further
+// broadcasts (including other players joining) until a manual reload.
+let _visibilityHandler: (() => void) | null = null;
+let _pageshowHandler: (() => void) | null = null;
+
 export const useCountryGuesserRoomStore = defineStore(
   "countryGuesserRoom",
   {
@@ -90,11 +106,46 @@ export const useCountryGuesserRoomStore = defineStore(
     actions: {
       connect(roomId: string, apiBase: string) {
         this._closeWs();
-        const wsBase = apiBase
-          ? apiBase.replace(/^http/, "ws")
+        _roomId = roomId;
+        _apiBase = apiBase;
+        _manualDisconnect = false;
+        this._dial();
+
+        if (!_visibilityHandler) {
+          _visibilityHandler = () => {
+            if (
+              document.visibilityState === "visible" &&
+              !_manualDisconnect &&
+              _ws?.readyState !== WebSocket.OPEN &&
+              _ws?.readyState !== WebSocket.CONNECTING
+            ) {
+              this._dial();
+            }
+          };
+          document.addEventListener(
+            "visibilitychange",
+            _visibilityHandler,
+          );
+        }
+        if (!_pageshowHandler) {
+          _pageshowHandler = () => _visibilityHandler?.();
+          window.addEventListener("pageshow", _pageshowHandler);
+        }
+      },
+
+      _dial() {
+        if (!_roomId) {
+          return;
+        }
+        if (_reconnectTimer) {
+          clearTimeout(_reconnectTimer);
+          _reconnectTimer = null;
+        }
+        const wsBase = _apiBase
+          ? _apiBase.replace(/^http/, "ws")
           : `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}`;
         const socket = new WebSocket(
-          `${wsBase}/api/countries/ws/${roomId}`,
+          `${wsBase}/api/countries/ws/${_roomId}`,
         );
 
         socket.addEventListener("message", event => {
@@ -111,11 +162,34 @@ export const useCountryGuesserRoomStore = defineStore(
         });
         socket.addEventListener("close", () => {
           this.connected = false;
+          if (!_manualDisconnect && !_reconnectTimer) {
+            _reconnectTimer = setTimeout(() => {
+              _reconnectTimer = null;
+              this._dial();
+            }, RECONNECT_DELAY_MS);
+          }
         });
         _ws = socket;
       },
 
       disconnect() {
+        _manualDisconnect = true;
+        if (_visibilityHandler) {
+          document.removeEventListener(
+            "visibilitychange",
+            _visibilityHandler,
+          );
+          _visibilityHandler = null;
+        }
+        if (_pageshowHandler) {
+          window.removeEventListener("pageshow", _pageshowHandler);
+          _pageshowHandler = null;
+        }
+        if (_reconnectTimer) {
+          clearTimeout(_reconnectTimer);
+          _reconnectTimer = null;
+        }
+        _roomId = null;
         this._closeWs();
         this._resetState();
       },
@@ -141,6 +215,7 @@ export const useCountryGuesserRoomStore = defineStore(
       },
 
       submitSkip() {
+        this.lastGuessCorrect = false;
         this.send({ type: "skip" });
       },
 
@@ -200,6 +275,7 @@ export const useCountryGuesserRoomStore = defineStore(
             this.hint = msg.hint;
             this.guessedCodes = msg.guessedCodes;
             this.donePlayerIds = [];
+            this.lastGuessCorrect = null;
             break;
 
           case "hint_update":

@@ -24,6 +24,11 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
   ],
   devtools: { enabled: true },
+  runtimeConfig: {
+    public: {
+      isPlaywrightTest,
+    },
+  },
   app: {
     head: {
       title: "Mark Metcalfe",
