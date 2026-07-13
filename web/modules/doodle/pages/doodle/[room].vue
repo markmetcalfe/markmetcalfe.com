@@ -72,6 +72,14 @@
 <script setup lang="ts">
 definePageMeta({ ssr: false });
 
+useSeoMeta({
+  title: "Doodle - Mark Metcalfe",
+  ogTitle: "Doodle - Mark Metcalfe",
+  description: "A multiplayer drawing and guessing game",
+  ogDescription: "A multiplayer drawing and guessing game",
+  ogImage: "https://markmetcalfe.com/doodle/social-card.jpg?v=1",
+});
+
 const route = useRoute();
 const config = useRuntimeConfig();
 const store = useDoodleStore();
