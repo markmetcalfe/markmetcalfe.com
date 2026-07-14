@@ -42,7 +42,7 @@ const inputPlaceholder = computed(() =>
 
 function submit() {
   const text = inputText.value.trim();
-  if (!text) {
+  if (!text || isProfane(text)) {
     return;
   }
   store.sendGuessOrChat(text);

@@ -23,6 +23,7 @@
     "@nuxt/image": "2.0.0",
     "@nuxt/test-utils": "4.0.3",
     "@pinia/nuxt": "0.11.3",
+    "bad-words": "^4.0.0",
     "color-convert": "^3.0.1",
     "hex-color-to-color-name": "^2.0.0",
     "is-mobile": "^5.0.0",

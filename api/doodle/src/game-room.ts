@@ -7,6 +7,7 @@ import type {
   ServerMessage,
 } from "./types";
 import { WORDS } from "./words";
+import { containsProfanity } from "../../shared/profanity";
 
 interface Session {
   ws: WebSocket;
@@ -184,6 +185,13 @@ export class GameRoom implements DurableObject {
           });
           return;
         }
+        if (containsProfanity(name)) {
+          this.send(session.ws, {
+            type: "error",
+            message: "Name contains inappropriate language",
+          });
+          return;
+        }
         const isHost = this.game.players.length === 0;
         const player: Player = {
           id: playerId,
@@ -263,7 +271,7 @@ export class GameRoom implements DurableObject {
           return;
         }
 
-        const text = msg.text.trim().slice(0, 100);
+        const text = this.sanitizeText(msg.text);
         if (!text) {
           return;
         }
@@ -315,7 +323,7 @@ export class GameRoom implements DurableObject {
         if (!session.player) {
           return;
         }
-        const text = msg.text.trim().slice(0, 100);
+        const text = this.sanitizeText(msg.text);
         if (!text) {
           return;
         }
@@ -347,10 +355,17 @@ export class GameRoom implements DurableObject {
           return;
         }
         const word = msg.word.trim().slice(0, 15);
-        if (!word) {
+        if (word.length < 3) {
           this.send(session.ws, {
             type: "error",
-            message: "Word cannot be empty",
+            message: "Word must be at least 3 characters",
+          });
+          return;
+        }
+        if (containsProfanity(word)) {
+          this.send(session.ws, {
+            type: "error",
+            message: "Word contains inappropriate language",
           });
           return;
         }
@@ -507,6 +522,11 @@ export class GameRoom implements DurableObject {
     }
 
     this.updateRoomListing();
+  }
+
+  private sanitizeText(raw: string): string | null {
+    const text = raw.trim().slice(0, 100);
+    return text && !containsProfanity(text) ? text : null;
   }
 
   private currentDrawerId(): string {

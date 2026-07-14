@@ -7,6 +7,9 @@
     "lint": "oxlint . && oxfmt --check .",
     "lint:fix": "oxlint . --fix && oxfmt ."
   },
+  "dependencies": {
+    "bad-words": "^4.0.0"
+  },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260621.1",
     "lint-staged": "^17.0.0",

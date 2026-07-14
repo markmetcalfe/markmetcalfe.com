@@ -6,6 +6,7 @@ import type {
   ServerMessage,
 } from "./types";
 import { COUNTRIES, isCorrectGuess, type Country } from "./countries";
+import { containsProfanity } from "../../shared/profanity";
 
 interface Session {
   ws: WebSocket;
@@ -167,6 +168,13 @@ export class GameRoom implements DurableObject {
           this.send(session.ws, {
             type: "error",
             message: "Name cannot be empty",
+          });
+          return;
+        }
+        if (containsProfanity(name)) {
+          this.send(session.ws, {
+            type: "error",
+            message: "Name contains inappropriate language",
           });
           return;
         }
