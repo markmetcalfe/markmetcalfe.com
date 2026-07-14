@@ -111,7 +111,7 @@
           :autofill="false"
         />
         <LinkButton
-          :disabled="!nameValue.trim().length"
+          :disabled="!canSubmitName"
           type="submit"
           text="Join Room"
         >
@@ -154,6 +154,11 @@ const nameValue = ref(store.myName);
 const nameInput = ref<{ focus: () => void }>();
 const guessInputRef = ref<{ flashIncorrect: () => void }>();
 
+const canSubmitName = computed(
+  () =>
+    nameValue.value.trim().length > 0 && !isProfane(nameValue.value),
+);
+
 const sortedPlayers = computed(() =>
   [...store.players].sort((a, b) => b.score - a.score),
 );
@@ -189,7 +194,7 @@ watch(
 
 function submitName() {
   const name = nameValue.value.trim();
-  if (!name) {
+  if (!name || isProfane(name)) {
     return;
   }
   showNamePrompt.value = false;

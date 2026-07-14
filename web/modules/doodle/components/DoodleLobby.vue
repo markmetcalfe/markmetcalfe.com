@@ -100,8 +100,14 @@ const displayRoomUrl = computed(() =>
 );
 
 const canSubmitWord = computed(() => {
-  const len = wordInput.value.trim().length;
-  return !store.iHaveSubmittedWord && len >= 3 && len <= 15;
+  const trimmed = wordInput.value.trim();
+  const len = trimmed.length;
+  return (
+    !store.iHaveSubmittedWord &&
+    len >= 3 &&
+    len <= 15 &&
+    !isProfane(trimmed)
+  );
 });
 
 function copyLink() {
