@@ -1,7 +1,7 @@
 <template>
   <div>
     <NuxtPage />
-    <DynamicBackground />
+    <DynamicBackground v-if="showDynamicBackground" />
     <a id="seo-link" href="https://www.instagram.com/markus_vizshun/"
       >@markus_vizshun</a
     >
@@ -9,6 +9,8 @@
 </template>
 
 <script setup lang="ts">
+const showDynamicBackground = useDynamicBackgroundVisible();
+
 useSeoMeta({
   title: "Mark Metcalfe",
   ogTitle: "Mark Metcalfe",

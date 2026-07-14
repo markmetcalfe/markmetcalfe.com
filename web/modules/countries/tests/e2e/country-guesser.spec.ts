@@ -26,7 +26,10 @@ test.describe("CountryGuesserPage", () => {
       page.locator("text=/ \\/ 197 guessed/"),
     ).toBeVisible();
     await expect(
-      page.locator('input[placeholder="Type a country..."]'),
+      page.getByRole("searchbox", { name: "Guess" }),
+    ).toBeVisible();
+    await expect(
+      page.locator('text="Type a country..."'),
     ).toBeVisible();
   });
 });

@@ -103,6 +103,10 @@ useSeoMeta({
   ogImage: "https://markmetcalfe.com/countries/social-card.jpg?v=1",
 });
 
+useHideDynamicBackground();
+
+useFixMobileViewport();
+
 const store = useCountryGuesserStore();
 const { playCorrect, playIncorrect, playRoundEnd } =
   useCountryGuesserSound(
@@ -165,7 +169,10 @@ onUnmounted(() => {
 
 .countryguesser {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--cg-viewport-height, 100dvh);
   display: grid;
   grid-template: "header" auto "main" 1fr / 1fr;
   background: var(--color-dark);

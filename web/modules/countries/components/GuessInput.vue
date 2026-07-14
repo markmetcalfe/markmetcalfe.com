@@ -1,14 +1,24 @@
 <template>
-  <div class="guessinput">
+  <div
+    class="guessinput"
+    @focusin="startResetScroll"
+    @focusout="stopResetScroll"
+  >
     <p class="guessinput-hint">{{ hint || " " }}</p>
-    <form class="guessinput-form" @submit.prevent="handleSubmit">
+    <form
+      class="guessinput-form"
+      autocomplete="off"
+      @submit.prevent="handleSubmit"
+    >
       <TextField
+        ref="textFieldRef"
         v-model="text"
         class="guessinput-field"
         :class="{ 'guessinput-field-shake': shake }"
+        name="guess"
+        aria-label="Guess"
         placeholder="Type a country..."
-        autocomplete="off"
-        :spellcheck="false"
+        :autofill="false"
         :disabled="disabled"
       />
       <LinkButton
@@ -22,7 +32,7 @@
         v-if="showSkip"
         text="Skip"
         :disabled="disabled"
-        @click="emit('skip')"
+        @click="handleSkip"
       >
         <Icon name="bx:skip-next" />
       </LinkButton>
@@ -50,7 +60,31 @@ const emit = defineEmits<{
 
 const text = ref("");
 const shake = ref(false);
+const textFieldRef = ref<{ focus: () => void }>();
 
+// Mobile browsers scroll a focused input into view while the on-screen
+// keyboard opens/animates, which on this fixed-layout page just reveals
+// dead space below it. That scroll can happen at any point during the
+// keyboard's open animation, so a single reset can still land before it
+// -- keep re-snapping to the top on an interval for as long as the
+// field stays focused instead of just once.
+let resetScrollInterval: ReturnType<typeof setInterval> | undefined;
+
+function startResetScroll() {
+  window.scrollTo(0, 0);
+  clearInterval(resetScrollInterval);
+  resetScrollInterval = setInterval(() => {
+    window.scrollTo(0, 0);
+  }, 100);
+}
+
+function stopResetScroll() {
+  clearInterval(resetScrollInterval);
+}
+
+// Guess/Skip are buttons, so clicking either moves focus away from the
+// text field and closes the on-screen keyboard. Immediately refocusing
+// keeps it open so the next guess can be typed straight away.
 function handleSubmit() {
   const value = text.value.trim();
   if (!value) {
@@ -58,6 +92,12 @@ function handleSubmit() {
   }
   emit("submit", value);
   text.value = "";
+  textFieldRef.value?.focus();
+}
+
+function handleSkip() {
+  emit("skip");
+  textFieldRef.value?.focus();
 }
 
 function flashIncorrect() {
@@ -69,6 +109,14 @@ function flashIncorrect() {
     }, 300);
   });
 }
+
+onMounted(() => {
+  textFieldRef.value?.focus();
+});
+
+onUnmounted(() => {
+  clearInterval(resetScrollInterval);
+});
 
 defineExpose({ flashIncorrect });
 </script>

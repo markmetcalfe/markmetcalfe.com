@@ -44,6 +44,10 @@ defineProps<Props>();
       color: var(--color-highlight);
       border: var(--color-highlight) 1px solid;
     }
+
+    @include vars.mobile-only {
+      padding: 0.3rem 0.4rem;
+    }
   }
 }
 </style>

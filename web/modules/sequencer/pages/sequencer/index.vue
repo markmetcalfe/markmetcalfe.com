@@ -266,12 +266,15 @@ onUnmounted(() => {
       }
 
       @include vars.mobile-only {
-        font-size: 0.75rem;
         min-width: 4.5rem;
         padding-right: 0.25rem;
 
+        & .dropdownselect {
+          font-size: 0.75rem;
+        }
+
         & .dropdownselect-selected-option {
-          padding: 0.1rem 0.5rem;
+          padding: 0.2rem 0.5rem;
         }
 
         & .dropdownselect-option {

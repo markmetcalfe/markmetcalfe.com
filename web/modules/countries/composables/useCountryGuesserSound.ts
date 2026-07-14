@@ -69,9 +69,9 @@ export function useCountryGuesserSound(
       oscillator: { type: "triangle" },
       envelope: {
         attack: 0.02,
-        decay: 0.2,
+        decay: 0.15,
         sustain: 0.1,
-        release: 0.5,
+        release: 0.4,
       },
     }).toDestination();
     roundEndSynth.volume.value = -8;
@@ -137,9 +137,10 @@ export function useCountryGuesserSound(
       return;
     }
     const now = toneRef.now();
-    roundEndSynth.triggerAttackRelease("E5", "8n", now);
-    roundEndSynth.triggerAttackRelease("G5", "8n", now + 0.12);
-    roundEndSynth.triggerAttackRelease("C6", "4n", now + 0.24);
+    roundEndSynth.triggerAttackRelease("C5", "8n", now);
+    roundEndSynth.triggerAttackRelease("E5", "8n", now + 0.12);
+    roundEndSynth.triggerAttackRelease("G5", "8n", now + 0.24);
+    roundEndSynth.triggerAttackRelease("C6", "2n", now + 0.36);
   }
 
   // Multiplayer only: everyone has guessed or skipped, moving on to

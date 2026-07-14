@@ -136,6 +136,10 @@ const handleBlur = (): void => {
   &-label {
     margin-right: 0.5rem;
     white-space: nowrap;
+
+    @include vars.mobile-only {
+      font-size: 16px;
+    }
   }
 
   &-container {

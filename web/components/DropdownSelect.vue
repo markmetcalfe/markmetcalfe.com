@@ -225,6 +225,11 @@ onUnmounted(() => {
   align-items: center;
   flex: auto;
 
+  @include vars.mobile-only {
+    font-size: 16px;
+    line-height: 1;
+  }
+
   &-container {
     position: relative;
     width: 100%;
