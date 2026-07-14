@@ -42,7 +42,7 @@ export class Leaderboard implements DurableObject {
       const score = body.score;
       if (
         !name ||
-        containsProfanity(name) ||
+        (await containsProfanity(name)) ||
         typeof score !== "number" ||
         !Number.isInteger(score) ||
         score < 0 ||

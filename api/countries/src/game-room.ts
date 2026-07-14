@@ -126,15 +126,19 @@ export class GameRoom implements DurableObject {
     this.send(server, { type: "state", state: this.publicState() });
 
     server.addEventListener("message", event => {
-      try {
-        const msg = JSON.parse(event.data as string) as ClientMessage;
-        this.handleMessage(playerId, msg);
-      } catch {
-        this.send(server, {
-          type: "error",
-          message: "Invalid message format",
-        });
-      }
+      void (async () => {
+        try {
+          const msg = JSON.parse(
+            event.data as string,
+          ) as ClientMessage;
+          await this.handleMessage(playerId, msg);
+        } catch {
+          this.send(server, {
+            type: "error",
+            message: "Invalid message format",
+          });
+        }
+      })();
     });
 
     const cleanup = () => this.handleDisconnect(playerId);
@@ -159,7 +163,10 @@ export class GameRoom implements DurableObject {
     await this.state.storage.setAlarm(Date.now() + 1000);
   }
 
-  private handleMessage(playerId: string, msg: ClientMessage): void {
+  private async handleMessage(
+    playerId: string,
+    msg: ClientMessage,
+  ): Promise<void> {
     const session = this.sessions.get(playerId);
     if (!session) {
       return;
@@ -178,11 +185,16 @@ export class GameRoom implements DurableObject {
           });
           return;
         }
-        if (containsProfanity(name)) {
+        if (await containsProfanity(name)) {
           this.send(session.ws, {
             type: "error",
             message: "Name contains inappropriate language",
           });
+          return;
+        }
+        // The profanity check above yields, so a second "join" for this
+        // session may have already gone through while we were awaiting.
+        if (session.player) {
           return;
         }
         const isHost = this.game.players.length === 0;
@@ -319,7 +331,7 @@ export class GameRoom implements DurableObject {
           return;
         }
         const name = msg.name.trim().slice(0, 24);
-        if (!name || containsProfanity(name)) {
+        if (!name || (await containsProfanity(name))) {
           this.send(session.ws, {
             type: "error",
             message: "Name contains inappropriate language",

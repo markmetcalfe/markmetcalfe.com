@@ -7,7 +7,10 @@ import type {
   ServerMessage,
 } from "./types";
 import { WORDS } from "./words";
-import { containsProfanity } from "../../shared/profanity";
+import {
+  containsProfanity,
+  censorText,
+} from "../../shared/profanity";
 
 interface Session {
   ws: WebSocket;
@@ -89,15 +92,19 @@ export class GameRoom implements DurableObject {
     this.sendFullState(server, playerId);
 
     server.addEventListener("message", event => {
-      try {
-        const msg = JSON.parse(event.data as string) as ClientMessage;
-        this.handleMessage(playerId, msg);
-      } catch {
-        this.send(server, {
-          type: "error",
-          message: "Invalid message format",
-        });
-      }
+      void (async () => {
+        try {
+          const msg = JSON.parse(
+            event.data as string,
+          ) as ClientMessage;
+          await this.handleMessage(playerId, msg);
+        } catch {
+          this.send(server, {
+            type: "error",
+            message: "Invalid message format",
+          });
+        }
+      })();
     });
 
     const cleanup = () => this.handleDisconnect(playerId);
@@ -166,7 +173,10 @@ export class GameRoom implements DurableObject {
     }
   }
 
-  private handleMessage(playerId: string, msg: ClientMessage): void {
+  private async handleMessage(
+    playerId: string,
+    msg: ClientMessage,
+  ): Promise<void> {
     const session = this.sessions.get(playerId);
     if (!session) {
       return;
@@ -185,11 +195,16 @@ export class GameRoom implements DurableObject {
           });
           return;
         }
-        if (containsProfanity(name)) {
+        if (await containsProfanity(name)) {
           this.send(session.ws, {
             type: "error",
             message: "Name contains inappropriate language",
           });
+          return;
+        }
+        // The profanity check above yields, so a second "join" for this
+        // session may have already gone through while we were awaiting.
+        if (session.player) {
           return;
         }
         const isHost = this.game.players.length === 0;
@@ -271,7 +286,7 @@ export class GameRoom implements DurableObject {
           return;
         }
 
-        const text = this.sanitizeText(msg.text);
+        const text = msg.text.trim().slice(0, 100);
         if (!text) {
           return;
         }
@@ -313,7 +328,7 @@ export class GameRoom implements DurableObject {
             type: "chat",
             playerId,
             name: session.player.name,
-            text,
+            text: await censorText(text),
           });
         }
         break;
@@ -323,7 +338,7 @@ export class GameRoom implements DurableObject {
         if (!session.player) {
           return;
         }
-        const text = this.sanitizeText(msg.text);
+        const text = msg.text.trim().slice(0, 100);
         if (!text) {
           return;
         }
@@ -331,7 +346,7 @@ export class GameRoom implements DurableObject {
           type: "chat",
           playerId,
           name: session.player.name,
-          text,
+          text: await censorText(text),
         });
         break;
       }
@@ -362,11 +377,16 @@ export class GameRoom implements DurableObject {
           });
           return;
         }
-        if (containsProfanity(word)) {
+        if (await containsProfanity(word)) {
           this.send(session.ws, {
             type: "error",
             message: "Word contains inappropriate language",
           });
+          return;
+        }
+        // The profanity check above yields, so this player may have
+        // already suggested a word while we were awaiting.
+        if (this.game.suggestedWords[playerId]) {
           return;
         }
         this.game.suggestedWords[playerId] = word;
@@ -522,11 +542,6 @@ export class GameRoom implements DurableObject {
     }
 
     this.updateRoomListing();
-  }
-
-  private sanitizeText(raw: string): string | null {
-    const text = raw.trim().slice(0, 100);
-    return text && !containsProfanity(text) ? text : null;
   }
 
   private currentDrawerId(): string {
