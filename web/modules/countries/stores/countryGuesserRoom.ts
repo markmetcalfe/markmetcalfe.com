@@ -51,12 +51,20 @@ type ServerMessage =
     }
   | { type: "timer"; timeLeft: number }
   | { type: "round_end"; players: Player[]; guessedCodes: string[] }
+  | { type: "score_submitted" }
   | { type: "error"; message: string };
 
 export interface RoomEvent {
   kind: "correct" | "no_guess" | "error";
   text: string;
 }
+
+// Mirrors the server's SOLO_TIME_BONUS_SECONDS / SOLO_SKIP_PENALTY_SECONDS
+// (api/countries/src/game-room.ts) purely so the timer can be nudged
+// optimistically -- the server's next per-second "timer" broadcast is
+// still what actually corrects/confirms it.
+const SOLO_TIME_BONUS_SECONDS = 10;
+const SOLO_SKIP_PENALTY_SECONDS = 10;
 
 // WebSocket must not be wrapped in Vue reactivity (breaks the object).
 let _ws: WebSocket | null = null;
@@ -94,6 +102,9 @@ export const useCountryGuesserRoomStore = defineStore(
       donePlayerIds: [] as string[],
       lastGuessCorrect: null as boolean | null,
       events: [] as RoomEvent[],
+      scoreSubmitted: false,
+      scoreSubmitError: "",
+      soloMode: false,
     }),
 
     getters: {
@@ -205,8 +216,13 @@ export const useCountryGuesserRoomStore = defineStore(
         this.send({ type: "join", name });
       },
 
-      startGame(roundLength: number) {
-        this.send({ type: "start_game", round_length: roundLength });
+      startGame(roundLength: number, solo = false) {
+        this.soloMode = solo;
+        this.send({
+          type: "start_game",
+          round_length: roundLength,
+          solo,
+        });
       },
 
       submitGuess(text: string) {
@@ -215,8 +231,22 @@ export const useCountryGuesserRoomStore = defineStore(
       },
 
       submitSkip() {
-        this.lastGuessCorrect = false;
+        // Optimistic -- the server applies the same penalty immediately
+        // too, but its next per-second "timer" broadcast is what actually
+        // confirms/corrects this value.
+        if (this.soloMode) {
+          this.timeLeft = Math.max(
+            0,
+            this.timeLeft - SOLO_SKIP_PENALTY_SECONDS,
+          );
+        }
         this.send({ type: "skip" });
+      },
+
+      submitScore(name: string) {
+        this.scoreSubmitted = false;
+        this.scoreSubmitError = "";
+        this.send({ type: "submit_score", name });
       },
 
       _handleMessage(msg: ServerMessage) {
@@ -248,6 +278,11 @@ export const useCountryGuesserRoomStore = defineStore(
 
           case "guess_result":
             this.lastGuessCorrect = msg.correct;
+            // Optimistic, same as the skip penalty above -- corrected by
+            // the next "timer" broadcast regardless.
+            if (msg.correct && this.soloMode) {
+              this.timeLeft += SOLO_TIME_BONUS_SECONDS;
+            }
             break;
 
           case "correct_guess": {
@@ -298,9 +333,16 @@ export const useCountryGuesserRoomStore = defineStore(
             this.players = msg.players;
             this.guessedCodes = msg.guessedCodes;
             this.currentCode = "";
+            this.scoreSubmitted = false;
+            this.scoreSubmitError = "";
+            break;
+
+          case "score_submitted":
+            this.scoreSubmitted = true;
             break;
 
           case "error":
+            this.scoreSubmitError = msg.message;
             this._addEvent({ kind: "error", text: msg.message });
             break;
         }
@@ -330,6 +372,9 @@ export const useCountryGuesserRoomStore = defineStore(
         this.donePlayerIds = [];
         this.lastGuessCorrect = null;
         this.events = [];
+        this.scoreSubmitted = false;
+        this.scoreSubmitError = "";
+        this.soloMode = false;
       },
     },
   },

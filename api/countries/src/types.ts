@@ -21,9 +21,10 @@ export interface RoomState {
 
 export type ClientMessage =
   | { type: "join"; name: string }
-  | { type: "start_game"; round_length?: number }
+  | { type: "start_game"; round_length?: number; solo?: boolean }
   | { type: "guess"; text: string }
-  | { type: "skip" };
+  | { type: "skip" }
+  | { type: "submit_score"; name: string };
 
 export type ServerMessage =
   | { type: "you_are"; id: string }
@@ -59,4 +60,5 @@ export type ServerMessage =
       players: Player[];
       guessedCodes: string[];
     }
+  | { type: "score_submitted" }
   | { type: "error"; message: string };
