@@ -31,6 +31,12 @@ export interface DoodleMessage {
   type: "chat" | "system" | "correct";
   name?: string;
   text: string;
+  // Set only on optimistic chat/guess echoes (see sendGuessOrChat) so the
+  // server's confirmation can find this exact entry again to adopt its
+  // (possibly censored) text -- object identity doesn't survive a round
+  // trip through Vue's reactive array (reads return a proxy, not the
+  // object that was pushed), so a plain id is used instead.
+  localId?: number;
 }
 
 type ServerMessage =
@@ -81,6 +87,22 @@ interface StatePayload {
 let _ws: WebSocket | null = null;
 let _onDraw: ((event: DrawEvent) => void) | null = null;
 let _onReset: ((history: DrawEvent[]) => void) | null = null;
+// Tracks the in-flight name-prompt "join" so its "player_joined"/"error"
+// response can be routed back to the caller instead of into the chat log.
+let _joinResolver: {
+  resolve: () => void;
+  reject: (message: string) => void;
+} | null = null;
+// Same idea for the lobby's "suggest_word" prompt.
+let _wordResolver: {
+  resolve: () => void;
+  reject: (message: string) => void;
+} | null = null;
+// Chat/guess messages are echoed back optimistically (see sendGuessOrChat)
+// before the server confirms them. FIFO queue of their localIds so the
+// confirmation can find the right entry and adopt the server's text.
+let _nextLocalId = 0;
+const _pendingOutgoingIds: number[] = [];
 
 // ── Store ─────────────────────────────────────────────────────────────────────
 
@@ -160,6 +182,16 @@ export const useDoodleStore = defineStore("doodle", {
       });
       socket.addEventListener("close", () => {
         this.connected = false;
+        if (_joinResolver) {
+          const { reject } = _joinResolver;
+          _joinResolver = null;
+          reject("Disconnected. Refresh to reconnect.");
+        }
+        if (_wordResolver) {
+          const { reject } = _wordResolver;
+          _wordResolver = null;
+          reject("Disconnected. Refresh to reconnect.");
+        }
         this._addMessage({
           type: "system",
           text: "Disconnected. Refresh to reconnect.",
@@ -185,6 +217,16 @@ export const useDoodleStore = defineStore("doodle", {
       }
     },
 
+    // Resolves once the server confirms the join ("player_joined" for
+    // this player), or rejects with the server's error message.
+    join(name: string): Promise<void> {
+      this.myName = name;
+      return new Promise((resolve, reject) => {
+        _joinResolver = { resolve, reject };
+        this.send({ type: "join", name });
+      });
+    },
+
     sendDraw(event: DrawEvent) {
       this.send({ type: "draw", event });
     },
@@ -205,21 +247,35 @@ export const useDoodleStore = defineStore("doodle", {
       });
     },
 
-    suggestWord(word: string) {
-      this.send({ type: "suggest_word", word });
+    // Resolves once the server confirms the word ("word_suggested" for
+    // this player), or rejects with the server's error message.
+    suggestWord(word: string): Promise<void> {
+      return new Promise((resolve, reject) => {
+        _wordResolver = { resolve, reject };
+        this.send({ type: "suggest_word", word });
+      });
     },
 
     sendGuessOrChat(text: string) {
-      if (!text.trim()) {
+      const trimmed = text.trim();
+      if (!trimmed) {
         return;
       }
+      const localId = ++_nextLocalId;
+      _pendingOutgoingIds.push(localId);
+      this._addMessage({
+        type: "chat",
+        name: this.me?.name ?? this.myName,
+        text: trimmed,
+        localId,
+      });
       if (
         this.phase === "drawing" &&
         this.currentDrawerId !== this.myId
       ) {
-        this.send({ type: "guess", text: text.trim() });
+        this.send({ type: "guess", text: trimmed });
       } else {
-        this.send({ type: "chat", text: text.trim() });
+        this.send({ type: "chat", text: trimmed });
       }
     },
 
@@ -250,6 +306,11 @@ export const useDoodleStore = defineStore("doodle", {
 
         case "player_joined":
           this.players = msg.players;
+          if (_joinResolver && msg.player.id === this.myId) {
+            const { resolve } = _joinResolver;
+            _joinResolver = null;
+            resolve();
+          }
           this._addMessage({
             type: "system",
             text: `${msg.player.name} joined`,
@@ -276,19 +337,44 @@ export const useDoodleStore = defineStore("doodle", {
           this.wordHint = msg.hint;
           break;
 
-        case "chat":
-          this._addMessage({
-            type: "chat",
-            name: msg.name,
-            text: msg.text,
-          });
+        case "chat": {
+          // Own messages were already shown optimistically by
+          // sendGuessOrChat -- adopt the server's text (it may have
+          // swapped offensive content for a happy word) instead of
+          // adding a duplicate.
+          let mine: DoodleMessage | undefined;
+          if (
+            msg.playerId === this.myId &&
+            _pendingOutgoingIds.length > 0
+          ) {
+            const localId = _pendingOutgoingIds.shift();
+            mine = this.messages.find(m => m.localId === localId);
+          }
+          if (mine) {
+            mine.text = msg.text;
+          } else {
+            this._addMessage({
+              type: "chat",
+              name: msg.name,
+              text: msg.text,
+            });
+          }
           break;
+        }
 
         case "correct_guess": {
           this.correctGuessers.push(msg.playerId);
           const p = this.players.find(pl => pl.id === msg.playerId);
           if (p) {
             p.score += msg.points;
+          }
+          // A correct guess never comes back as a "chat" echo, so just
+          // drop the optimistic entry's pending marker here instead.
+          if (
+            msg.playerId === this.myId &&
+            _pendingOutgoingIds.length > 0
+          ) {
+            _pendingOutgoingIds.shift();
           }
           this._addMessage({
             type: "correct",
@@ -326,6 +412,11 @@ export const useDoodleStore = defineStore("doodle", {
           if (!this.suggestedWordPlayerIds.includes(msg.playerId)) {
             this.suggestedWordPlayerIds.push(msg.playerId);
           }
+          if (_wordResolver && msg.playerId === this.myId) {
+            const { resolve } = _wordResolver;
+            _wordResolver = null;
+            resolve();
+          }
           break;
 
         case "round_end":
@@ -340,10 +431,24 @@ export const useDoodleStore = defineStore("doodle", {
           break;
 
         case "error":
-          this._addMessage({
-            type: "system",
-            text: `Error: ${msg.message}`,
-          });
+          if (_joinResolver) {
+            const { reject } = _joinResolver;
+            _joinResolver = null;
+            reject(msg.message);
+          } else if (_wordResolver) {
+            const { reject } = _wordResolver;
+            _wordResolver = null;
+            reject(msg.message);
+          } else {
+            // Chat/guess text is never rejected -- offensive content is
+            // swapped for a happy word server-side instead (see the
+            // "chat" case above). Anything landing here is a genuine
+            // error (e.g. "start_game" failing).
+            this._addMessage({
+              type: "system",
+              text: `Error: ${msg.message}`,
+            });
+          }
           break;
       }
     },
@@ -375,6 +480,7 @@ export const useDoodleStore = defineStore("doodle", {
       this.correctGuessers = [];
       this.suggestedWordPlayerIds = [];
       this.messages = [];
+      _pendingOutgoingIds.length = 0;
     },
   },
 });

@@ -69,6 +69,13 @@ const SOLO_SKIP_PENALTY_SECONDS = 10;
 // WebSocket must not be wrapped in Vue reactivity (breaks the object).
 let _ws: WebSocket | null = null;
 
+// Tracks the in-flight name-prompt "join" so its "player_joined"/"error"
+// response can be routed back to the caller instead of into the event log.
+let _joinResolver: {
+  resolve: () => void;
+  reject: (message: string) => void;
+} | null = null;
+
 // Connection details kept outside store state (like `_ws`) purely so
 // reconnect logic can re-dial without the caller passing them again.
 let _roomId: string | null = null;
@@ -105,6 +112,9 @@ export const useCountryGuesserRoomStore = defineStore(
       scoreSubmitted: false,
       scoreSubmitError: "",
       soloMode: false,
+      // Remembered so the "you_are" handler's reconnect-rejoin logic
+      // (below) can redo a solo join, which carries no name of its own.
+      soloJoin: false,
     }),
 
     getters: {
@@ -173,6 +183,11 @@ export const useCountryGuesserRoomStore = defineStore(
         });
         socket.addEventListener("close", () => {
           this.connected = false;
+          if (_joinResolver) {
+            const { reject } = _joinResolver;
+            _joinResolver = null;
+            reject("Disconnected. Refresh to reconnect.");
+          }
           if (!_manualDisconnect && !_reconnectTimer) {
             _reconnectTimer = setTimeout(() => {
               _reconnectTimer = null;
@@ -211,9 +226,15 @@ export const useCountryGuesserRoomStore = defineStore(
         }
       },
 
-      join(name: string) {
+      // Resolves once the server confirms the join ("player_joined" for
+      // this player), or rejects with the server's error message.
+      join(name: string, solo = false): Promise<void> {
         this.myName = name;
-        this.send({ type: "join", name });
+        this.soloJoin = solo;
+        return new Promise((resolve, reject) => {
+          _joinResolver = { resolve, reject };
+          this.send({ type: "join", name, solo });
+        });
       },
 
       startGame(roundLength: number, solo = false) {
@@ -253,8 +274,12 @@ export const useCountryGuesserRoomStore = defineStore(
         switch (msg.type) {
           case "you_are":
             this.myId = msg.id;
-            if (this.myName) {
-              this.send({ type: "join", name: this.myName });
+            if (this.myName || this.soloJoin) {
+              this.send({
+                type: "join",
+                name: this.myName,
+                solo: this.soloJoin,
+              });
             }
             break;
 
@@ -270,6 +295,11 @@ export const useCountryGuesserRoomStore = defineStore(
 
           case "player_joined":
             this.players = msg.players;
+            if (_joinResolver && msg.player.id === this.myId) {
+              const { resolve } = _joinResolver;
+              _joinResolver = null;
+              resolve();
+            }
             break;
 
           case "player_left":
@@ -342,8 +372,14 @@ export const useCountryGuesserRoomStore = defineStore(
             break;
 
           case "error":
-            this.scoreSubmitError = msg.message;
-            this._addEvent({ kind: "error", text: msg.message });
+            if (_joinResolver) {
+              const { reject } = _joinResolver;
+              _joinResolver = null;
+              reject(msg.message);
+            } else {
+              this.scoreSubmitError = msg.message;
+              this._addEvent({ kind: "error", text: msg.message });
+            }
             break;
         }
       },
@@ -375,6 +411,7 @@ export const useCountryGuesserRoomStore = defineStore(
         this.scoreSubmitted = false;
         this.scoreSubmitError = "";
         this.soloMode = false;
+        this.soloJoin = false;
       },
     },
   },

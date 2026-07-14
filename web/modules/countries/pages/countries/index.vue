@@ -199,7 +199,7 @@ const elapsedSeconds = ref(0);
 const canSubmitScoreName = computed(
   () =>
     scoreNameValue.value.trim().length > 0 &&
-    !isProfane(scoreNameValue.value),
+    scoreNameValue.value.trim().length <= 20,
 );
 
 const formattedElapsedTime = computed(() => {
@@ -221,10 +221,9 @@ async function playSolo() {
   const res = await fetch("/api/countries/rooms", { method: "POST" });
   const { roomId } = (await res.json()) as { roomId: string };
   store.connect(roomId, config.public.countryGuesserApiUrl as string);
-  // Pre-set the name so the "you_are" handler's reconnect-rejoin logic
-  // sends the join automatically once the socket is actually open --
-  // solo has no lobby, so there's no name prompt to wait on.
-  store.join("You");
+  // Solo has no lobby (no name prompt to wait on) and no name is ever
+  // shown, so join as solo instead of supplying/validating a name.
+  void store.join("", true).catch(() => {});
 }
 
 function playAgain() {
@@ -250,11 +249,11 @@ function handleGuess(text: string) {
 
 function submitScore() {
   const name = scoreNameValue.value.trim();
-  if (!name || isProfane(name)) {
+  if (!name || name.length > 20) {
     return;
   }
-  localStorage.setItem("countryGuesserName", name);
   store.submitScore(name);
+  localStorage.setItem("countryGuesserName", name);
 }
 
 watch(

@@ -36,12 +36,15 @@
         :text="
           store.iHaveSubmittedWord ? 'Word submitted!' : 'Submit'
         "
-        :disabled="!canSubmitWord"
+        :disabled="!canSubmitWord || submittingWord"
       >
         <Icon v-if="store.iHaveSubmittedWord" name="bx:check" />
         <Icon v-else name="bx:send" />
       </LinkButton>
     </form>
+    <p v-if="wordError" class="doodlelobby-suggest-error">
+      Error: {{ wordError }}
+    </p>
 
     <div class="doodlelobby-invite">
       <span class="doodlelobby-invite-url">{{ displayRoomUrl }}</span>
@@ -89,6 +92,8 @@ import isMobile from "is-mobile";
 const store = useDoodleStore();
 const copied = ref(false);
 const wordInput = ref("");
+const wordError = ref("");
+const submittingWord = ref(false);
 
 const roomUrl = computed(() =>
   typeof window !== "undefined" ? window.location.href : "",
@@ -102,12 +107,7 @@ const displayRoomUrl = computed(() =>
 const canSubmitWord = computed(() => {
   const trimmed = wordInput.value.trim();
   const len = trimmed.length;
-  return (
-    !store.iHaveSubmittedWord &&
-    len >= 3 &&
-    len <= 15 &&
-    !isProfane(trimmed)
-  );
+  return !store.iHaveSubmittedWord && len >= 3 && len <= 15;
 });
 
 function copyLink() {
@@ -119,11 +119,19 @@ function copyLink() {
   });
 }
 
-function submitWord() {
+async function submitWord() {
   if (!canSubmitWord.value) {
     return;
   }
-  store.suggestWord(wordInput.value.trim());
+  wordError.value = "";
+  submittingWord.value = true;
+  try {
+    await store.suggestWord(wordInput.value.trim());
+  } catch (message) {
+    wordError.value = message as string;
+  } finally {
+    submittingWord.value = false;
+  }
 }
 </script>
 
@@ -178,6 +186,14 @@ function submitWord() {
 
     .textfield {
       flex: 1;
+    }
+
+    &-error {
+      margin: 0;
+      width: 100%;
+      max-width: 360px;
+      color: var(--color-error);
+      font-size: 0.85rem;
     }
   }
 

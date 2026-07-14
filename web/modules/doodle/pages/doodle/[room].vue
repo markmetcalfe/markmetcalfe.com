@@ -59,13 +59,16 @@
           :autofill="false"
         />
         <LinkButton
-          :disabled="!canSubmitName"
+          :disabled="!canSubmitName || submittingName"
           type="submit"
           text="Join Game"
         >
           <Icon name="bx:log-in" />
         </LinkButton>
       </form>
+      <p v-if="nameError" class="doodleroom-nameprompt-error">
+        {{ nameError }}
+      </p>
     </ModalDialog>
   </div>
 </template>
@@ -93,10 +96,13 @@ const roomId = computed(() => route.params.room as string);
 const showNamePrompt = ref(false);
 const nameValue = ref(store.myName);
 const nameInput = ref<{ focus: () => void }>();
+const nameError = ref("");
+const submittingName = ref(false);
 
 const canSubmitName = computed(
   () =>
-    nameValue.value.trim().length > 0 && !isProfane(nameValue.value),
+    nameValue.value.trim().length > 0 &&
+    nameValue.value.trim().length <= 20,
 );
 
 const timerClass = computed(() => {
@@ -125,14 +131,21 @@ watch(
   },
 );
 
-function submitName() {
+async function submitName() {
   const name = nameValue.value.trim();
-  if (!name || isProfane(name)) {
+  if (!name || name.length > 20) {
     return;
   }
-  store.myName = name;
-  showNamePrompt.value = false;
-  store.send({ type: "join", name });
+  nameError.value = "";
+  submittingName.value = true;
+  try {
+    await store.join(name);
+    showNamePrompt.value = false;
+  } catch (message) {
+    nameError.value = message as string;
+  } finally {
+    submittingName.value = false;
+  }
 }
 
 onMounted(() => {
@@ -252,6 +265,13 @@ onUnmounted(() => {
       align-items: center;
       gap: 0.75rem;
     }
+  }
+
+  &-nameprompt-error {
+    margin: 0.5rem 0 0;
+    color: var(--color-error);
+    font-size: 0.85rem;
+    text-align: center;
   }
 }
 </style>
