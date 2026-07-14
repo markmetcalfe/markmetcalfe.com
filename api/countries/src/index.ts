@@ -1,6 +1,7 @@
 import { GameRoom } from "./game-room";
+import { Leaderboard } from "./leaderboard";
 
-export { GameRoom };
+export { GameRoom, Leaderboard };
 
 const PRODUCTION_ORIGIN = "https://markmetcalfe.com";
 
@@ -75,6 +76,18 @@ export default {
       request.method === "POST"
     ) {
       return json({ roomId: generateRoomId() }, 200, allowedOrigin);
+    }
+
+    if (
+      pathname === "/api/countries/leaderboard" &&
+      request.method === "GET"
+    ) {
+      const stub = env.LEADERBOARD.get(
+        env.LEADERBOARD.idFromName("global"),
+      );
+      const res = await stub.fetch("http://leaderboard/top10");
+      const entries = await res.json();
+      return json(entries, res.status, allowedOrigin);
     }
 
     if (pathname.startsWith("/api/countries/ws/")) {

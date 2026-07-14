@@ -3,15 +3,15 @@
     <HeaderBar title="Country Guesser" back-href="/" floating>
       <ScoreBar
         v-if="store.phase === 'playing'"
-        :seconds-left="store.secondsLeft"
-        :score="store.score"
-        :guessed-count="store.guessedCount"
-        :total-count="store.totalCount"
+        :seconds-left="store.timeLeft"
+        :score="store.me?.score ?? 0"
+        :guessed-count="store.guessedCodes.length"
+        :total-count="totalCount"
       />
     </HeaderBar>
 
     <main class="countryguesser-main">
-      <div v-if="store.phase === 'idle'" class="countryguesser-hub">
+      <div v-if="!started" class="countryguesser-hub">
         <AttractMap />
         <h1 class="countryguesser-hub-heading">Country Guesser</h1>
         <p class="countryguesser-hub-desc">
@@ -20,7 +20,12 @@
           time, and you can skip (with a small penalty)
         </p>
         <div class="countryguesser-hub-actions">
-          <LinkButton text="Play Solo" large @click="store.start()">
+          <LinkButton
+            text="Play Solo"
+            large
+            :disabled="started"
+            @click="playSolo"
+          >
             <Icon name="bx:play" />
           </LinkButton>
           <LinkButton
@@ -30,6 +35,13 @@
             @click="createRoom"
           >
             <Icon name="bx:group" />
+          </LinkButton>
+          <LinkButton
+            text="Leaderboard"
+            large
+            @click="showLeaderboard = true"
+          >
+            <Icon name="bx:trophy" />
           </LinkButton>
         </div>
         <p class="countryguesser-hub-attribution">
@@ -45,29 +57,72 @@
 
       <div v-else class="countryguesser-play">
         <div
-          v-if="store.phase === 'ended'"
+          v-if="store.phase === 'round_end'"
           class="countryguesser-gameover-top"
         >
           <h2 class="countryguesser-gameover-heading">Game Over</h2>
           <p class="countryguesser-gameover-score">
-            <span class="highlight">{{ store.score }}</span> points
+            <span class="highlight">{{ store.me?.score ?? 0 }}</span>
+            points
           </p>
           <p class="countryguesser-gameover-progress">
-            {{ store.guessedCount }} out of
-            {{ store.totalCount }} countries guessed in
+            {{ store.guessedCodes.length }} out of
+            {{ totalCount }} countries guessed in
             {{ formattedElapsedTime }}
           </p>
           <p class="countryguesser-gameover-stats">
-            {{ store.skipCount }} skipped &middot; +{{
-              store.timeBonusSeconds
+            {{ store.me?.skips ?? 0 }} skipped &middot; +{{
+              (store.me?.correctGuesses ?? 0) * TIME_BONUS_SECONDS
             }}s from correct guesses
+          </p>
+
+          <p
+            v-if="store.scoreSubmitted"
+            class="countryguesser-submitscore-confirm"
+          >
+            Score submitted!
+          </p>
+          <form
+            v-else
+            class="countryguesser-submitscore"
+            @submit.prevent="submitScore"
+          >
+            <TextField
+              v-model="scoreNameValue"
+              small
+              maxlength="24"
+              placeholder="Your name..."
+              aria-label="Your name"
+              :autofill="false"
+            />
+            <LinkButton
+              type="submit"
+              small
+              text="Submit score"
+              :disabled="!canSubmitScoreName"
+            >
+              <Icon name="bx:send" />
+            </LinkButton>
+          </form>
+          <p
+            v-if="store.scoreSubmitError"
+            class="countryguesser-submitscore-error"
+          >
+            {{ store.scoreSubmitError }}
           </p>
         </div>
 
+        <p
+          v-if="store.phase === 'waiting'"
+          class="countryguesser-connecting"
+        >
+          Connecting&hellip;
+        </p>
         <CountryMap
+          v-else
           :target-code="store.currentCode"
           :guessed-codes="store.guessedCodes"
-          :complete="store.phase === 'ended'"
+          :complete="store.phase === 'round_end'"
         />
 
         <GuessInput
@@ -75,22 +130,36 @@
           ref="guessInputRef"
           :hint="store.hint"
           @submit="handleGuess"
-          @skip="store.skip()"
+          @skip="store.submitSkip()"
         />
         <div
-          v-else-if="store.phase === 'ended'"
+          v-else-if="store.phase === 'round_end'"
           class="countryguesser-gameover-bottom"
         >
-          <LinkButton text="Play Again" large @click="store.start()">
+          <LinkButton text="Play Again" large @click="playAgain">
             <Icon name="bx:refresh" />
+          </LinkButton>
+          <LinkButton
+            text="Leaderboard"
+            large
+            @click="showLeaderboard = true"
+          >
+            <Icon name="bx:trophy" />
           </LinkButton>
         </div>
       </div>
     </main>
+
+    <LeaderboardModal
+      v-if="showLeaderboard"
+      @close="showLeaderboard = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import { COUNTRIES } from "../../data/countries";
+
 definePageMeta({ ssr: false });
 
 useSeoMeta({
@@ -107,18 +176,35 @@ useHideDynamicBackground();
 
 useFixMobileViewport();
 
-const store = useCountryGuesserStore();
+const TIME_BONUS_SECONDS = 10;
+const totalCount = COUNTRIES.length;
+
+const config = useRuntimeConfig();
+const store = useCountryGuesserRoomStore();
+const { recordScore } = useCountryGuesserHighScore();
 const { playCorrect, playIncorrect, playRoundEnd } =
   useCountryGuesserSound(
-    computed(() => store.secondsLeft),
+    computed(() => store.timeLeft),
     computed(() => store.phase === "playing"),
   );
+
 const guessInputRef = ref<{ flashIncorrect: () => void }>();
+const started = ref(false);
 const creatingRoom = ref(false);
+const showLeaderboard = ref(false);
+const scoreNameValue = ref("");
+const playStartedAt = ref(0);
+const elapsedSeconds = ref(0);
+
+const canSubmitScoreName = computed(
+  () =>
+    scoreNameValue.value.trim().length > 0 &&
+    !isProfane(scoreNameValue.value),
+);
 
 const formattedElapsedTime = computed(() => {
-  const minutes = Math.floor(store.elapsedSeconds / 60);
-  const seconds = store.elapsedSeconds % 60;
+  const minutes = Math.floor(elapsedSeconds.value / 60);
+  const seconds = elapsedSeconds.value % 60;
   const secondsLabel = `${seconds} second${seconds === 1 ? "" : "s"}`;
   if (minutes === 0) {
     return secondsLabel;
@@ -127,24 +213,23 @@ const formattedElapsedTime = computed(() => {
   return `${minutesLabel}, ${secondsLabel}`;
 });
 
-function handleGuess(text: string) {
-  const correct = store.submitGuess(text);
-  if (correct) {
-    playCorrect();
-  } else {
-    playIncorrect();
-    guessInputRef.value?.flashIncorrect();
+async function playSolo() {
+  if (started.value) {
+    return;
   }
+  started.value = true;
+  const res = await fetch("/api/countries/rooms", { method: "POST" });
+  const { roomId } = (await res.json()) as { roomId: string };
+  store.connect(roomId, config.public.countryGuesserApiUrl as string);
+  // Pre-set the name so the "you_are" handler's reconnect-rejoin logic
+  // sends the join automatically once the socket is actually open --
+  // solo has no lobby, so there's no name prompt to wait on.
+  store.join("You");
 }
 
-watch(
-  () => store.phase,
-  phase => {
-    if (phase === "ended") {
-      playRoundEnd();
-    }
-  },
-);
+function playAgain() {
+  store.startGame(120, true);
+}
 
 async function createRoom() {
   creatingRoom.value = true;
@@ -159,8 +244,65 @@ async function createRoom() {
   }
 }
 
+function handleGuess(text: string) {
+  store.submitGuess(text);
+}
+
+function submitScore() {
+  const name = scoreNameValue.value.trim();
+  if (!name || isProfane(name)) {
+    return;
+  }
+  localStorage.setItem("countryGuesserName", name);
+  store.submitScore(name);
+}
+
+watch(
+  () => store.me,
+  me => {
+    if (
+      started.value &&
+      me &&
+      store.phase === "waiting" &&
+      !store.scoreSubmitted
+    ) {
+      store.startGame(120, true);
+    }
+  },
+);
+
+watch(
+  () => store.lastGuessCorrect,
+  correct => {
+    if (correct === true) {
+      playCorrect();
+    } else if (correct === false) {
+      playIncorrect();
+      guessInputRef.value?.flashIncorrect();
+    }
+  },
+);
+
+watch(
+  () => store.phase,
+  (phase, previousPhase) => {
+    if (phase === "playing" && previousPhase !== "playing") {
+      playStartedAt.value = Date.now();
+    }
+    if (phase === "round_end") {
+      elapsedSeconds.value = Math.round(
+        (Date.now() - playStartedAt.value) / 1000,
+      );
+      recordScore(store.me?.score ?? 0);
+      scoreNameValue.value =
+        localStorage.getItem("countryGuesserName") ?? "";
+      playRoundEnd();
+    }
+  },
+);
+
 onUnmounted(() => {
-  store.stop();
+  store.disconnect();
 });
 </script>
 
@@ -217,9 +359,9 @@ onUnmounted(() => {
 
     &-actions {
       display: flex;
+      flex-direction: column;
+      align-items: center;
       gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
     }
 
     &-attribution {
@@ -239,6 +381,40 @@ onUnmounted(() => {
     flex-direction: column;
     overflow: hidden;
     padding-top: 3rem;
+  }
+
+  &-connecting {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-light);
+  }
+
+  &-submitscore {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding-top: 0.5rem;
+
+    .textfield {
+      max-width: 150px;
+    }
+
+    &-confirm {
+      margin: 0;
+      color: var(--color-highlight);
+      font-size: 0.9rem;
+    }
+
+    &-error {
+      margin: 0;
+      color: var(--color-error);
+      font-size: 0.85rem;
+      text-align: center;
+    }
   }
 
   &-gameover {
@@ -276,6 +452,7 @@ onUnmounted(() => {
 
     &-bottom {
       display: flex;
+      gap: 1rem;
       justify-content: center;
       padding: 1rem 1rem 1.5rem;
       flex-shrink: 0;

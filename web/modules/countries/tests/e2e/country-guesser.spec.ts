@@ -18,18 +18,15 @@ test.describe("CountryGuesserPage", () => {
   });
 
   test("can start a solo round", async ({ page }) => {
+    // Solo play now connects to the countries API over a WebSocket
+    // (server-authoritative scoring for the leaderboard), which this
+    // hermetic Playwright/Chromatic environment has no route to. This
+    // only checks the part reachable without a live backend -- that
+    // clicking Play Solo leaves the hub and starts connecting.
     await page.goto("/countries");
 
     await page.locator('button:has-text("Play Solo")').click();
 
-    await expect(
-      page.locator("text=/ \\/ 197 guessed/"),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("searchbox", { name: "Guess" }),
-    ).toBeVisible();
-    await expect(
-      page.locator('text="Type a country..."'),
-    ).toBeVisible();
+    await expect(page.getByText("Connecting…")).toBeVisible();
   });
 });

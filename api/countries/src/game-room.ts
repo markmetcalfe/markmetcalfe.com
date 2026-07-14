@@ -17,6 +17,7 @@ type AlarmMode = "idle" | "countdown";
 
 interface GameData {
   phase: RoomPhase;
+  mode: "multiplayer" | "solo";
   players: Player[];
   roundLength: number;
   timeLeft: number;
@@ -41,6 +42,9 @@ const CLUE_REVEAL_CAP = 0.6;
 const AUTO_ADVANCE_GRACE_SECONDS = 8;
 const MIN_ROUND_LENGTH = 60;
 const MAX_ROUND_LENGTH = 1200;
+const SOLO_ROUND_LENGTH = 120;
+const SOLO_TIME_BONUS_SECONDS = 10;
+const SOLO_SKIP_PENALTY_SECONDS = 10;
 
 function shuffledCodes(): string[] {
   const codes = COUNTRIES.map(c => c.code);
@@ -75,11 +79,13 @@ function buildHint(name: string, revealedIndices: number[]): string {
 
 export class GameRoom implements DurableObject {
   private readonly state: DurableObjectState;
+  private readonly env: Env;
   private sessions: Map<string, Session>;
   private game: GameData;
 
-  constructor(state: DurableObjectState) {
+  constructor(state: DurableObjectState, env: Env) {
     this.state = state;
+    this.env = env;
     this.sessions = new Map();
     this.game = this.makeInitialState();
   }
@@ -87,6 +93,7 @@ export class GameRoom implements DurableObject {
   private makeInitialState(): GameData {
     return {
       phase: "waiting",
+      mode: "multiplayer",
       players: [],
       roundLength: 300,
       timeLeft: 0,
@@ -198,14 +205,27 @@ export class GameRoom implements DurableObject {
       }
 
       case "start_game": {
-        if (!session.player?.isHost) {
+        if (!session.player) {
+          return;
+        }
+        // Solo mode is only honoured for an actual single-player room —
+        // a real multiplayer room can't use it to dodge the 2-player
+        // minimum below.
+        const solo =
+          msg.solo === true && this.game.players.length === 1;
+        // "Host" is a multiplayer concept (who's allowed to start the
+        // game for everyone else). A solo room has no one else to gate
+        // against, and host status can otherwise be lost across a
+        // reconnect (backgrounded tab, brief network drop) with nothing
+        // left to re-elect it -- so solo restarts don't require it.
+        if (!solo && !session.player.isHost) {
           this.send(session.ws, {
             type: "error",
             message: "Only the host can start the game",
           });
           return;
         }
-        if (this.game.players.length < 2) {
+        if (!solo && this.game.players.length < 2) {
           this.send(session.ws, {
             type: "error",
             message: "Need at least 2 players to start",
@@ -219,11 +239,13 @@ export class GameRoom implements DurableObject {
           });
           return;
         }
-        const roundLength = Math.min(
-          MAX_ROUND_LENGTH,
-          Math.max(MIN_ROUND_LENGTH, msg.round_length ?? 300),
-        );
-        this.doStartGame(roundLength);
+        const roundLength = solo
+          ? SOLO_ROUND_LENGTH
+          : Math.min(
+              MAX_ROUND_LENGTH,
+              Math.max(MIN_ROUND_LENGTH, msg.round_length ?? 300),
+            );
+        this.doStartGame(roundLength, solo ? "solo" : "multiplayer");
         break;
       }
 
@@ -255,6 +277,9 @@ export class GameRoom implements DurableObject {
         session.player.score += points;
         session.player.correctGuesses++;
         this.game.anyCorrectThisTarget = true;
+        if (this.game.mode === "solo") {
+          this.game.timeLeft += SOLO_TIME_BONUS_SECONDS;
+        }
         if (!this.game.guessedCodes.includes(country.code)) {
           this.game.guessedCodes.push(country.code);
         }
@@ -278,9 +303,56 @@ export class GameRoom implements DurableObject {
           return;
         }
         session.player.skips++;
+        if (this.game.mode === "solo") {
+          this.game.timeLeft -= SOLO_SKIP_PENALTY_SECONDS;
+        }
         this.markPlayerDone(playerId, false);
         break;
       }
+
+      case "submit_score": {
+        if (
+          this.game.mode !== "solo" ||
+          this.game.phase !== "round_end" ||
+          !session.player
+        ) {
+          return;
+        }
+        const name = msg.name.trim().slice(0, 24);
+        if (!name || containsProfanity(name)) {
+          this.send(session.ws, {
+            type: "error",
+            message: "Name contains inappropriate language",
+          });
+          return;
+        }
+        void this.submitScore(session, name);
+        break;
+      }
+    }
+  }
+
+  private async submitScore(
+    session: Session,
+    name: string,
+  ): Promise<void> {
+    const stub = this.env.LEADERBOARD.get(
+      this.env.LEADERBOARD.idFromName("global"),
+    );
+    const res = await stub.fetch("http://leaderboard/submit", {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        score: session.player?.score ?? 0,
+      }),
+    });
+    if (res.ok) {
+      this.send(session.ws, { type: "score_submitted" });
+    } else {
+      this.send(session.ws, {
+        type: "error",
+        message: "Could not submit score",
+      });
     }
   }
 
@@ -323,7 +395,11 @@ export class GameRoom implements DurableObject {
     this.advanceTarget();
   }
 
-  private doStartGame(roundLength: number): void {
+  private doStartGame(
+    roundLength: number,
+    mode: "multiplayer" | "solo",
+  ): void {
+    this.game.mode = mode;
     this.game.roundLength = roundLength;
     this.game.timeLeft = roundLength;
     this.game.queue = shuffledCodes();
