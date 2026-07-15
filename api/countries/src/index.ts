@@ -17,7 +17,17 @@ function resolveAllowedOrigin(
   if (env.ENVIRONMENT === "development") {
     return origin ?? "*";
   }
-  return origin === PRODUCTION_ORIGIN ? PRODUCTION_ORIGIN : null;
+  if (origin === PRODUCTION_ORIGIN) {
+    return PRODUCTION_ORIGIN;
+  }
+  // Browsers only send an `Origin` header on a same-origin request when
+  // its method isn't GET/HEAD, so a same-origin GET (e.g. the site's own
+  // leaderboard fetch) legitimately arrives with none. Only reject when
+  // an Origin was actually sent and didn't match.
+  if (origin === null && request.method === "GET") {
+    return PRODUCTION_ORIGIN;
+  }
+  return null;
 }
 
 function corsHeaders(allowedOrigin: string): Record<string, string> {

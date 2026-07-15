@@ -198,7 +198,7 @@ export class GameRoom implements DurableObject {
         if (await containsProfanity(name)) {
           this.send(session.ws, {
             type: "error",
-            message: "Name contains inappropriate language",
+            message: "This name cannot be used",
           });
           return;
         }

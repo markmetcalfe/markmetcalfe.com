@@ -5,7 +5,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "dev:api": "npm --prefix ../api run dev & API_LOCAL=1 nuxt dev",
+    "dev:api": "npm --prefix ../api run dev & API_LOCAL=1 nuxt dev --host",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "typecheck": "nuxt typecheck && tsc --noEmit -p ../api/tsconfig.json",

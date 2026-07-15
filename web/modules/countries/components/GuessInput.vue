@@ -25,6 +25,7 @@
         type="submit"
         text="Guess"
         :disabled="disabled || !text.trim()"
+        @mousedown.prevent
       >
         <Icon name="bx:right-arrow-alt" />
       </LinkButton>
@@ -32,6 +33,7 @@
         v-if="showSkip"
         text="Skip"
         :disabled="disabled"
+        @mousedown.prevent
         @click="handleSkip"
       >
         <Icon name="bx:skip-next" />
@@ -82,9 +84,11 @@ function stopResetScroll() {
   clearInterval(resetScrollInterval);
 }
 
-// Guess/Skip are buttons, so clicking either moves focus away from the
-// text field and closes the on-screen keyboard. Immediately refocusing
-// keeps it open so the next guess can be typed straight away.
+// The buttons' mousedown is prevented (see template) so tapping them
+// doesn't blur the field and cycle the on-screen keyboard closed/open --
+// that briefly resizes the visual viewport and shakes the fixed-layout
+// page. Keyboard activation (Tab+Enter/Space) still moves focus though,
+// so refocus here to keep typing the next guess uninterrupted either way.
 function handleSubmit() {
   const value = text.value.trim();
   if (!value) {
