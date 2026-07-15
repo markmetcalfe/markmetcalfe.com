@@ -9,23 +9,31 @@ export interface Player {
   isHost: boolean;
   correctGuesses: number;
   skips: number;
+  disconnectedAt: number | null;
 }
 
 interface RoomState {
   phase: RoomPhase;
+  mode: "multiplayer" | "solo";
   players: Player[];
   roundLength: number;
   timeLeft: number;
+  elapsedSeconds: number;
+  currentCode: string;
   currentHint?: string;
   guessedCodes: string[];
   donePlayerIds: string[];
 }
 
 type ServerMessage =
-  | { type: "you_are"; id: string }
   | { type: "state"; state: RoomState }
   | { type: "player_joined"; player: Player; players: Player[] }
   | { type: "player_left"; playerId: string; players: Player[] }
+  | {
+      type: "player_disconnected";
+      playerId: string;
+      players: Player[];
+    }
   | { type: "guess_result"; correct: boolean }
   | {
       type: "correct_guess";
@@ -40,6 +48,7 @@ type ServerMessage =
       code: string;
       hint: string;
       guessedCodes: string[];
+      timeLeft: number;
     }
   | { type: "hint_update"; hint: string }
   | { type: "no_guess"; code: string; countryName: string }
@@ -50,9 +59,16 @@ type ServerMessage =
       donePlayerIds: string[];
     }
   | { type: "timer"; timeLeft: number }
-  | { type: "round_end"; players: Player[]; guessedCodes: string[] }
+  | {
+      type: "round_end";
+      players: Player[];
+      guessedCodes: string[];
+      elapsedSeconds: number;
+    }
   | { type: "score_submitted" }
-  | { type: "error"; message: string };
+  | { type: "error"; message: string }
+  | { type: "ping" }
+  | { type: "returned_to_lobby" };
 
 export interface RoomEvent {
   kind: "correct" | "no_guess" | "error";
@@ -65,6 +81,45 @@ export interface RoomEvent {
 // still what actually corrects/confirms it.
 const SOLO_TIME_BONUS_SECONDS = 10;
 const SOLO_SKIP_PENALTY_SECONDS = 10;
+
+// A stable per-browser identity, persisted so a reconnect (brief drop,
+// backgrounded tab, or a full page reload) rejoins as the same player
+// instead of losing score/host status to a freshly-minted one -- see
+// the matching reconnect-by-id logic in api/countries/src/game-room.ts.
+const PLAYER_ID_KEY = "countryGuesserPlayerId";
+const PLAYER_NAME_KEY = "countryGuesserPlayerName";
+
+// These pages are ssr:false, but that only stops the server from
+// rendering their output -- setup() still runs server-side on a direct
+// (non-hydration) navigation, so anything touching localStorage must
+// guard against that or it 500s.
+export function getPersistentPlayerId(): string {
+  if (!import.meta.client) {
+    return "";
+  }
+  let id = localStorage.getItem(PLAYER_ID_KEY);
+  if (!id) {
+    // crypto.randomUUID() throws outside secure contexts (plain HTTP,
+    // embedded webviews); getRandomValues has no such restriction.
+    id = crypto.getRandomValues(new Uint32Array(4)).join("-");
+    localStorage.setItem(PLAYER_ID_KEY, id);
+  }
+  return id;
+}
+
+export function getPersistentPlayerName(): string {
+  if (!import.meta.client) {
+    return "";
+  }
+  return localStorage.getItem(PLAYER_NAME_KEY) ?? "";
+}
+
+function setPersistentPlayerName(name: string): void {
+  if (!import.meta.client) {
+    return;
+  }
+  localStorage.setItem(PLAYER_NAME_KEY, name);
+}
 
 // WebSocket must not be wrapped in Vue reactivity (breaks the object).
 let _ws: WebSocket | null = null;
@@ -103,6 +158,7 @@ export const useCountryGuesserRoomStore = defineStore(
       players: [] as Player[],
       roundLength: 300,
       timeLeft: 0,
+      elapsedSeconds: 0,
       currentCode: "",
       hint: "",
       guessedCodes: [] as string[],
@@ -110,11 +166,7 @@ export const useCountryGuesserRoomStore = defineStore(
       lastGuessCorrect: null as boolean | null,
       events: [] as RoomEvent[],
       scoreSubmitted: false,
-      scoreSubmitError: "",
       soloMode: false,
-      // Remembered so the "you_are" handler's reconnect-rejoin logic
-      // (below) can redo a solo join, which carries no name of its own.
-      soloJoin: false,
     }),
 
     getters: {
@@ -162,9 +214,7 @@ export const useCountryGuesserRoomStore = defineStore(
           clearTimeout(_reconnectTimer);
           _reconnectTimer = null;
         }
-        const wsBase = _apiBase
-          ? _apiBase.replace(/^http/, "ws")
-          : `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}`;
+        const wsBase = getWsBase(_apiBase);
         const socket = new WebSocket(
           `${wsBase}/api/countries/ws/${_roomId}`,
         );
@@ -180,6 +230,18 @@ export const useCountryGuesserRoomStore = defineStore(
         });
         socket.addEventListener("open", () => {
           this.connected = true;
+          this.myId = getPersistentPlayerId();
+          // Rejoin automatically on every (re)connect once we already
+          // know who we are -- this is what makes a brief drop or a
+          // backgrounded-tab reconnect resume as the same player instead
+          // of prompting for a name again.
+          if (this.myName) {
+            this.send({
+              type: "join",
+              id: this.myId,
+              name: this.myName,
+            });
+          }
         });
         socket.addEventListener("close", () => {
           this.connected = false;
@@ -228,12 +290,13 @@ export const useCountryGuesserRoomStore = defineStore(
 
       // Resolves once the server confirms the join ("player_joined" for
       // this player), or rejects with the server's error message.
-      join(name: string, solo = false): Promise<void> {
+      join(name: string): Promise<void> {
+        this.myId = getPersistentPlayerId();
         this.myName = name;
-        this.soloJoin = solo;
+        setPersistentPlayerName(name);
         return new Promise((resolve, reject) => {
           _joinResolver = { resolve, reject };
-          this.send({ type: "join", name, solo });
+          this.send({ type: "join", id: this.myId, name });
         });
       },
 
@@ -264,30 +327,25 @@ export const useCountryGuesserRoomStore = defineStore(
         this.send({ type: "skip" });
       },
 
-      submitScore(name: string) {
+      submitScore() {
         this.scoreSubmitted = false;
-        this.scoreSubmitError = "";
-        this.send({ type: "submit_score", name });
+        this.send({ type: "submit_score" });
+      },
+
+      returnToLobby() {
+        this.send({ type: "return_to_lobby" });
       },
 
       _handleMessage(msg: ServerMessage) {
         switch (msg.type) {
-          case "you_are":
-            this.myId = msg.id;
-            if (this.myName || this.soloJoin) {
-              this.send({
-                type: "join",
-                name: this.myName,
-                solo: this.soloJoin,
-              });
-            }
-            break;
-
           case "state":
             this.phase = msg.state.phase;
+            this.soloMode = msg.state.mode === "solo";
             this.players = msg.state.players;
             this.roundLength = msg.state.roundLength;
             this.timeLeft = msg.state.timeLeft;
+            this.elapsedSeconds = msg.state.elapsedSeconds;
+            this.currentCode = msg.state.currentCode;
             this.hint = msg.state.currentHint ?? "";
             this.guessedCodes = msg.state.guessedCodes;
             this.donePlayerIds = msg.state.donePlayerIds;
@@ -303,6 +361,10 @@ export const useCountryGuesserRoomStore = defineStore(
             break;
 
           case "player_left":
+            this.players = msg.players;
+            break;
+
+          case "player_disconnected":
             this.players = msg.players;
             break;
 
@@ -339,6 +401,7 @@ export const useCountryGuesserRoomStore = defineStore(
             this.currentCode = msg.code;
             this.hint = msg.hint;
             this.guessedCodes = msg.guessedCodes;
+            this.timeLeft = msg.timeLeft;
             this.donePlayerIds = [];
             this.lastGuessCorrect = null;
             break;
@@ -362,13 +425,20 @@ export const useCountryGuesserRoomStore = defineStore(
             this.phase = "round_end";
             this.players = msg.players;
             this.guessedCodes = msg.guessedCodes;
+            this.elapsedSeconds = msg.elapsedSeconds;
             this.currentCode = "";
             this.scoreSubmitted = false;
-            this.scoreSubmitError = "";
             break;
 
           case "score_submitted":
             this.scoreSubmitted = true;
+            break;
+
+          case "returned_to_lobby":
+            this.phase = "waiting";
+            break;
+
+          case "ping":
             break;
 
           case "error":
@@ -377,7 +447,6 @@ export const useCountryGuesserRoomStore = defineStore(
               _joinResolver = null;
               reject(msg.message);
             } else {
-              this.scoreSubmitError = msg.message;
               this._addEvent({ kind: "error", text: msg.message });
             }
             break;
@@ -402,6 +471,7 @@ export const useCountryGuesserRoomStore = defineStore(
         this.phase = "waiting";
         this.players = [];
         this.timeLeft = 0;
+        this.elapsedSeconds = 0;
         this.currentCode = "";
         this.hint = "";
         this.guessedCodes = [];
@@ -409,9 +479,7 @@ export const useCountryGuesserRoomStore = defineStore(
         this.lastGuessCorrect = null;
         this.events = [];
         this.scoreSubmitted = false;
-        this.scoreSubmitError = "";
         this.soloMode = false;
-        this.soloJoin = false;
       },
     },
   },

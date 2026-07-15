@@ -72,7 +72,12 @@ const timerClass = computed(() => {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  flex-shrink: 0;
+
+  // Not flex-shrink: 0 -- in the header, this needs to shrink to fit
+  // next to the back button on mobile instead of wrapping onto its own
+  // line. The timer/progress/score text protect their own width below,
+  // and .scorebar-players scrolls horizontally instead of shrinking.
+  min-width: 0;
 
   &-timer {
     font-size: 1.1rem;
@@ -110,7 +115,8 @@ const timerClass = computed(() => {
     gap: 0.5rem;
     overflow-x: auto;
     flex: 1;
-    justify-content: center;
+    justify-content: flex-end;
+    margin: 0;
   }
 
   &-player {

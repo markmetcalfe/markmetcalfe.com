@@ -161,9 +161,7 @@ export const useDoodleStore = defineStore("doodle", {
 
     connect(roomId: string, apiBase: string) {
       this._closeWs();
-      const wsBase = apiBase
-        ? apiBase.replace(/^http/, "ws")
-        : `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}`;
+      const wsBase = getWsBase(apiBase);
       const socket = new WebSocket(
         `${wsBase}/api/doodle/ws/${roomId}`,
       );

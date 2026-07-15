@@ -21,6 +21,16 @@ interface GameData {
   players: Player[];
   roundLength: number;
   timeLeft: number;
+  // Epoch ms the current/most recent round began, purely to compute
+  // `lastRoundElapsedSeconds` -- never shown to clients directly, since
+  // that'd require trusting their clock instead of the server's.
+  roundStartedAt: number;
+  // Set once when a round ends and held until the next one starts, so
+  // a client that reconnects straight into "round_end" (never having
+  // seen the live "round_end" broadcast) still gets the right value
+  // via the "state" sync instead of having no idea when the round
+  // started.
+  lastRoundElapsedSeconds: number;
   queue: string[];
   guessedCodes: string[];
   currentCode: string;
@@ -45,6 +55,16 @@ const MAX_ROUND_LENGTH = 1200;
 const SOLO_ROUND_LENGTH = 120;
 const SOLO_TIME_BONUS_SECONDS = 10;
 const SOLO_SKIP_PENALTY_SECONDS = 10;
+// The lobby and the round-end screen otherwise send nothing over the
+// socket for as long as players linger there, and idle WebSockets get
+// silently dropped by intermediary networks (mobile carriers, NAT) well
+// before either side sees a close frame -- so a stale connection looks
+// live (readyState stays OPEN) but future sends just vanish. A periodic
+// no-op keeps traffic flowing so that never happens.
+const KEEPALIVE_INTERVAL_SECONDS = 25;
+// How long a disconnected player's seat (score, host status) is held
+// open for them to reconnect into before being dropped for good.
+const GRACE_PERIOD_MS = 5000;
 
 function shuffledCodes(): string[] {
   const codes = COUNTRIES.map(c => c.code);
@@ -97,6 +117,8 @@ export class GameRoom implements DurableObject {
       players: [],
       roundLength: 300,
       timeLeft: 0,
+      roundStartedAt: 0,
+      lastRoundElapsedSeconds: 0,
       queue: [],
       guessedCodes: [],
       currentCode: "",
@@ -117,13 +139,16 @@ export class GameRoom implements DurableObject {
 
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
-    const playerId = crypto.randomUUID();
+    // Purely an internal handle for this socket in `sessions` -- player
+    // identity is the client-supplied, localStorage-persisted id carried
+    // on every "join" (see the "join" case below), not this.
+    const connectionId = crypto.randomUUID();
 
-    this.sessions.set(playerId, { ws: server, player: null });
+    this.sessions.set(connectionId, { ws: server, player: null });
     server.accept();
 
-    this.send(server, { type: "you_are", id: playerId });
     this.send(server, { type: "state", state: this.publicState() });
+    this.scheduleIdleAlarm();
 
     server.addEventListener("message", event => {
       void (async () => {
@@ -131,7 +156,7 @@ export class GameRoom implements DurableObject {
           const msg = JSON.parse(
             event.data as string,
           ) as ClientMessage;
-          await this.handleMessage(playerId, msg);
+          await this.handleMessage(connectionId, msg);
         } catch {
           this.send(server, {
             type: "error",
@@ -141,7 +166,7 @@ export class GameRoom implements DurableObject {
       })();
     });
 
-    const cleanup = () => this.handleDisconnect(playerId);
+    const cleanup = () => this.handleDisconnect(connectionId);
     server.addEventListener("close", cleanup);
     server.addEventListener("error", cleanup);
 
@@ -149,7 +174,21 @@ export class GameRoom implements DurableObject {
   }
 
   async alarm(): Promise<void> {
+    // Runs regardless of mode so a mid-round disconnect's grace period
+    // still expires (and the room reacts) without waiting for the round
+    // to end first.
+    this.sweepDisconnectedPlayers();
+
     if (this.game.alarmMode !== "countdown") {
+      if (
+        this.sessions.size > 0 ||
+        this.game.players.some(p => p.disconnectedAt !== null)
+      ) {
+        if (this.sessions.size > 0) {
+          this.broadcast({ type: "ping" });
+        }
+        this.scheduleIdleAlarm();
+      }
       return;
     }
     this.game.timeLeft--;
@@ -163,11 +202,78 @@ export class GameRoom implements DurableObject {
     await this.state.storage.setAlarm(Date.now() + 1000);
   }
 
+  // Only takes effect outside "countdown" mode (idle/waiting/round_end)
+  // so it never fights the per-second timer alarm during an active
+  // round. Fires at the keepalive interval, or sooner if a disconnected
+  // player's grace period expires first, so their seat gets freed close
+  // to on time instead of waiting for the next keepalive tick.
+  private scheduleIdleAlarm(): void {
+    if (this.game.alarmMode === "countdown") {
+      return;
+    }
+    const now = Date.now();
+    let delayMs = KEEPALIVE_INTERVAL_SECONDS * 1000;
+    for (const p of this.game.players) {
+      if (p.disconnectedAt !== null) {
+        delayMs = Math.min(
+          delayMs,
+          Math.max(p.disconnectedAt + GRACE_PERIOD_MS - now, 0),
+        );
+      }
+    }
+    void this.state.storage.setAlarm(now + delayMs);
+  }
+
+  // Drops any player whose grace period has elapsed, re-electing a host
+  // if theirs was the one that left.
+  private sweepDisconnectedPlayers(): void {
+    const now = Date.now();
+    const remaining = this.game.players.filter(
+      p =>
+        p.disconnectedAt === null ||
+        now - p.disconnectedAt < GRACE_PERIOD_MS,
+    );
+    if (remaining.length === this.game.players.length) {
+      return;
+    }
+    const removed = this.game.players.filter(
+      p => !remaining.includes(p),
+    );
+    this.game.players = remaining;
+    this.game.donePlayerIds = this.game.donePlayerIds.filter(id =>
+      remaining.some(p => p.id === id),
+    );
+    if (
+      removed.some(p => p.isHost) &&
+      remaining.length > 0 &&
+      !remaining.some(p => p.isHost)
+    ) {
+      (remaining[0] as Player).isHost = true;
+    }
+    for (const player of removed) {
+      this.broadcast({
+        type: "player_left",
+        playerId: player.id,
+        players: remaining,
+      });
+    }
+    if (this.game.phase === "playing") {
+      if (remaining.length < 2) {
+        this.doEndRound();
+      } else {
+        this.maybeAdvanceIfAllDone();
+      }
+    }
+    if (remaining.length === 0) {
+      this.game = this.makeInitialState();
+    }
+  }
+
   private async handleMessage(
-    playerId: string,
+    connectionId: string,
     msg: ClientMessage,
   ): Promise<void> {
-    const session = this.sessions.get(playerId);
+    const session = this.sessions.get(connectionId);
     if (!session) {
       return;
     }
@@ -177,43 +283,63 @@ export class GameRoom implements DurableObject {
         if (session.player) {
           return;
         }
-        let name: string;
-        if (msg.solo) {
-          // Solo has no lobby and the name is never shown anywhere, so
-          // it's assigned here rather than trusting (and validating) a
-          // client-supplied one for no reason.
-          name = "You";
-        } else {
-          name = msg.name.trim().slice(0, 24);
-          if (!name) {
-            this.send(session.ws, {
-              type: "error",
-              message: "Name cannot be empty",
-            });
-            return;
+
+        // Reconnecting -- msg.id is the client's localStorage-persisted
+        // id, stable across page reloads/socket drops. Reattach to the
+        // existing player (score, host status intact) instead of
+        // creating a duplicate.
+        const existing = this.game.players.find(p => p.id === msg.id);
+        if (existing) {
+          // Drop any other live session still pointing at them (a
+          // stale socket that hasn't fired "close" yet, or a second tab).
+          for (const [otherId, otherSession] of this.sessions) {
+            if (
+              otherId !== connectionId &&
+              otherSession.player === existing
+            ) {
+              otherSession.ws.close();
+              this.sessions.delete(otherId);
+            }
           }
-          if (await containsProfanity(name)) {
-            this.send(session.ws, {
-              type: "error",
-              message: "Name contains inappropriate language",
-            });
-            return;
-          }
-          // The profanity check above yields, so a second "join" for
-          // this session may have already gone through while we were
-          // awaiting.
-          if (session.player) {
-            return;
-          }
+          existing.disconnectedAt = null;
+          session.player = existing;
+          this.broadcast({
+            type: "player_joined",
+            player: existing,
+            players: this.game.players,
+          });
+          break;
+        }
+
+        const name = msg.name.trim().slice(0, 24);
+        if (!name) {
+          this.send(session.ws, {
+            type: "error",
+            message: "Name cannot be empty",
+          });
+          return;
+        }
+        if (await containsProfanity(name)) {
+          this.send(session.ws, {
+            type: "error",
+            message: "This name cannot be used",
+          });
+          return;
+        }
+        // The profanity check above yields, so a second "join" for this
+        // session may have already gone through while we were awaiting.
+        if (session.player) {
+          return;
         }
         const isHost = this.game.players.length === 0;
         const player: Player = {
-          id: playerId,
+          id: msg.id,
           name,
           score: 0,
           isHost,
           correctGuesses: 0,
           skips: 0,
+          disconnectedAt: null,
         };
         session.player = player;
         this.game.players.push(player);
@@ -274,7 +400,7 @@ export class GameRoom implements DurableObject {
         if (this.game.phase !== "playing" || !session.player) {
           return;
         }
-        if (this.game.donePlayerIds.includes(playerId)) {
+        if (this.game.donePlayerIds.includes(session.player.id)) {
           return;
         }
         const text = msg.text.trim().slice(0, 100);
@@ -306,13 +432,13 @@ export class GameRoom implements DurableObject {
         }
         this.broadcast({
           type: "correct_guess",
-          playerId,
+          playerId: session.player.id,
           name: session.player.name,
           points,
           code: country.code,
           countryName: country.name,
         });
-        this.markPlayerDone(playerId, true);
+        this.markPlayerDone(session.player.id, true);
         break;
       }
 
@@ -320,14 +446,14 @@ export class GameRoom implements DurableObject {
         if (this.game.phase !== "playing" || !session.player) {
           return;
         }
-        if (this.game.donePlayerIds.includes(playerId)) {
+        if (this.game.donePlayerIds.includes(session.player.id)) {
           return;
         }
         session.player.skips++;
         if (this.game.mode === "solo") {
           this.game.timeLeft -= SOLO_SKIP_PENALTY_SECONDS;
         }
-        this.markPlayerDone(playerId, false);
+        this.markPlayerDone(session.player.id, false);
         break;
       }
 
@@ -339,31 +465,34 @@ export class GameRoom implements DurableObject {
         ) {
           return;
         }
-        const name = msg.name.trim().slice(0, 24);
-        if (!name || (await containsProfanity(name))) {
-          this.send(session.ws, {
-            type: "error",
-            message: "Name contains inappropriate language",
-          });
+        void this.submitScore(session);
+        break;
+      }
+
+      // Any player can send everyone back to the lobby -- lower-stakes
+      // than starting a round, so unlike "start_game" this isn't
+      // restricted to the host.
+      case "return_to_lobby": {
+        if (this.game.phase !== "round_end" || !session.player) {
           return;
         }
-        void this.submitScore(session, name);
+        this.game.phase = "waiting";
+        this.game.alarmMode = "idle";
+        this.scheduleIdleAlarm();
+        this.broadcast({ type: "returned_to_lobby" });
         break;
       }
     }
   }
 
-  private async submitScore(
-    session: Session,
-    name: string,
-  ): Promise<void> {
+  private async submitScore(session: Session): Promise<void> {
     const stub = this.env.LEADERBOARD.get(
       this.env.LEADERBOARD.idFromName("global"),
     );
     const res = await stub.fetch("http://leaderboard/submit", {
       method: "POST",
       body: JSON.stringify({
-        name,
+        name: session.player?.name ?? "",
         score: session.player?.score ?? 0,
       }),
     });
@@ -423,6 +552,7 @@ export class GameRoom implements DurableObject {
     this.game.mode = mode;
     this.game.roundLength = roundLength;
     this.game.timeLeft = roundLength;
+    this.game.roundStartedAt = Date.now();
     this.game.queue = shuffledCodes();
     this.game.guessedCodes = [];
     this.game.players.forEach(p => {
@@ -449,10 +579,14 @@ export class GameRoom implements DurableObject {
     );
     const autoAdvanceAt =
       cap * CLUE_INTERVAL_SECONDS + AUTO_ADVANCE_GRACE_SECONDS;
-    if (this.game.targetElapsed >= autoAdvanceAt) {
-      // Safety net: force the room on even if some players never
-      // guessed or skipped (e.g. gone AFK), so a stuck player can't
-      // block everyone forever.
+    // Safety net: force the room on even if some players never guessed
+    // or skipped (e.g. gone AFK), so a stuck player can't block everyone
+    // forever. Solo has no one else to block, so let the target sit
+    // until the player explicitly guesses or skips it.
+    if (
+      this.game.mode !== "solo" &&
+      this.game.targetElapsed >= autoAdvanceAt
+    ) {
       if (!this.game.anyCorrectThisTarget) {
         this.broadcast({
           type: "no_guess",
@@ -507,6 +641,7 @@ export class GameRoom implements DurableObject {
       code: next,
       hint: buildHint(country.name, []),
       guessedCodes: this.game.guessedCodes,
+      timeLeft: this.game.timeLeft,
     });
   }
 
@@ -516,6 +651,16 @@ export class GameRoom implements DurableObject {
   private doEndRound(): void {
     this.game.phase = "round_end";
     this.game.alarmMode = "idle";
+    // Cleared here (not just optimistically by the client on the live
+    // "round_end" broadcast) so a client that reconnects afterwards --
+    // e.g. a backgrounded mobile tab -- gets an empty currentCode from
+    // its fresh "state" sync too, instead of the last-played country
+    // re-triggering CountryMap's zoom-in/pull-back-out tween.
+    this.game.currentCode = "";
+    this.game.lastRoundElapsedSeconds = Math.round(
+      (Date.now() - this.game.roundStartedAt) / 1000,
+    );
+    this.scheduleIdleAlarm();
     const sorted = [...this.game.players].sort(
       (a, b) => b.score - a.score,
     );
@@ -523,56 +668,44 @@ export class GameRoom implements DurableObject {
       type: "round_end",
       players: sorted,
       guessedCodes: this.game.guessedCodes,
+      elapsedSeconds: this.game.lastRoundElapsedSeconds,
     });
   }
 
-  private handleDisconnect(playerId: string): void {
-    const session = this.sessions.get(playerId);
+  // Doesn't remove the player -- just marks them disconnected and lets
+  // them keep their seat (score, host status) until either they
+  // reconnect (see "join" above) or their grace period lapses (see
+  // `sweepDisconnectedPlayers`). A reconnect that beat this event to the
+  // punch (see the stale-session cleanup in "join") already removed this
+  // session from `sessions`, so this is a no-op for it.
+  private handleDisconnect(connectionId: string): void {
+    const session = this.sessions.get(connectionId);
     if (!session) {
       return;
     }
-    this.sessions.delete(playerId);
+    this.sessions.delete(connectionId);
     if (!session.player) {
       return;
     }
-
-    this.game.players = this.game.players.filter(
-      p => p.id !== playerId,
-    );
-    this.game.donePlayerIds = this.game.donePlayerIds.filter(
-      id => id !== playerId,
-    );
-    if (session.player.isHost && this.game.players.length > 0) {
-      (this.game.players[0] as Player).isHost = true;
-    }
+    session.player.disconnectedAt = Date.now();
     this.broadcast({
-      type: "player_left",
-      playerId,
+      type: "player_disconnected",
+      playerId: session.player.id,
       players: this.game.players,
     });
-
-    if (this.game.phase === "playing") {
-      if (this.game.players.length < 2) {
-        this.doEndRound();
-      } else {
-        // The player who left may have been the last one everyone
-        // else was waiting on.
-        this.maybeAdvanceIfAllDone();
-      }
-    }
-
-    if (this.game.players.length === 0) {
-      this.game = this.makeInitialState();
-    }
+    this.scheduleIdleAlarm();
   }
 
   private publicState(): RoomState {
     const country = countryByCode(this.game.currentCode);
     return {
       phase: this.game.phase,
+      mode: this.game.mode,
       players: this.game.players,
       roundLength: this.game.roundLength,
       timeLeft: this.game.timeLeft,
+      elapsedSeconds: this.game.lastRoundElapsedSeconds,
+      currentCode: this.game.currentCode,
       currentHint: country
         ? buildHint(country.name, this.game.revealedIndices)
         : undefined,
