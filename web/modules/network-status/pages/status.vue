@@ -43,7 +43,7 @@ const {
   data: networkStatus,
   status,
   refresh,
-} = await useFetch<NetworkStatus>("/api/get-network-status", {
+} = await useFetch<NetworkStatus>("/api/network-status", {
   server: false,
 });
 </script>
