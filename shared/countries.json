@@ -781,7 +781,7 @@
   {
     "code": "vc",
     "name": "Saint Vincent and the Grenadines",
-    "aliases": []
+    "aliases": ["St Vincent and the Grenadines"]
   },
   {
     "code": "ws",
@@ -797,7 +797,8 @@
     "code": "st",
     "name": "Sao Tome and Principe",
     "aliases": [
-      "Sao Tome e Principe"
+      "Sao Tome e Principe",
+      "Sao Tome"
     ]
   },
   {
