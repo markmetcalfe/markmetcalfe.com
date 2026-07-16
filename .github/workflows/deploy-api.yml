@@ -15,6 +15,8 @@ on:
       - '.github/workflows/deploy-api.yml'
 
 jobs:
+  # Lists workers with changes in this PR (or the latest commit on push), so only
+  # those get deployed. If the workflow file itself changed, all workers are listed.
   get-workers:
     name: Get Workers
     runs-on: ubuntu-latest
@@ -22,10 +24,24 @@ jobs:
       workers: ${{ steps.list.outputs.workers }}
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-      - name: List workers
+        with:
+          fetch-depth: 0
+      - name: List changed workers
         id: list
         run: |
-          workers=$(find api -mindepth 2 -maxdepth 2 -name 'wrangler.jsonc' | cut -d'/' -f2 | sort | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            changed=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}")
+          else
+            changed=$(git diff --name-only HEAD^ HEAD)
+          fi
+          all_workers=$(find api -mindepth 2 -maxdepth 2 -name 'wrangler.jsonc' | cut -d'/' -f2 | sort)
+          if echo "$changed" | grep -q "^\.github/workflows/deploy-api\.yml$"; then
+            workers=$(echo "$all_workers" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          else
+            workers=$(echo "$all_workers" | while read -r worker; do
+              echo "$changed" | grep -q "^api/$worker/" && echo "$worker"
+            done | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          fi
           echo "workers=$workers" >> "$GITHUB_OUTPUT"
 
   deploy-worker:
