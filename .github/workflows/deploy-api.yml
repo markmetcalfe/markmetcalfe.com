@@ -6,17 +6,19 @@ on:
       - main
     paths:
       - 'api/**'
+      - 'shared/**'
       - '.github/workflows/deploy-api.yml'
   push:
     branches:
       - main
     paths:
       - 'api/**'
+      - 'shared/**'
       - '.github/workflows/deploy-api.yml'
 
 jobs:
   # Lists workers with changes in this PR (or the latest commit on push), so only
-  # those get deployed. If the workflow file itself changed, all workers are listed.
+  # those get deployed. If the workflow file or shared/** changed, all workers are listed.
   get-workers:
     name: Get Workers
     runs-on: ubuntu-latest
@@ -35,7 +37,7 @@ jobs:
             changed=$(git diff --name-only HEAD^ HEAD)
           fi
           all_workers=$(find api -mindepth 2 -maxdepth 2 -name 'wrangler.jsonc' | cut -d'/' -f2 | sort)
-          if echo "$changed" | grep -q "^\.github/workflows/deploy-api\.yml$"; then
+          if echo "$changed" | grep -qE "^(\.github/workflows/deploy-api\.yml|shared/)"; then
             workers=$(echo "$all_workers" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           else
             workers=$(echo "$all_workers" | while read -r worker; do
