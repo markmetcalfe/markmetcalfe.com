@@ -1,4 +1,5 @@
 {
+  "ignorePatterns": ["**/*.geojson"],
   "semi": true,
   "trailingComma": "all",
   "arrowParens": "avoid",
