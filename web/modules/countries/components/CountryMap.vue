@@ -1,15 +1,20 @@
 <template>
   <div
-    ref="containerRef"
     class="countrymap"
     :class="{ 'countrymap-complete': props.complete }"
   >
-    <canvas ref="canvasRef" class="countrymap-canvas" />
+    <div ref="mapContainerRef" class="countrymap-canvas" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { COUNTRIES } from "../data/countries";
+import "maplibre-gl/dist/maplibre-gl.css";
+import type { Map as MapLibreMap } from "maplibre-gl";
+import type {
+  ExpressionSpecification,
+  StyleSpecification,
+} from "@maplibre/maplibre-gl-style-spec";
+import colorConvert from "color-convert";
 
 interface Props {
   targetCode?: string | null;
@@ -26,83 +31,96 @@ const props = withDefaults(defineProps<Props>(), {
   highlightTarget: true,
 });
 
-const containerRef = ref<HTMLDivElement>();
-const canvasRef = ref<HTMLCanvasElement>();
-let ctx: CanvasRenderingContext2D | null = null;
+const mapContainerRef = ref<HTMLDivElement>();
 
-type Box = { minX: number; minY: number; maxX: number; maxY: number };
-type ViewBox = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-type Camera = ViewBox;
+const SOURCE_ID = "countries";
+const FILL_LAYER = "countries-fill";
+const LINE_LAYER = "countries-line";
 
-// A country piece rendered on the canvas. `circle` is set for <circle>
-// leaves (which need a dynamic radius override when active); `path` is
-// a pre-built Path2D for everything else (only <path> appears
-// otherwise in this map).
-interface Piece {
-  codes: string[];
-  hidden: boolean;
-  strokeWidth: number;
-  circle: { cx: number; cy: number; r: number } | null;
-  path: Path2D | null;
-}
+type Role = "default" | "guessed" | "target";
 
-let baseViewBox: ViewBox | null = null;
-let pieces: Piece[] = [];
-const zoomStartByCode = new Map<
-  string,
-  { cx: number; cy: number; width: number; height: number }
->();
-let colorDark = "#000";
-let colorLight = "#fff";
-let colorHighlight = "#0f0";
+// Fixed screen-pixel padding around a targeted country's bounds, so it
+// never sits flush against the container edges. The world-view fit
+// deliberately uses no padding -- edge to edge is the desired look
+// there.
+const COUNTRY_FIT_PADDING = 24;
 
-// A target country is zoomed so it fills at least half of the view
-// (in width and/or height) rather than being shown at true relative
-// size, so tiny countries aren't nearly invisible next to huge ones.
-const ZOOM_PADDING_FACTOR = 1.6;
-
-// After the initial zoom-in, the view gradually pulls back out to the
+// The view gradually pulls back from a freshly targeted country to the
 // full map over this many milliseconds, giving surrounding geography
 // away as a passive clue the longer a country goes unguessed.
 const ZOOM_OUT_DURATION_MS = 60000;
 
-// Classes whose elements are hidden (opacity 0) in the source map
-// unless they're the current target or already guessed — small marker
-// circles drawn over disputed/limited-recognition territories (e.g.
-// Kosovo) rather than full landmass shapes.
-const HIDDEN_BY_DEFAULT_CLASSES = new Set([
-  "unxx",
-  "subxx",
-  "noxx",
-  "circlexx",
-]);
-const RELEVANT_TYPE_CLASSES = new Set([
-  "landxx",
-  "unxx",
-  "subxx",
-  "antxx",
-  "limitxx",
-  "noxx",
-  "circlexx",
-]);
+// A round's zoom-out stops this many zoom levels short of the full
+// world view (worldZoom), so guessing never pulls back all the way to
+// the whole map -- just enough surrounding geography to be a clue.
+const ZOOM_OUT_MARGIN = 2.5;
 
-let camera: Camera = { x: 0, y: 0, width: 1, height: 1 };
-let zoomTween: {
-  cx: number;
-  cy: number;
-  fromWidth: number;
-  fromHeight: number;
-  toWidth: number;
-  toHeight: number;
-  startTime: number;
-} | null = null;
-let rafId: number | null = null;
+// Eases the round's zoom-out fast at first (most noticeable for a
+// small country starting at a tight zoom) and gradually slows toward
+// the end, rather than moving at a constant rate throughout.
+function zoomOutEasing(t: number): number {
+  return 1 - (1 - t) ** 3;
+}
+
+// On the round-end recap, the camera eases in a bit closer than the
+// normal "whole world fits" zoom (so the globe reads as a globe, not
+// a distant dot) and keeps slowly spinning afterward, so every
+// guessed/highlighted country scrolls into view over time.
+const COMPLETE_ZOOM_OFFSET = 1.8;
+const COMPLETE_ZOOM_TRANSITION_MS = 3000;
+const ROTATION_DEGREES_PER_SECOND = 8;
+
+// While spinning, latitude also wanders (rather than holding the
+// round's last latitude) so different parts of the globe -- Europe,
+// Antarctica, the Pacific -- scroll into view over time, not just an
+// unchanging band. Two sine waves of independent (randomized per
+// round) period are layered so the drift reads as meandering rather
+// than a single obvious back-and-forth sweep; both start at zero so
+// the wander eases in smoothly from the round's actual last latitude
+// instead of jumping to it.
+const LAT_WANDER_RANGE_DEGREES = 40;
+const LAT_WANDER_PERIOD_MS_MIN = 15000;
+const LAT_WANDER_PERIOD_MS_MAX = 30000;
+const LAT_CLAMP_DEGREES = 80;
+
+// How long one flash cycle (highlight -> dark -> highlight) takes,
+// both for the actively-guessed target and for the round-end recap.
+const PULSE_PERIOD_MS = 1800;
+
+const GUESSED_FILL = "#b3ffb3";
+
+let map: MapLibreMap | null = null;
 let resizeObserver: ResizeObserver | null = null;
+let styleLoaded = false;
+let rafId: number | null = null;
+
+let colorDark = "#000";
+let colorLight = "#fff";
+let colorHighlight = "#0f0";
+let highlightRgb: [number, number, number] = [0, 255, 0];
+let highlightDarkRgb: [number, number, number] = [0, 90, 0];
+
+const boundsByCode = new Map<
+  string,
+  [number, number, number, number]
+>();
+let worldBounds: [number, number, number, number] | null = null;
+// The zoom level at which the whole map fits the container -- cached
+// once so the round's zoom-out can hold the target country centered
+// (a fixed center, animating zoom only) instead of re-centering on the
+// world's overall midpoint.
+let worldZoom = 0;
+let guessedSet = new Set<string>();
+
+// Starting point + timestamp for the round-end zoom-out/rotation,
+// captured once when `complete` turns on so frame() can interpolate
+// the zoom-out and keep spinning the longitude indefinitely afterward.
+let completeAnimStart: number | null = null;
+let completeAnimFromZoom = 0;
+let completeAnimFromLng = 0;
+let completeAnimFromLat = 0;
+let completeAnimLatPeriodA = LAT_WANDER_PERIOD_MS_MIN;
+let completeAnimLatPeriodB = LAT_WANDER_PERIOD_MS_MAX;
 
 function scheduleFrame() {
   if (rafId !== null) {
@@ -111,394 +129,319 @@ function scheduleFrame() {
   rafId = requestAnimationFrame(frame);
 }
 
+// Drives, off one shared color/timestamp per frame: the current
+// target's flash while it's being guessed, every guessed country's
+// flash (in sync) once the round ends, and the round-end camera
+// zoom-out/rotation.
 function frame(now: number) {
   rafId = null;
   let stillAnimating = false;
-  if (zoomTween) {
-    const t = Math.min(
-      1,
-      (now - zoomTween.startTime) / ZOOM_OUT_DURATION_MS,
-    );
-    const width =
-      zoomTween.fromWidth +
-      (zoomTween.toWidth - zoomTween.fromWidth) * t;
-    const height =
-      zoomTween.fromHeight +
-      (zoomTween.toHeight - zoomTween.fromHeight) * t;
-    camera = {
-      x: zoomTween.cx - width / 2,
-      y: zoomTween.cy - height / 2,
-      width,
-      height,
-    };
-    if (t < 1) {
-      stillAnimating = true;
-    } else {
-      zoomTween = null;
-    }
-  }
-  // The target's pulse animation needs a continuous redraw loop too.
+  const color = pulseColorAt(now);
   if (props.targetCode && props.highlightTarget) {
+    map?.setFeatureState(
+      { source: SOURCE_ID, id: props.targetCode },
+      { pulseColor: color },
+    );
     stillAnimating = true;
   }
-  draw(now);
+  if (props.complete && guessedSet.size > 0) {
+    for (const code of guessedSet) {
+      map?.setFeatureState(
+        { source: SOURCE_ID, id: code },
+        { pulseColor: color },
+      );
+    }
+    stillAnimating = true;
+  }
+  if (props.complete && completeAnimStart !== null && map) {
+    const elapsed = now - completeAnimStart;
+    const zoomT = Math.min(1, elapsed / COMPLETE_ZOOM_TRANSITION_MS);
+    const eased = 1 - (1 - zoomT) ** 3;
+    const targetZoom = worldZoom + COMPLETE_ZOOM_OFFSET;
+    const zoom =
+      completeAnimFromZoom +
+      (targetZoom - completeAnimFromZoom) * eased;
+    const lng =
+      completeAnimFromLng +
+      (ROTATION_DEGREES_PER_SECOND * elapsed) / 1000;
+    const latWander =
+      LAT_WANDER_RANGE_DEGREES *
+      (0.6 *
+        Math.sin((2 * Math.PI * elapsed) / completeAnimLatPeriodA) +
+        0.4 *
+          Math.sin((2 * Math.PI * elapsed) / completeAnimLatPeriodB));
+    const lat = Math.max(
+      -LAT_CLAMP_DEGREES,
+      Math.min(LAT_CLAMP_DEGREES, completeAnimFromLat + latWander),
+    );
+    map.jumpTo({ center: [lng, lat], zoom });
+    stillAnimating = true;
+  }
   if (stillAnimating) {
+    map?.triggerRepaint();
     scheduleFrame();
   }
 }
 
-// Matches the CSS `countrymap-pulse` keyframes this replaces: a 1s
-// ease-in-out loop between fill-opacity 1 and 0.75.
-function pulseFactor(now: number): number {
-  return 0.875 + 0.125 * Math.cos((now / 1000) * Math.PI * 2);
+// An ease-in-out loop between the highlight color and a darkened
+// version of it, one cycle every PULSE_PERIOD_MS.
+function pulseColorAt(now: number): string {
+  const t =
+    0.5 + 0.5 * Math.cos((now / PULSE_PERIOD_MS) * Math.PI * 2);
+  const rgb = highlightRgb.map((c, i) =>
+    Math.round(c + ((highlightDarkRgb[i] ?? c) - c) * t),
+  );
+  return `rgb(${rgb.join(",")})`;
 }
 
-function draw(now: number) {
-  if (!ctx || !canvasRef.value) {
+function roleFor(code: string): Role {
+  if (code === props.targetCode && props.highlightTarget) {
+    return "target";
+  }
+  return guessedSet.has(code) ? "guessed" : "default";
+}
+
+// Sets a code's role, and -- for target/guessed-while-complete, the
+// two roles a pulse applies to -- an initial pulseColor too, so
+// there's no one-frame flash of an unset color before the next
+// scheduleFrame() tick lands.
+function applyRole(code: string) {
+  if (!map || !styleLoaded) {
     return;
   }
-  const canvas = canvasRef.value;
-  const cw = canvas.width;
-  const ch = canvas.height;
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, cw, ch);
-  if (camera.width <= 0 || camera.height <= 0) {
+  const role = roleFor(code);
+  const state: Record<string, unknown> = { role };
+  if (role === "target" || (role === "guessed" && props.complete)) {
+    state.pulseColor = pulseColorAt(performance.now());
+  }
+  map.setFeatureState({ source: SOURCE_ID, id: code }, state);
+}
+
+// Captures the camera's current position as the round-end zoom-out's
+// starting point -- only once per round-end, so re-entering this (e.g.
+// an unrelated invertBase change while already complete) doesn't
+// restart the transition or jump the rotation.
+function startCompleteRotationIfNeeded() {
+  if (!map || !props.complete || completeAnimStart !== null) {
     return;
   }
-  const scale = Math.min(cw / camera.width, ch / camera.height);
-  const offsetX = (cw - camera.width * scale) / 2 - camera.x * scale;
-  const offsetY = (ch - camera.height * scale) / 2 - camera.y * scale;
-  ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
+  completeAnimStart = performance.now();
+  completeAnimFromZoom = map.getZoom();
+  const center = map.getCenter();
+  completeAnimFromLng = center.lng;
+  completeAnimFromLat = center.lat;
+  completeAnimLatPeriodA =
+    LAT_WANDER_PERIOD_MS_MIN +
+    Math.random() *
+      (LAT_WANDER_PERIOD_MS_MAX - LAT_WANDER_PERIOD_MS_MIN);
+  completeAnimLatPeriodB =
+    LAT_WANDER_PERIOD_MS_MIN +
+    Math.random() *
+      (LAT_WANDER_PERIOD_MS_MAX - LAT_WANDER_PERIOD_MS_MIN);
+}
 
-  const guessedSet = new Set(props.guessedCodes);
-  const pulse = props.highlightTarget ? pulseFactor(now) : 1;
-
-  for (const piece of pieces) {
-    const isTarget = piece.codes.includes(props.targetCode ?? "");
-    const isGuessed = piece.codes.some(code => guessedSet.has(code));
-    if (!isTarget && !isGuessed && piece.hidden) {
-      continue;
+// Kicks off (or re-syncs) the flash loop. Called whenever the target
+// or `complete` changes, and once more at mount in case the map mounts
+// straight into an active target or an already-complete round (e.g. a
+// reconnect).
+function startPulseIfNeeded() {
+  if (!map || !styleLoaded) {
+    return;
+  }
+  if (props.targetCode && props.highlightTarget) {
+    applyRole(props.targetCode);
+  }
+  if (props.complete) {
+    for (const code of guessedSet) {
+      applyRole(code);
     }
-    const highlighted = isTarget && props.highlightTarget;
-
-    const stroke = highlighted
-      ? colorHighlight
-      : props.invertBase
-        ? colorLight
-        : colorDark;
-    const strokeWidth = highlighted ? 1 : piece.strokeWidth;
-    const fill = highlighted
-      ? colorHighlight
-      : isGuessed
-        ? props.complete
-          ? colorHighlight
-          : "#b3ffb3"
-        : props.invertBase
-          ? colorDark
-          : "#fff";
-
-    if (piece.circle) {
-      const isActive = highlighted || isGuessed;
-      const r = isActive ? 15 : piece.circle.r;
-      const alpha = isActive ? 0.35 : 1;
-      const shape = new Path2D();
-      shape.arc(piece.circle.cx, piece.circle.cy, r, 0, Math.PI * 2);
-      ctx.globalAlpha = highlighted ? alpha * pulse : alpha;
-      ctx.fillStyle = fill;
-      ctx.fill(shape);
-      ctx.globalAlpha = alpha;
-      if (strokeWidth > 0) {
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = strokeWidth;
-        ctx.stroke(shape);
-      }
-      ctx.globalAlpha = 1;
-    } else if (piece.path) {
-      ctx.globalAlpha = highlighted ? pulse : 1;
-      ctx.fillStyle = fill;
-      ctx.fill(piece.path, "evenodd");
-      ctx.globalAlpha = 1;
-      if (strokeWidth > 0) {
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = strokeWidth;
-        ctx.stroke(piece.path);
-      }
-    }
+    startCompleteRotationIfNeeded();
+  } else {
+    completeAnimStart = null;
   }
-}
-
-function resizeCanvas() {
-  const canvas = canvasRef.value;
-  const container = containerRef.value;
-  if (!canvas || !container) {
-    return;
-  }
-  const dpr = window.devicePixelRatio || 1;
-  const width = container.clientWidth;
-  const height = container.clientHeight;
-  if (width === 0 || height === 0) {
-    return;
-  }
-  canvas.width = Math.round(width * dpr);
-  canvas.height = Math.round(height * dpr);
-  canvas.style.width = `${width}px`;
-  canvas.style.height = `${height}px`;
-  draw(performance.now());
-}
-
-function setCamera(box: ViewBox) {
-  zoomTween = null;
-  camera = {
-    x: box.x,
-    y: box.y,
-    width: box.width,
-    height: box.height,
-  };
-}
-
-function zoomToCountry(code: string) {
-  const start = zoomStartByCode.get(code);
-  if (!start || !baseViewBox) {
-    return;
-  }
-  camera = {
-    x: start.cx - start.width / 2,
-    y: start.cy - start.height / 2,
-    width: start.width,
-    height: start.height,
-  };
-  const baseAspect = baseViewBox.width / baseViewBox.height;
-  const endHeight = baseViewBox.height;
-  const endWidth = endHeight * baseAspect;
-  zoomTween = {
-    cx: start.cx,
-    cy: start.cy,
-    fromWidth: start.width,
-    fromHeight: start.height,
-    toWidth: endWidth,
-    toHeight: endHeight,
-    startTime: performance.now(),
-  };
   scheduleFrame();
 }
 
-function resetZoom() {
-  if (!baseViewBox) {
+function baseColor() {
+  return props.invertBase ? colorDark : colorLight;
+}
+
+function borderColor() {
+  return props.invertBase ? colorLight : colorDark;
+}
+
+// The target flashes between the highlight color and a darkened
+// version of it while being guessed. Guessed countries are a flat
+// light green while play continues (a progress indicator), then flash
+// the same way as the target once the round ends -- see
+// startPulseIfNeeded/frame.
+function fillColorExpression(): ExpressionSpecification {
+  return [
+    "case",
+    ["==", ["feature-state", "role"], "target"],
+    ["feature-state", "pulseColor"],
+    ["==", ["feature-state", "role"], "guessed"],
+    props.complete ? ["feature-state", "pulseColor"] : GUESSED_FILL,
+    baseColor(),
+  ];
+}
+
+function lineColorExpression(): ExpressionSpecification {
+  return [
+    "case",
+    ["==", ["feature-state", "role"], "target"],
+    ["feature-state", "pulseColor"],
+    ["==", ["feature-state", "role"], "guessed"],
+    props.complete ? ["feature-state", "pulseColor"] : borderColor(),
+    borderColor(),
+  ];
+}
+
+// Thin at the world view, thicker the closer in a country is framed.
+const LINE_WIDTH_EXPRESSION: ExpressionSpecification = [
+  "interpolate",
+  ["linear"],
+  ["zoom"],
+  1,
+  0.5,
+  4,
+  1.2,
+  8,
+  3,
+];
+
+function updatePaint() {
+  if (!map || !styleLoaded) {
     return;
   }
-  setCamera(baseViewBox);
-  draw(performance.now());
-}
-
-function boundingBoxOf(elements: Element[]): Box | null {
-  let minX = Infinity;
-  let minY = Infinity;
-  let maxX = -Infinity;
-  let maxY = -Infinity;
-  elements.forEach(el => {
-    const bbox = (el as SVGGraphicsElement).getBBox();
-    if (bbox.width === 0 && bbox.height === 0) {
-      return;
-    }
-    minX = Math.min(minX, bbox.x);
-    minY = Math.min(minY, bbox.y);
-    maxX = Math.max(maxX, bbox.x + bbox.width);
-    maxY = Math.max(maxY, bbox.y + bbox.height);
-  });
-  return Number.isFinite(minX) ? { minX, minY, maxX, maxY } : null;
-}
-
-// A handful of countries (e.g. Kiribati) have territory split across
-// opposite edges of this equirectangular map because they straddle the
-// antimeridian. Unioning every piece's bbox would produce a "zoom" box
-// almost as wide as the whole map. Zoom to the single largest piece
-// instead — every piece still gets colored in when guessed/targeted,
-// this only affects what the camera frames.
-function largestPieceBoundingBox(elements: Element[]): Box | null {
-  let best: Box | null = null;
-  let bestArea = -1;
-  elements.forEach(el => {
-    const tag = el.tagName.toLowerCase();
-    if (tag !== "path" && tag !== "circle") {
-      return;
-    }
-    const bbox = (el as SVGGraphicsElement).getBBox();
-    const area = bbox.width * bbox.height;
-    if (area <= 0 || area <= bestArea) {
-      return;
-    }
-    bestArea = area;
-    best = {
-      minX: bbox.x,
-      minY: bbox.y,
-      maxX: bbox.x + bbox.width,
-      maxY: bbox.y + bbox.height,
-    };
-  });
-  return best;
-}
-
-function classesOf(el: Element): string[] {
-  return (el.getAttribute("class") ?? "")
-    .split(/\s+/)
-    .filter(Boolean);
-}
-
-// Class-based CSS styling in the source map is set on a country's
-// outer <g> (or directly on a lone <path>/<circle>); children with no
-// class of their own inherit it. Walk up to find whichever element
-// actually carries the type class.
-function effectiveClasses(
-  leaf: Element,
-  root: SVGSVGElement,
-): string[] {
-  let el: Element | null = leaf;
-  while (el && el !== root) {
-    const own = classesOf(el);
-    if (own.length > 0) {
-      return own;
-    }
-    el = el.parentElement;
-  }
-  return [];
-}
-
-function strokeWidthFor(classes: string[]): number {
-  if (classes.includes("coastxx")) {
-    return 0.3;
-  }
-  if (classes.includes("landxx")) {
-    return 0.5;
-  }
-  if (classes.includes("unxx") || classes.includes("subxx")) {
-    return 0.3;
-  }
-  return 0;
-}
-
-function selectCountryElements(
-  root: SVGSVGElement,
-  code: string,
-): Element[] {
-  const escaped = CSS.escape(code);
-  return Array.from(
-    root.querySelectorAll(`#${escaped}, #${escaped} *, .${escaped}`),
+  map.setPaintProperty(
+    FILL_LAYER,
+    "fill-color",
+    fillColorExpression(),
+  );
+  map.setPaintProperty(
+    LINE_LAYER,
+    "line-color",
+    lineColorExpression(),
   );
 }
 
-// Fetches the map, stages it in an off-screen (but still rendered, so
-// getBBox() works) SVG element just long enough to measure geometry
-// and read path/circle data, then discards the SVG entirely — the
-// canvas never touches the DOM again after this.
-async function setup() {
-  const res = await fetch("/countries/world.svg");
-  const markup = await res.text();
+function buildStyle(): StyleSpecification {
+  return {
+    version: 8,
+    // A real rotating sphere at low zoom, smoothly flattening to
+    // Mercator as the camera moves in tight on a single country.
+    projection: { type: "globe" },
+    sources: {
+      [SOURCE_ID]: {
+        type: "geojson",
+        data: "/countries/world.geojson",
+        promoteId: "code",
+      },
+    },
+    layers: [
+      {
+        id: "background",
+        type: "background",
+        paint: { "background-color": colorDark },
+      },
+      {
+        id: FILL_LAYER,
+        type: "fill",
+        source: SOURCE_ID,
+        paint: { "fill-color": fillColorExpression() },
+      },
+      {
+        id: LINE_LAYER,
+        type: "line",
+        source: SOURCE_ID,
+        paint: {
+          "line-color": lineColorExpression(),
+          "line-width": LINE_WIDTH_EXPRESSION,
+        },
+      },
+    ],
+  };
+}
 
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(markup, "image/svg+xml");
-  const svgRoot = doc.documentElement as unknown as SVGSVGElement;
-
-  const staging = document.createElement("div");
-  staging.style.cssText =
-    "position:fixed;left:-99999px;top:-99999px;width:1px;height:1px;overflow:hidden;";
-  document.body.appendChild(staging);
-  staging.appendChild(svgRoot);
-
-  try {
-    const candidates = Array.from(
-      svgRoot.querySelectorAll(".landxx, .unxx, .subxx"),
-    );
-    const box = boundingBoxOf(candidates);
-    if (box) {
-      const padding = 10;
-      baseViewBox = {
-        x: box.minX - padding,
-        y: box.minY - padding,
-        width: box.maxX - box.minX + padding * 2,
-        height: box.maxY - box.minY + padding * 2,
-      };
-    }
-
-    const codeByElement = new Map<Element, string[]>();
-    for (const country of COUNTRIES) {
-      const matched = selectCountryElements(svgRoot, country.code);
-      matched.forEach(el => {
-        const list = codeByElement.get(el) ?? [];
-        list.push(country.code);
-        codeByElement.set(el, list);
-      });
-      const zoomBox =
-        largestPieceBoundingBox(matched) ?? boundingBoxOf(matched);
-      if (zoomBox && baseViewBox) {
-        const baseAspect = baseViewBox.width / baseViewBox.height;
-        const countryWidth = zoomBox.maxX - zoomBox.minX;
-        const countryHeight = zoomBox.maxY - zoomBox.minY;
-        let width = countryWidth * ZOOM_PADDING_FACTOR;
-        let height = countryHeight * ZOOM_PADDING_FACTOR;
-        if (width / height > baseAspect) {
-          height = width / baseAspect;
-        } else {
-          width = height * baseAspect;
-        }
-        zoomStartByCode.set(country.code, {
-          cx: (zoomBox.minX + zoomBox.maxX) / 2,
-          cy: (zoomBox.minY + zoomBox.maxY) / 2,
-          width,
-          height,
-        });
-      }
-    }
-
-    const leaves = svgRoot.querySelectorAll("path, circle");
-    const built: Piece[] = [];
-    leaves.forEach(leaf => {
-      const classes = effectiveClasses(leaf, svgRoot);
-      if (!classes.some(c => RELEVANT_TYPE_CLASSES.has(c))) {
-        return;
-      }
-      const codes = codeByElement.get(leaf) ?? [];
-      const hidden = classes.some(c =>
-        HIDDEN_BY_DEFAULT_CLASSES.has(c),
-      );
-      const strokeWidth = strokeWidthFor(classes);
-      if (leaf.tagName.toLowerCase() === "circle") {
-        built.push({
-          codes,
-          hidden,
-          strokeWidth,
-          circle: {
-            cx: Number(leaf.getAttribute("cx") ?? 0),
-            cy: Number(leaf.getAttribute("cy") ?? 0),
-            r: Number(leaf.getAttribute("r") ?? 0),
-          },
-          path: null,
-        });
-        return;
-      }
-      const d = leaf.getAttribute("d");
-      if (!d) {
-        return;
-      }
-      built.push({
-        codes,
-        hidden,
-        strokeWidth,
-        circle: null,
-        path: new Path2D(d),
-      });
-    });
-    pieces = built;
-  } finally {
-    staging.remove();
+// Snaps straight to the target country, then eases the zoom back out
+// over ZOOM_OUT_DURATION_MS -- stopping ZOOM_OUT_MARGIN levels short of
+// the full map, keeping the country centered throughout (a fixed
+// center, only zoom changes) rather than drifting toward the world's
+// overall midpoint.
+// A country's own fitBounds zoom can already be at or below the
+// round's zoom-out target (e.g. Russia, whose bounds barely fit closer
+// than the whole world already) -- easeTo-ing to that target would
+// then zoom *in*. Skip the animation entirely rather than do that;
+// holding still is preferable to zooming the wrong way.
+function startZoomOutAnimation() {
+  if (!map) {
+    return;
   }
+  const targetZoom = worldZoom + ZOOM_OUT_MARGIN;
+  if (targetZoom >= map.getZoom()) {
+    return;
+  }
+  map.easeTo({
+    center: map.getCenter(),
+    zoom: targetZoom,
+    duration: ZOOM_OUT_DURATION_MS,
+    easing: zoomOutEasing,
+  });
+}
+
+function focusCountry(code: string) {
+  if (!map) {
+    return;
+  }
+  const bounds = boundsByCode.get(code);
+  if (bounds) {
+    map.fitBounds(bounds, {
+      padding: COUNTRY_FIT_PADDING,
+      duration: 0,
+    });
+  }
+  startZoomOutAnimation();
+}
+
+function resetZoom() {
+  if (!map || !worldBounds) {
+    return;
+  }
+  map.fitBounds(worldBounds, { duration: 0 });
+}
+
+function geometryBounds(geometry: {
+  type: string;
+  coordinates: unknown;
+}): [number, number, number, number] {
+  const rings =
+    geometry.type === "MultiPolygon"
+      ? (geometry.coordinates as number[][][][]).map(poly => poly[0])
+      : [(geometry.coordinates as number[][][])[0]];
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+  for (const ring of rings) {
+    for (const [x, y] of ring ?? []) {
+      if (x === undefined || y === undefined) {
+        continue;
+      }
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+  }
+  return [minX, minY, maxX, maxY];
 }
 
 onMounted(async () => {
-  const canvas = canvasRef.value;
-  if (!canvas) {
+  if (!mapContainerRef.value) {
     return;
   }
-  ctx = canvas.getContext("2d");
+
   const styles = getComputedStyle(document.documentElement);
   colorDark =
     styles.getPropertyValue("--color-dark").trim() || "#000";
@@ -506,18 +449,83 @@ onMounted(async () => {
     styles.getPropertyValue("--color-light").trim() || "#fff";
   colorHighlight =
     styles.getPropertyValue("--color-highlight").trim() || "#0f0";
+  highlightRgb = colorConvert.hex.rgb(
+    colorHighlight.replace("#", ""),
+  );
+  highlightDarkRgb = highlightRgb.map(c => Math.round(c * 0.35)) as [
+    number,
+    number,
+    number,
+  ];
 
-  await setup();
-  resetZoom();
-  if (props.targetCode) {
-    zoomToCountry(props.targetCode);
+  const [{ default: maplibregl }, geo] = await Promise.all([
+    import("maplibre-gl"),
+    fetch("/countries/world.geojson").then(res => res.json()),
+  ]);
+
+  const features = geo.features as {
+    properties: {
+      code?: string;
+      zoomBounds?: [number, number, number, number];
+    };
+    geometry: { type: string; coordinates: unknown };
+  }[];
+  for (const feature of features) {
+    const { code, zoomBounds } = feature.properties;
+    if (code && zoomBounds) {
+      boundsByCode.set(code, zoomBounds);
+    }
+    // worldBounds covers every landmass on the map (not just the
+    // guessable ones), so the zoomed-out view includes e.g. Greenland
+    // and Antarctica-adjacent territory too.
+    const [w, s, e, n] = geometryBounds(feature.geometry);
+    if (!worldBounds) {
+      worldBounds = [w, s, e, n];
+    } else {
+      worldBounds[0] = Math.min(worldBounds[0], w);
+      worldBounds[1] = Math.min(worldBounds[1], s);
+      worldBounds[2] = Math.max(worldBounds[2], e);
+      worldBounds[3] = Math.max(worldBounds[3], n);
+    }
   }
 
-  resizeObserver = new ResizeObserver(resizeCanvas);
-  if (containerRef.value) {
-    resizeObserver.observe(containerRef.value);
+  guessedSet = new Set(props.guessedCodes);
+
+  const initialBounds =
+    (props.targetCode && boundsByCode.get(props.targetCode)) ||
+    worldBounds ||
+    undefined;
+
+  map = new maplibregl.Map({
+    container: mapContainerRef.value,
+    style: buildStyle(),
+    bounds: initialBounds,
+    fitBoundsOptions: {
+      padding: props.targetCode ? COUNTRY_FIT_PADDING : 0,
+    },
+    interactive: false,
+    attributionControl: false,
+  });
+
+  if (worldBounds) {
+    worldZoom =
+      map.cameraForBounds(worldBounds)?.zoom ?? map.getZoom();
   }
-  resizeCanvas();
+
+  map.on("load", () => {
+    styleLoaded = true;
+    updatePaint();
+    for (const code of guessedSet) {
+      applyRole(code);
+    }
+    startPulseIfNeeded();
+    if (props.targetCode) {
+      startZoomOutAnimation();
+    }
+  });
+
+  resizeObserver = new ResizeObserver(() => map?.resize());
+  resizeObserver.observe(mapContainerRef.value);
 });
 
 onUnmounted(() => {
@@ -525,23 +533,60 @@ onUnmounted(() => {
     cancelAnimationFrame(rafId);
   }
   resizeObserver?.disconnect();
+  map?.remove();
+  map = null;
 });
 
 watch(
   () => props.targetCode,
-  code => {
+  (code, previousCode) => {
+    if (!map) {
+      return;
+    }
+    if (previousCode) {
+      applyRole(previousCode);
+    }
     if (code) {
-      zoomToCountry(code);
+      focusCountry(code);
+      startPulseIfNeeded();
     } else {
       resetZoom();
     }
-    scheduleFrame();
   },
 );
 
 watch(
-  () => [props.guessedCodes.length, props.complete],
-  () => draw(performance.now()),
+  () => props.guessedCodes,
+  next => {
+    if (!map || !styleLoaded) {
+      return;
+    }
+    const nextSet = new Set(next);
+    const changed = new Set<string>();
+    for (const code of nextSet) {
+      if (!guessedSet.has(code)) {
+        changed.add(code);
+      }
+    }
+    for (const code of guessedSet) {
+      if (!nextSet.has(code)) {
+        changed.add(code);
+      }
+    }
+    guessedSet = nextSet;
+    for (const code of changed) {
+      applyRole(code);
+    }
+  },
+  { deep: true },
+);
+
+watch(
+  () => [props.complete, props.invertBase],
+  () => {
+    updatePaint();
+    startPulseIfNeeded();
+  },
 );
 </script>
 
