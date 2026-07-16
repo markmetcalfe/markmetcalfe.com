@@ -6,7 +6,7 @@
   "preview_urls": false,
   "routes": [
     {
-      "pattern": "markmetcalfe.com/api/get-network-status",
+      "pattern": "markmetcalfe.com/api/network-status",
       "zone_name": "markmetcalfe.com",
     },
   ],

@@ -28,7 +28,7 @@ test.describe("NetworkStatusPage", () => {
   test("can see connected network status", async ({
     page,
   }, testInfo) => {
-    await page.route("/api/get-network-status", async route => {
+    await page.route("/api/network-status", async route => {
       await route.fulfill({
         status: 200,
         body: JSON.stringify({
@@ -65,7 +65,7 @@ test.describe("NetworkStatusPage", () => {
   test("can see not connected network status", async ({
     page,
   }, testInfo) => {
-    await page.route("/api/get-network-status", async route => {
+    await page.route("/api/network-status", async route => {
       await route.fulfill({
         status: 200,
         body: JSON.stringify({
@@ -91,7 +91,7 @@ test.describe("NetworkStatusPage", () => {
   });
 
   test("can refresh the network status", async ({ page }) => {
-    await page.route("/api/get-network-status", async route => {
+    await page.route("/api/network-status", async route => {
       await route.fulfill({
         status: 200,
         body: JSON.stringify({
@@ -110,7 +110,7 @@ test.describe("NetworkStatusPage", () => {
       "Not Connected To Local Network",
     );
 
-    await page.route("/api/get-network-status", async route => {
+    await page.route("/api/network-status", async route => {
       await route.fulfill({
         status: 200,
         body: JSON.stringify({
