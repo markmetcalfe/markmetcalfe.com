@@ -452,6 +452,9 @@ export class GameRoom implements DurableObject {
         session.player.skips++;
         if (this.game.mode === "solo") {
           this.game.timeLeft -= SOLO_SKIP_PENALTY_SECONDS;
+          // Re-queue it at the back instead of dropping it, so a solo
+          // player can still come back and guess it before time runs out.
+          this.game.queue.push(this.game.currentCode);
         }
         this.markPlayerDone(session.player.id, false);
         break;

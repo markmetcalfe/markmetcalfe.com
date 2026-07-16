@@ -32,7 +32,7 @@
       <LinkButton
         v-if="showSkip"
         text="Skip"
-        :disabled="disabled"
+        :disabled="disabled || skipping"
         @mousedown.prevent
         @click="handleSkip"
       >
@@ -47,12 +47,14 @@ interface Props {
   hint?: string;
   disabled?: boolean;
   showSkip?: boolean;
+  skipping?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
   hint: "",
   disabled: false,
   showSkip: true,
+  skipping: false,
 });
 
 const emit = defineEmits<{

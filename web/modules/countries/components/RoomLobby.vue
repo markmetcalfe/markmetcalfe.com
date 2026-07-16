@@ -1,10 +1,11 @@
 <template>
   <div class="roomlobby">
     <LinkButton
-      v-if="store.isHost && store.players.length < 2"
+      v-if="store.players.length < 2"
       large
-      text="Start Solo Game"
-      @click="startGame"
+      :disabled="startingSolo"
+      :text="startingSolo ? 'Starting…' : 'Start Solo Game'"
+      @click="startSoloGame"
     >
       <Icon name="bx:play" />
     </LinkButton>
@@ -72,12 +73,36 @@ import isMobile from "is-mobile";
 const store = useCountryGuesserRoomStore();
 const copied = ref(false);
 const gameLengthMinutes = ref(5);
+const startingSolo = ref(false);
 
 function startGame() {
   store.startGame(
     gameLengthMinutes.value * 60,
     store.players.length < 2,
   );
+}
+
+// The button is shown immediately (rather than waiting on the WS
+// connection + join round-trip to confirm host status, which solo start
+// doesn't require server-side anyway) -- so if it's clicked before that
+// connection is up, wait for it here instead of gating the button on it.
+async function startSoloGame() {
+  if (!store.connected) {
+    startingSolo.value = true;
+    await new Promise<void>(resolve => {
+      const stop = watch(
+        () => store.connected,
+        connected => {
+          if (connected) {
+            stop();
+            resolve();
+          }
+        },
+      );
+    });
+    startingSolo.value = false;
+  }
+  startGame();
 }
 
 const roomUrl = computed(() =>
@@ -89,13 +114,26 @@ const displayRoomUrl = computed(() =>
     : roomUrl.value,
 );
 
-function copyLink() {
-  void navigator.clipboard.writeText(roomUrl.value).then(() => {
-    copied.value = true;
-    setTimeout(() => {
-      copied.value = false;
-    }, 2000);
-  });
+async function copyLink() {
+  try {
+    await navigator.clipboard.writeText(roomUrl.value);
+  } catch {
+    // iOS Safari's Clipboard API is unavailable/rejects in some
+    // versions -- fall back to the legacy selection-based copy.
+    const textarea = document.createElement("textarea");
+    textarea.value = roomUrl.value;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    document.execCommand("copy");
+    textarea.remove();
+  }
+  copied.value = true;
+  setTimeout(() => {
+    copied.value = false;
+  }, 2000);
 }
 
 // The invite URL must never truncate -- shrink its font instead of

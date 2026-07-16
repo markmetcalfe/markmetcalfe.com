@@ -26,6 +26,8 @@ const emit = defineEmits<{ "show-leaderboard": [] }>();
 </script>
 
 <style lang="scss">
+@use "/variables" as vars;
+
 .waitingroomscreen {
   position: relative;
   z-index: 0;
@@ -42,6 +44,10 @@ const emit = defineEmits<{ "show-leaderboard": [] }>();
   &-heading {
     font-size: 1.8rem;
     font-weight: 400;
+
+    @include vars.desktop-only {
+      font-size: 2.75rem;
+    }
   }
 
   &-desc {
