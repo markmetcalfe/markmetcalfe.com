@@ -6,8 +6,9 @@
     "
     ref="guessInputRef"
     :hint="store.hint"
+    :skipping="skipping"
     @submit="handleGuess"
-    @skip="store.submitSkip()"
+    @skip="handleSkip"
   />
   <div
     v-else-if="
@@ -28,6 +29,18 @@
 const store = useCountryGuesserRoomStore();
 
 const guessInputRef = ref<{ flashIncorrect: () => void }>();
+const skipping = ref(false);
+
+// "Done" (server-confirmed) rather than a fixed timeout so the button
+// stays disabled for exactly as long as the skip request is in flight.
+watch(
+  () => store.donePlayerIds.includes(store.myId),
+  done => {
+    if (done) {
+      skipping.value = false;
+    }
+  },
+);
 
 const remainingLabel = computed(() => {
   const remainingPlayers = store.players.filter(
@@ -44,6 +57,11 @@ const remainingLabel = computed(() => {
 
 function handleGuess(text: string) {
   store.submitGuess(text);
+}
+
+function handleSkip() {
+  skipping.value = true;
+  store.submitSkip();
 }
 
 defineExpose({
