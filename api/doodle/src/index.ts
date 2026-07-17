@@ -15,7 +15,10 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
-function generateRoomId(): string {
+function generateRoomId(env: Env): string {
+  if (env.IS_PLAYWRIGHT === "1") {
+    return "abc123";
+  }
   const bytes = new Uint8Array(4);
   crypto.getRandomValues(bytes);
   return Array.from(bytes, b => b.toString(36).padStart(2, "0"))
@@ -34,7 +37,7 @@ export default {
 
     if (pathname === "/api/doodle/rooms") {
       if (request.method === "POST") {
-        return json({ roomId: generateRoomId() });
+        return json({ roomId: generateRoomId(env) });
       }
       if (request.method === "GET") {
         if (!env.ROOM_LIST) {

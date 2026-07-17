@@ -6,14 +6,22 @@ on:
       - main
     paths:
       - 'web/**'
+      - 'api/**'
       - 'shared/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'playwright.config.ts'
       - '.github/workflows/build-web.yml'
   push:
     branches:
       - main
     paths:
       - 'web/**'
+      - 'api/**'
       - 'shared/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'playwright.config.ts'
       - '.github/workflows/build-web.yml'
 
 jobs:
@@ -33,13 +41,8 @@ jobs:
       
       - name: Install dependencies
         run: npm ci
-        working-directory: web
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Install API dependencies
-        run: npm ci
-        working-directory: api
 
       - name: Lint the code
         run: npm run lint
@@ -70,31 +73,27 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: web
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install Playwright
         run: npm exec playwright install
-        working-directory: web
 
       - name: Run Playwright tests
-        run: CI=1 npm run test
-        working-directory: web
+        run: CI=1 npm test
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: test-results
           path: |
-            web/playwright-report/
-            web/test-results/
+            playwright-report/
+            test-results/
           retention-days: 7
 
       - name: Run Chromatic
         uses: chromaui/action@1db61b73b7919508ee8e62336f04bd0aed6da756 # v17.4.1
         with:
-          workingDir: web
           playwright: true
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           exitZeroOnChanges: true

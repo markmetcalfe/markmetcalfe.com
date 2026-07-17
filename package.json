@@ -1,0 +1,27 @@
+{
+  "name": "markmetcalfe.com",
+  "private": true,
+  "type": "module",
+  "workspaces": ["web", "api"],
+  "scripts": {
+    "dev": "npm --prefix web run dev & npm --prefix api run dev",
+    "prepare": "husky",
+    "pretest": "for f in api/*/.dev.vars.dist; do [ -f \"${f%.dist}\" ] || cp \"$f\" \"${f%.dist}\"; done",
+    "test": "playwright test",
+    "chromatic": "chromatic --playwright --exit-zero-on-changes"
+  },
+  "devDependencies": {
+    "@chromatic-com/playwright": "^0.12.0",
+    "@playwright/test": "^1.52.0",
+    "chromatic": "^17.0.0",
+    "husky": "^9.1.7"
+  },
+  "overrides": {
+    "vue-tsc": {
+      "typescript": "^5.9.3"
+    }
+  },
+  "engines": {
+    "node": "22.x.x"
+  }
+}
