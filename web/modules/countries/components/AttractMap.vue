@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isPlaywrightTest" class="attractmap">
+  <div class="attractmap">
     <CountryMap
       :target-code="targetCode"
       :guessed-codes="[]"
@@ -17,9 +17,11 @@ import { COUNTRIES } from "../data/countries";
 // background always looks mid-transition rather than settling fully.
 const CYCLE_INTERVAL_MS = 7000;
 
-// This map's continuous random cycling/zooming makes it unsuitable to
-// appear in Chromatic snapshots (never the same frame twice), so it's
-// skipped entirely under Playwright/Chromatic runs.
+// This map's continuous random cycling/zooming would never be the same
+// frame twice, so it's unsuitable for Chromatic snapshots as-is --
+// under Playwright, onMounted below skips picking (and cycling) a
+// target entirely, leaving CountryMap's own fully-zoomed-out world view
+// (its default with no target) as a stable, deterministic background.
 const isPlaywrightTest = useRuntimeConfig().public.isPlaywrightTest;
 
 const targetCode = ref<string | null>(null);

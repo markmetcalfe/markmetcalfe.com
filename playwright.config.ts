@@ -48,13 +48,18 @@ export default defineConfig<ChromaticConfig & ConfigOptions>({
       name: "Desktop Chrome",
       use: {
         ...devices["Desktop Chrome"],
+        extraHTTPHeaders: { "X-Playwright-Project": "desktop" },
       },
+      grepInvert: /\(Mobile Chrome\)$/,
     },
     {
       name: "Mobile Chrome",
       use: {
-        ...devices["Pixel 7"],
+        ...devices["iPhone 13"],
+        browserName: "chromium", // needs Chromium for Chromatic snapshot capture
+        extraHTTPHeaders: { "X-Playwright-Project": "mobile" },
       },
+      grepInvert: /\(Desktop Chrome\)$/,
     },
   ],
 

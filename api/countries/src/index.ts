@@ -53,9 +53,16 @@ function json(
   });
 }
 
-function generateRoomId(env: Env): string {
+function generateRoomId(request: Request, env: Env): string {
   if (env.IS_PLAYWRIGHT === "1") {
-    return "abc123";
+    // Desktop Chrome and Mobile Chrome run this suite concurrently
+    // against the same dev server -- keyed off a header the config sets
+    // per project (see playwright.config.ts) so they don't collide in
+    // the same room. Falls back to a fixed id if the header's absent.
+    const project = request.headers
+      .get("X-Playwright-Project")
+      ?.replace(/[^\w-]/g, "");
+    return project ? `abc123-${project}` : "abc123";
   }
   const bytes = new Uint8Array(4);
   crypto.getRandomValues(bytes);
@@ -89,7 +96,7 @@ export default {
       request.method === "POST"
     ) {
       return json(
-        { roomId: generateRoomId(env) },
+        { roomId: generateRoomId(request, env) },
         200,
         allowedOrigin,
       );

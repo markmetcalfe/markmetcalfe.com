@@ -50,6 +50,8 @@ interface GameData {
 const CLUE_INTERVAL_SECONDS = 5;
 const CLUE_REVEAL_CAP = 0.6;
 const AUTO_ADVANCE_GRACE_SECONDS = 8;
+// See the `autoAdvanceGraceSeconds` getter below.
+const PLAYWRIGHT_AUTO_ADVANCE_GRACE_SECONDS = 120;
 const MIN_ROUND_LENGTH = 60;
 const MAX_ROUND_LENGTH = 1200;
 const SOLO_ROUND_LENGTH = 120;
@@ -65,8 +67,29 @@ const KEEPALIVE_INTERVAL_SECONDS = 25;
 // How long a disconnected player's seat (score, host status) is held
 // open for them to reconnect into before being dropped for good.
 const GRACE_PERIOD_MS = 5000;
+// Playwright reuses a handful of fixed rooms across many back-to-back
+// test cases (see `generateRoomId`) -- the real-world grace period would
+// otherwise leak a "disconnected" player from one test into the next, so
+// tests get no grace period at all (see `handleDisconnect`'s immediate
+// sweep) instead of a shorter one racing against the next test's setup.
+const PLAYWRIGHT_GRACE_PERIOD_MS = 0;
+// The round clock ticks once per real second normally. Under Playwright
+// it ticks this many times faster instead -- still exactly one *game*
+// second of countdown/clue-reveal/auto-advance timing per tick, just
+// packed into less real time -- so an e2e test doesn't have to wait out
+// a full multiplayer round (which, unlike solo, has no guess/skip
+// bonus or penalty to speed it up) in real time.
+const PLAYWRIGHT_TICK_SPEEDUP = 4;
 
-function shuffledCodes(): string[] {
+// Playwright hardcodes guesses against the round order (see
+// `IS_PLAYWRIGHT` below), so its queue is alphabetical by name instead
+// of shuffled.
+function shuffledCodes(alphabetical: boolean): string[] {
+  if (alphabetical) {
+    return [...COUNTRIES]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(c => c.code);
+  }
   const codes = COUNTRIES.map(c => c.code);
   for (let i = codes.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -108,6 +131,35 @@ export class GameRoom implements DurableObject {
     this.env = env;
     this.sessions = new Map();
     this.game = this.makeInitialState();
+  }
+
+  private get gracePeriodMs(): number {
+    return this.env.IS_PLAYWRIGHT === "1"
+      ? PLAYWRIGHT_GRACE_PERIOD_MS
+      : GRACE_PERIOD_MS;
+  }
+
+  private get tickIntervalMs(): number {
+    return this.env.IS_PLAYWRIGHT === "1"
+      ? 1000 / PLAYWRIGHT_TICK_SPEEDUP
+      : 1000;
+  }
+
+  // AUTO_ADVANCE_GRACE_SECONDS is a *game*-second budget -- ticking
+  // PLAYWRIGHT_TICK_SPEEDUP times faster under Playwright would
+  // otherwise shrink its real-time duration by the same factor,
+  // undercutting a real player's (or a test's own) time to act before
+  // the safety net force-advances the target out from under them
+  // (verified directly: a Playwright multiplayer test clicking through
+  // a full guess/skip sequence hit exactly this, "element ... detached"
+  // mid-click as the target changed underneath it -- and it recurred
+  // even after a same-factor correction, so this is generous on top of
+  // that rather than an exact 1:1 scale-back). This constant is only
+  // ever widened under Playwright, so it can't affect real players.
+  private get autoAdvanceGraceSeconds(): number {
+    return this.env.IS_PLAYWRIGHT === "1"
+      ? PLAYWRIGHT_AUTO_ADVANCE_GRACE_SECONDS
+      : AUTO_ADVANCE_GRACE_SECONDS;
   }
 
   private makeInitialState(): GameData {
@@ -199,7 +251,9 @@ export class GameRoom implements DurableObject {
     this.game.targetElapsed++;
     this.maybeRevealOrAdvance();
     this.broadcast({ type: "timer", timeLeft: this.game.timeLeft });
-    await this.state.storage.setAlarm(Date.now() + 1000);
+    await this.state.storage.setAlarm(
+      Date.now() + this.tickIntervalMs,
+    );
   }
 
   // Only takes effect outside "countdown" mode (idle/waiting/round_end)
@@ -217,7 +271,7 @@ export class GameRoom implements DurableObject {
       if (p.disconnectedAt !== null) {
         delayMs = Math.min(
           delayMs,
-          Math.max(p.disconnectedAt + GRACE_PERIOD_MS - now, 0),
+          Math.max(p.disconnectedAt + this.gracePeriodMs - now, 0),
         );
       }
     }
@@ -231,7 +285,7 @@ export class GameRoom implements DurableObject {
     const remaining = this.game.players.filter(
       p =>
         p.disconnectedAt === null ||
-        now - p.disconnectedAt < GRACE_PERIOD_MS,
+        now - p.disconnectedAt < this.gracePeriodMs,
     );
     if (remaining.length === this.game.players.length) {
       return;
@@ -556,7 +610,7 @@ export class GameRoom implements DurableObject {
     this.game.roundLength = roundLength;
     this.game.timeLeft = roundLength;
     this.game.roundStartedAt = Date.now();
-    this.game.queue = shuffledCodes();
+    this.game.queue = shuffledCodes(this.env.IS_PLAYWRIGHT === "1");
     this.game.guessedCodes = [];
     this.game.players.forEach(p => {
       p.score = 0;
@@ -566,7 +620,9 @@ export class GameRoom implements DurableObject {
     this.game.phase = "playing";
     this.game.alarmMode = "countdown";
     this.advanceTarget();
-    void this.state.storage.setAlarm(Date.now() + 1000);
+    void this.state.storage.setAlarm(
+      Date.now() + this.tickIntervalMs,
+    );
   }
 
   private maybeRevealOrAdvance(): void {
@@ -581,7 +637,7 @@ export class GameRoom implements DurableObject {
       letterCount(country.name) * CLUE_REVEAL_CAP,
     );
     const autoAdvanceAt =
-      cap * CLUE_INTERVAL_SECONDS + AUTO_ADVANCE_GRACE_SECONDS;
+      cap * CLUE_INTERVAL_SECONDS + this.autoAdvanceGraceSeconds;
     // Safety net: force the room on even if some players never guessed
     // or skipped (e.g. gone AFK), so a stuck player can't block everyone
     // forever. Solo has no one else to block, so let the target sit
@@ -696,6 +752,9 @@ export class GameRoom implements DurableObject {
       playerId: session.player.id,
       players: this.game.players,
     });
+    // A no-op in production (nothing's past its grace period yet) --
+    // only actually drops anyone when gracePeriodMs is 0 (playwright).
+    this.sweepDisconnectedPlayers();
     this.scheduleIdleAlarm();
   }
 
