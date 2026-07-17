@@ -65,6 +65,12 @@ const KEEPALIVE_INTERVAL_SECONDS = 25;
 // How long a disconnected player's seat (score, host status) is held
 // open for them to reconnect into before being dropped for good.
 const GRACE_PERIOD_MS = 5000;
+// Playwright reuses a handful of fixed rooms across many back-to-back
+// test cases (see `generateRoomId`) -- the real-world grace period would
+// otherwise leak a "disconnected" player from one test into the next, so
+// tests get no grace period at all (see `handleDisconnect`'s immediate
+// sweep) instead of a shorter one racing against the next test's setup.
+const PLAYWRIGHT_GRACE_PERIOD_MS = 0;
 
 function shuffledCodes(): string[] {
   const codes = COUNTRIES.map(c => c.code);
@@ -108,6 +114,12 @@ export class GameRoom implements DurableObject {
     this.env = env;
     this.sessions = new Map();
     this.game = this.makeInitialState();
+  }
+
+  private get gracePeriodMs(): number {
+    return this.env.IS_PLAYWRIGHT === "1"
+      ? PLAYWRIGHT_GRACE_PERIOD_MS
+      : GRACE_PERIOD_MS;
   }
 
   private makeInitialState(): GameData {
@@ -217,7 +229,7 @@ export class GameRoom implements DurableObject {
       if (p.disconnectedAt !== null) {
         delayMs = Math.min(
           delayMs,
-          Math.max(p.disconnectedAt + GRACE_PERIOD_MS - now, 0),
+          Math.max(p.disconnectedAt + this.gracePeriodMs - now, 0),
         );
       }
     }
@@ -231,7 +243,7 @@ export class GameRoom implements DurableObject {
     const remaining = this.game.players.filter(
       p =>
         p.disconnectedAt === null ||
-        now - p.disconnectedAt < GRACE_PERIOD_MS,
+        now - p.disconnectedAt < this.gracePeriodMs,
     );
     if (remaining.length === this.game.players.length) {
       return;
@@ -696,6 +708,9 @@ export class GameRoom implements DurableObject {
       playerId: session.player.id,
       players: this.game.players,
     });
+    // A no-op in production (nothing's past its grace period yet) --
+    // only actually drops anyone when gracePeriodMs is 0 (playwright).
+    this.sweepDisconnectedPlayers();
     this.scheduleIdleAlarm();
   }
 
