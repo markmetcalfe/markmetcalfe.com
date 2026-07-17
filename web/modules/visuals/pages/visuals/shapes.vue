@@ -75,7 +75,7 @@ useSeoMeta({
   ogTitle: "Edit Shapes - Mark Metcalfe",
   description: "Interactive graphics generated live in the browser",
   ogDescription: "Interactive graphics generated live in the browser",
-  ogImage: "https://markmetcalfe.com/visuals/social-card.jpg?v=1",
+  ogImage: "https://markmetcalfe.com/visuals-social-card.jpg?v=1",
 });
 
 const visualsStore = useVisualsStore();

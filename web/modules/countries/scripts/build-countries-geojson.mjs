@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // One-time/occasional data-prep step -- not part of the app build.
-// Regenerates public/countries/world.geojson from Natural Earth's
+// Regenerates public/countries.geojson from Natural Earth's
 // 1:10m admin-0 countries dataset. Run with:
-//   node web/modules/countries/scripts/build-world-geojson.mjs
+//   node web/modules/countries/scripts/build-countries-geojson.mjs
 //
 // Every landmass in the source (not just our 197 guessable countries)
 // is kept, so non-guessable territory (Greenland, Antarctica, Hong
@@ -66,9 +66,7 @@ const PIECE_DISTANCE_DEGREES = 50;
 // pinned here so that can't happen regardless of future tuning.
 const ALWAYS_FULL_ACCURACY_CODES = new Set(["va", "nr", "mc"]);
 
-const OUT_DIR = fileURLToPath(
-  new URL("../public/countries", import.meta.url),
-);
+const OUT_DIR = fileURLToPath(new URL("../public", import.meta.url));
 const COUNTRIES_JSON_PATH = fileURLToPath(
   new URL("../../../../shared/countries.json", import.meta.url),
 );
@@ -321,7 +319,7 @@ const simplifiedBuckets = await Promise.all(
 
 const features = [...simplifiedBuckets.flat(), ...small];
 writeFileSync(
-  `${OUT_DIR}/world.geojson`,
+  `${OUT_DIR}/countries.geojson`,
   JSON.stringify({ type: "FeatureCollection", features }),
 );
 const bucketSummary = [...buckets.entries()]
@@ -332,7 +330,7 @@ const bucketSummary = [...buckets.entries()]
   )
   .join(", ");
 console.log(
-  "wrote world.geojson -",
+  "wrote countries.geojson -",
   features.length,
   "landmasses total,",
   ours.length,

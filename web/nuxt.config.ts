@@ -23,7 +23,7 @@ export default defineNuxtConfig({
     "@nuxt/test-utils",
     "@pinia/nuxt",
   ],
-  devtools: { enabled: true },
+  devtools: { enabled: !isPlaywrightTest },
   runtimeConfig: {
     public: {
       isPlaywrightTest,
@@ -45,6 +45,9 @@ export default defineNuxtConfig({
     mailtoLink: "mailto:mark@markmetcalfe.com",
   },
   compatibilityDate: "2025-05-28",
+  routeRules: {
+    "/**": { trailingSlash: false },
+  },
   icon: {
     clientBundle: {
       scan: true,
@@ -60,19 +63,15 @@ export default defineNuxtConfig({
   pinia: {
     storesDirs: ["stores"],
   },
-  ...(isPlaywrightTest
-    ? {}
-    : {
-        nitro: {
-          devProxy: isApiLocal
-            ? buildLocalDevProxy()
-            : {
-                "/api": {
-                  target: `https://${siteDomain}/api`,
-                  changeOrigin: true,
-                  prependPath: true,
-                },
-              },
+  nitro: {
+    devProxy: isApiLocal
+      ? buildLocalDevProxy()
+      : {
+          "/api": {
+            target: `https://${siteDomain}/api`,
+            changeOrigin: true,
+            prependPath: true,
+          },
         },
-      }),
+  },
 });

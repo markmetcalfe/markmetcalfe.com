@@ -35,22 +35,21 @@ A set of [Cloudflare Workers](https://workers.cloudflare.com/) managed with [Wra
 
 ## Development
 
-1. Install dependencies in both sub-projects:
+1. Install dependencies:
 
 ```sh
-cd web && npm install
-cd ../api && npm install
+npm ci
 ```
 
-2. Start the development server (from the `web/` directory). This also starts the API workers locally:
+2. Start the development server. This also starts the API workers locally:
 
 ```sh
-npm run dev:api
+npm run dev
 ```
 
 ## Testing
 
-Playwright is used for end-to-end testing. Tests live in `web/tests/e2e/`.
+Playwright is used for end-to-end testing. Tests live in `**/tests/e2e/*.spec.ts` files.
 
 Install Playwright browsers if you haven't already:
 
@@ -58,7 +57,7 @@ Install Playwright browsers if you haven't already:
 npx playwright install
 ```
 
-Run the tests (from the `web/` directory):
+Run the tests:
 
 ```sh
 npm run test

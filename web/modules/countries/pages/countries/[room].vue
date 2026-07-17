@@ -61,7 +61,7 @@ useSeoMeta({
     "A singleplayer and multiplayer country name guessing game",
   ogDescription:
     "A singleplayer and multiplayer country name guessing game",
-  ogImage: "https://markmetcalfe.com/countries/social-card.jpg?v=1",
+  ogImage: "https://markmetcalfe.com/countries-social-card.jpg?v=1",
 });
 
 useHideDynamicBackground();

@@ -81,7 +81,7 @@ useSeoMeta({
   ogTitle: "Doodle - Mark Metcalfe",
   description: "A multiplayer drawing and guessing game",
   ogDescription: "A multiplayer drawing and guessing game",
-  ogImage: "https://markmetcalfe.com/doodle/social-card.jpg?v=1",
+  ogImage: "https://markmetcalfe.com/doodle-social-card.jpg?v=1",
 });
 
 useHideDynamicBackground();

@@ -11,6 +11,9 @@ test.beforeEach(async ({ page }) => {
 test.describe("SequencerPage", () => {
   test("can load page", async ({ page }, testInfo) => {
     await expect(page.locator('text="Step Sequencer"')).toBeVisible();
+    await expect(
+      page.locator(".sequencerpage-sequences"),
+    ).toBeVisible();
     await takeSnapshot(page, "Sequencer Page", testInfo);
   });
 

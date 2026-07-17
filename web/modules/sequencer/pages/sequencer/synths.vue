@@ -96,7 +96,7 @@ useSeoMeta({
   ogTitle: "Edit Synths - Mark Metcalfe",
   description: "Interactive step sequencer in the browser",
   ogDescription: "Interactive step sequencer in the browser",
-  ogImage: "https://markmetcalfe.com/sequencer/social-card.jpg?v=1",
+  ogImage: "https://markmetcalfe.com/sequencer-social-card.jpg?v=1",
 });
 
 const sequencerStore = useSequencerStore();

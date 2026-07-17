@@ -7,6 +7,7 @@ import type { ConfigOptions } from "@nuxt/test-utils/playwright";
  */
 export default defineConfig<ChromaticConfig & ConfigOptions>({
   testMatch: "**/tests/e2e/**/*.spec.ts",
+  globalSetup: "./playwright.global-setup.ts",
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
   expect: {
@@ -58,12 +59,19 @@ export default defineConfig<ChromaticConfig & ConfigOptions>({
     },
   ],
 
-  /* Run your local dev server before starting the tests */
-  webServer: {
-    command:
-      "IS_PLAYWRIGHT=1 npm run build && IS_PLAYWRIGHT=1 npm run preview -- --port 3001",
-    port: 3001,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+  webServer: [
+    {
+      command: "IS_PLAYWRIGHT=1 npm run dev --workspace=api",
+      url: "http://localhost:8787/api/countries/leaderboard",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    },
+    {
+      command:
+        "IS_PLAYWRIGHT=1 PORT=3001 API_LOCAL=1 npm run dev --workspace=web",
+      url: "http://localhost:3001/api/countries/leaderboard",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    },
+  ],
 });

@@ -335,7 +335,7 @@ function buildStyle(): StyleSpecification {
     sources: {
       [SOURCE_ID]: {
         type: "geojson",
-        data: "/countries/world.geojson",
+        data: "/countries.geojson",
         promoteId: "code",
       },
     },
@@ -460,7 +460,7 @@ onMounted(async () => {
 
   const [{ default: maplibregl }, geo] = await Promise.all([
     import("maplibre-gl"),
-    fetch("/countries/world.geojson").then(res => res.json()),
+    fetch("/countries.geojson").then(res => res.json()),
   ]);
 
   const features = geo.features as {

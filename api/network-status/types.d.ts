@@ -1,3 +1,7 @@
+interface Env {
+  IS_PLAYWRIGHT?: string;
+}
+
 interface DNSResponse {
   Status: number;
   TC: boolean;

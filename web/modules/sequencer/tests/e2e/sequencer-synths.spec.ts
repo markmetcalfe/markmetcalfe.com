@@ -11,6 +11,7 @@ test.beforeEach(async ({ page }) => {
 test.describe("EditSynthsPage", () => {
   test("can load page", async ({ page }, testInfo) => {
     await expect(page.locator('text="Edit Synths"')).toBeVisible();
+    await expect(page.locator(".editsynths")).toBeVisible();
     await takeSnapshot(page, "Edit Synths Page", testInfo);
   });
 

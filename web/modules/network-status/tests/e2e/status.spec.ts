@@ -28,21 +28,10 @@ test.describe("NetworkStatusPage", () => {
   test("can see connected network status", async ({
     page,
   }, testInfo) => {
-    await page.route("/api/network-status", async route => {
-      await route.fulfill({
-        status: 200,
-        body: JSON.stringify({
-          isConnected: true,
-          yourIp: "250.80.20.30",
-          homeIp: "250.80.20.30",
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    await page.setExtraHTTPHeaders({
+      "CF-Connecting-IP": "123.45.678.90",
     });
     await page.goto("/status");
-    await page.waitForTimeout(3000);
     await expect(page.locator(".networkstatus")).toContainText(
       "Connected To Local Network",
     );
@@ -50,10 +39,10 @@ test.describe("NetworkStatusPage", () => {
       "Not Connected To Local Network",
     );
     await expect(page.locator(".networkstatus")).toContainText(
-      "Home IP: 250.80.20.30",
+      "Your IP: 123.45.678.90",
     );
     await expect(page.locator(".networkstatus")).toContainText(
-      "Your IP: 250.80.20.30",
+      "Home IP: 123.45.678.90",
     );
     await takeSnapshot(
       page,
@@ -65,21 +54,8 @@ test.describe("NetworkStatusPage", () => {
   test("can see not connected network status", async ({
     page,
   }, testInfo) => {
-    await page.route("/api/network-status", async route => {
-      await route.fulfill({
-        status: 200,
-        body: JSON.stringify({
-          isConnected: false,
-          yourIp: "100.40.80.70",
-          homeIp: "250.80.20.30",
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    });
+    await page.setExtraHTTPHeaders({ "CF-Connecting-IP": "1.2.3.4" });
     await page.goto("/status");
-    await page.waitForTimeout(3000);
     await expect(page.locator(".networkstatus")).toContainText(
       "Not Connected To Local Network",
     );
@@ -91,43 +67,25 @@ test.describe("NetworkStatusPage", () => {
   });
 
   test("can refresh the network status", async ({ page }) => {
-    await page.route("/api/network-status", async route => {
-      await route.fulfill({
-        status: 200,
-        body: JSON.stringify({
-          isConnected: false,
-          yourIp: "100.40.80.70",
-          homeIp: "250.80.20.30",
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    });
+    await page.setExtraHTTPHeaders({ "CF-Connecting-IP": "1.2.3.4" });
     await page.goto("/status");
-    await page.waitForTimeout(3000);
     await expect(page.locator(".networkstatus")).toContainText(
       "Not Connected To Local Network",
     );
 
-    await page.route("/api/network-status", async route => {
-      await route.fulfill({
-        status: 200,
-        body: JSON.stringify({
-          isConnected: true,
-          yourIp: "250.80.20.30",
-          homeIp: "250.80.20.30",
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    await page.setExtraHTTPHeaders({
+      "CF-Connecting-IP": "123.45.678.90",
     });
     const refreshButton = page.getByTitle("Refresh");
     await refreshButton.click();
-    await page.waitForTimeout(3000);
     await expect(page.locator(".networkstatus")).toContainText(
       "Connected To Local Network",
+    );
+    await expect(page.locator(".networkstatus")).toContainText(
+      "Your IP: 123.45.678.90",
+    );
+    await expect(page.locator(".networkstatus")).toContainText(
+      "Home IP: 123.45.678.90",
     );
   });
 });
