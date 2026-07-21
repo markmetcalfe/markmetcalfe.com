@@ -5,6 +5,14 @@
   "minimumReleaseAge": "14 days",
   "packageRules": [
     {
+      "description": "Refresh @markmetcalfe lockfile pins every hour instead of waiting for weekly lock file maintenance",
+      "matchFileNames": ["web/**"],
+      "matchPackageNames": ["@markmetcalfe/*"],
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "minimumReleaseAge": null,
+      "schedule": ["* * * * *"]
+    },
+    {
       "description": "Update @markmetcalfe packages every hour",
       "matchFileNames": ["web/**"],
       "matchPackageNames": ["@markmetcalfe/*"],
@@ -25,21 +33,6 @@
       "groupSlug": "api"
     },
     {
-      "matchUpdateTypes": [
-        "minor",
-        "patch",
-        "pin",
-        "digest"
-      ],
-      "automerge": true
-    },
-    {
-      "matchDepTypes": [
-        "devDependencies"
-      ],
-      "automerge": true
-    },
-    {
       "matchPackageNames": [
         "node"
       ],
@@ -52,8 +45,32 @@
     },
     {
       "matchFileNames": ["web/**"],
-      "matchPackageNames": ["/@nuxt/"],
+      "matchPackageNames": ["nuxt", "/@nuxt/"],
       "groupName": "web nuxt"
+    },
+    {
+      "matchFileNames": ["web/**"],
+      "matchPackageNames": ["/^stylelint/"],
+      "groupName": "stylelint"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    },
+    {
+      "matchFileNames": ["web/**"],
+      "matchPackageNames": ["pinia", "/@pinia/"],
+      "groupName": "pinia"
+    },
+    {
+      "matchFileNames": ["web/**"],
+      "matchPackageNames": ["maplibre-gl", "/@maplibre/"],
+      "groupName": "maplibre"
+    },
+    {
+      "matchPackageNames": ["@playwright/test", "chromatic", "@chromatic-com/playwright", "chromaui/action"],
+      "groupName": "playwright/chromatic",
+      "separateMajorMinor": false
     }
   ],
   "hostRules": [
@@ -65,10 +82,8 @@
   ],
   "npmrc": "@markmetcalfe:registry=https://npm.pkg.github.com/",
   "lockFileMaintenance": {
-    "enabled": true,
-    "automerge": true
+    "enabled": true
   },
-  "platformAutomerge": true,
   "timezone": "Pacific/Auckland",
   "schedule": "* * 1 * *"
 }
