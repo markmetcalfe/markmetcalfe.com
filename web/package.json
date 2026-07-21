@@ -27,7 +27,7 @@
     "obscenity": "^0.4.6",
     "pinia": "^3.0.1",
     "react-device-detect": "^2.2.3",
-    "three": "^0.184.0",
+    "three": "^0.185.0",
     "tone": "^15.0.4",
     "vue": "^3.5.13",
     "vue-router": "^5.0.0"
@@ -39,7 +39,7 @@
     "@iconify-json/simple-icons": "^1.2.2",
     "@maplibre/maplibre-gl-style-spec": "^24.10.0",
     "@types/spotify-api": "^0.0.26",
-    "@types/three": "^0.184.0",
+    "@types/three": "^0.185.0",
     "lint-staged": "^17.0.0",
     "mapshaper": "^0.7.45",
     "oxfmt": "^0.56.0",
