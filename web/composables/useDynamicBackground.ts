@@ -2,7 +2,8 @@ const hidden = ref(false);
 
 // app.vue reads this to decide whether to mount the generative background.
 export function useDynamicBackgroundVisible() {
-  return computed(() => !hidden.value);
+  const isPlaywrightTest = useRuntimeConfig().public.isPlaywrightTest;
+  return computed(() => !isPlaywrightTest && !hidden.value);
 }
 
 // Pages with their own opaque full-viewport background call this to hide
