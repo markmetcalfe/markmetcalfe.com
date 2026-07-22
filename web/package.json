@@ -42,10 +42,10 @@
     "@types/three": "^0.185.0",
     "mapshaper": "^0.7.45",
     "sass": "^1.86.0",
-    "stylelint": "^16.16.0",
-    "stylelint-config-recommended-scss": "^14.1.0",
+    "stylelint": "^17.0.0",
+    "stylelint-config-recommended-scss": "^17.0.0",
     "stylelint-config-recommended-vue": "^1.6.0",
-    "stylelint-config-standard-scss": "^14.0.0",
+    "stylelint-config-standard-scss": "^17.0.0",
     "vue-tsc": "^3.3.3"
   },
   "lint-staged": {
