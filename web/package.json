@@ -15,7 +15,7 @@
   "dependencies": {
     "@markmetcalfe/resume": "^1.0.0",
     "@nuxt/fonts": "0.14.0",
-    "@nuxt/icon": "2.2.3",
+    "@nuxt/icon": "2.3.1",
     "@nuxt/image": "2.0.0",
     "@nuxt/test-utils": "4.0.3",
     "@pinia/nuxt": "0.11.3",
@@ -23,7 +23,7 @@
     "hex-color-to-color-name": "^2.0.0",
     "is-mobile": "^5.0.0",
     "maplibre-gl": "^5.24.0",
-    "nuxt": "4.4.6",
+    "nuxt": "4.4.8",
     "obscenity": "^0.4.6",
     "pinia": "^3.0.1",
     "react-device-detect": "^2.2.3",
