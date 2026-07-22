@@ -6,17 +6,9 @@
   "automerge": false,
   "packageRules": [
     {
-      "description": "Refresh @markmetcalfe lockfile pins every hour instead of waiting for weekly lock file maintenance",
       "matchFileNames": ["web/**"],
       "matchPackageNames": ["@markmetcalfe/*"],
-      "matchUpdateTypes": ["lockFileMaintenance"],
-      "minimumReleaseAge": null,
-      "schedule": ["* * * * *"]
-    },
-    {
-      "description": "Update @markmetcalfe packages every hour",
-      "matchFileNames": ["web/**"],
-      "matchPackageNames": ["@markmetcalfe/*"],
+      "rangeStrategy": "bump",
       "minimumReleaseAge": null,
       "schedule": ["* * * * *"]
     },
