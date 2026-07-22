@@ -19,6 +19,9 @@ test.describe("CountryGuesserPage", () => {
     await expect(
       page.getByText("Invite Others To Play:"),
     ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Enter your name" }),
+    ).toBeVisible();
 
     await takeSnapshot(page, "Country Guesser Lobby", testInfo);
   });

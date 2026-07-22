@@ -3,7 +3,7 @@
     <template #title> Connection Status </template>
     <div class="networkstatus">
       <p
-        v-if="status === 'pending'"
+        v-if="status === 'pending' || status === 'idle'"
         class="networkstatus-status networkstatus-loading"
       >
         Loading...
@@ -23,7 +23,7 @@
 
       <LinkButton
         title="Refresh"
-        :disabled="status === 'pending'"
+        :disabled="status === 'pending' || status === 'idle'"
         @click="refresh()"
       >
         <Icon name="bx:refresh" />

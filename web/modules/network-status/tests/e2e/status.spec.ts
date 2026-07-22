@@ -10,6 +10,9 @@ test.describe("NetworkStatusPage", () => {
     await expect(
       page.locator('text="Connection Status"'),
     ).toBeVisible();
+    await expect(page.locator(".networkstatus-loading")).toHaveText(
+      "Loading...",
+    );
     await takeSnapshot(
       page,
       "Network Status Page - Loading",
