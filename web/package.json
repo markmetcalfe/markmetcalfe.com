@@ -40,17 +40,12 @@
     "@maplibre/maplibre-gl-style-spec": "^24.10.0",
     "@types/spotify-api": "^0.0.26",
     "@types/three": "^0.184.0",
-    "lint-staged": "^17.0.0",
     "mapshaper": "^0.7.45",
-    "oxfmt": "^0.56.0",
-    "oxlint": "^1.71.0",
-    "oxlint-tsgolint": "^0.24.0",
     "sass": "^1.86.0",
     "stylelint": "^16.16.0",
     "stylelint-config-recommended-scss": "^14.1.0",
     "stylelint-config-recommended-vue": "^1.6.0",
     "stylelint-config-standard-scss": "^14.0.0",
-    "typescript": "^5.8.2",
     "vue-tsc": "^3.3.3"
   },
   "lint-staged": {
