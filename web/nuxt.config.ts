@@ -45,9 +45,6 @@ export default defineNuxtConfig({
     mailtoLink: "mailto:mark@markmetcalfe.com",
   },
   compatibilityDate: "2025-05-28",
-  routeRules: {
-    "/**": { trailingSlash: false },
-  },
   icon: {
     clientBundle: {
       scan: true,
