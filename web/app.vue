@@ -40,6 +40,7 @@ onMounted(() => {
 body {
   width: 100%;
   height: 100%;
+  min-height: 100vh;
   margin: 0;
   font-family: Inter, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -56,6 +57,11 @@ body {
   @include vars.mobile-only {
     font-size: 0.9rem;
   }
+}
+
+/* stylelint-disable-next-line selector-id-pattern */
+#__nuxt {
+  min-height: 100vh;
 }
 
 a,

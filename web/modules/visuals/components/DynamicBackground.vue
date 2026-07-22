@@ -1,5 +1,8 @@
 <template>
-  <div :style="{ filter: blurString }">
+  <div
+    class="dynamicbackground-wrapper"
+    :style="{ filter: blurString }"
+  >
     <div
       class="dynamicbackground"
       :style="{
@@ -60,7 +63,7 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
-.dynamicbackground {
+.dynamicbackground-wrapper {
   position: fixed;
   top: 0;
   left: 0;
@@ -69,6 +72,11 @@ onUnmounted(() => {
   min-width: 100vw;
   min-height: 100vh;
   z-index: -100;
+}
+
+.dynamicbackground {
+  width: 100%;
+  height: 100%;
   transition: opacity 0.4s;
   cursor: pointer;
 }
