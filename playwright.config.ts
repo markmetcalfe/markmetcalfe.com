@@ -48,12 +48,14 @@ export default defineConfig<ChromaticConfig & ConfigOptions>({
       name: "Desktop Chrome",
       use: {
         ...devices["Desktop Chrome"],
+        extraHTTPHeaders: { "X-Playwright-Project": "desktop" },
       },
     },
     {
       name: "Mobile Chrome",
       use: {
         ...devices["Pixel 7"],
+        extraHTTPHeaders: { "X-Playwright-Project": "mobile" },
       },
     },
   ],
