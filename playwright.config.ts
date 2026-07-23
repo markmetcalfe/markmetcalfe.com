@@ -7,7 +7,6 @@ import type { ConfigOptions } from "@nuxt/test-utils/playwright";
  */
 export default defineConfig<ChromaticConfig & ConfigOptions>({
   testMatch: "**/tests/e2e/**/*.spec.ts",
-  globalSetup: "./playwright.global-setup.ts",
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
   expect: {
@@ -28,7 +27,7 @@ export default defineConfig<ChromaticConfig & ConfigOptions>({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "http://localhost:3001",
+    baseURL: "http://localhost:8080",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -68,10 +67,17 @@ export default defineConfig<ChromaticConfig & ConfigOptions>({
     },
     {
       command:
-        "IS_PLAYWRIGHT=1 PORT=3001 API_LOCAL=1 npm run dev --workspace=web",
-      url: "http://localhost:3001/api/countries/leaderboard",
+        "IS_PLAYWRIGHT=1 npm run build --workspace=web && PORT=3000 HOST=0.0.0.0 node web/.output/server/index.mjs",
+      url: "http://localhost:3000/",
       reuseExistingServer: !process.env.CI,
-      timeout: 120 * 1000,
+      timeout: 180 * 1000,
+    },
+    {
+      command: "docker compose -f playwright.docker-compose.yml up",
+      url: "http://localhost:8080/api/countries/leaderboard",
+      reuseExistingServer: !process.env.CI,
+      timeout: 60 * 1000,
+      gracefulShutdown: { signal: "SIGTERM", timeout: 10 * 1000 },
     },
   ],
 });

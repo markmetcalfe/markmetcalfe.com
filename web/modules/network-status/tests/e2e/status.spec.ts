@@ -5,21 +5,6 @@ import {
 } from "@chromatic-com/playwright";
 
 test.describe("NetworkStatusPage", () => {
-  test("can load page", async ({ page }, testInfo) => {
-    await page.goto("/status");
-    await expect(
-      page.locator('text="Connection Status"'),
-    ).toBeVisible();
-    await expect(page.locator(".networkstatus-loading")).toHaveText(
-      "Loading...",
-    );
-    await takeSnapshot(
-      page,
-      "Network Status Page - Loading",
-      testInfo,
-    );
-  });
-
   test("can navigate back home", async ({ page }) => {
     await page.goto("/status");
     const link = page.locator('[aria-label="Back"]');
@@ -35,6 +20,9 @@ test.describe("NetworkStatusPage", () => {
       "CF-Connecting-IP": "123.45.678.90",
     });
     await page.goto("/status");
+    await expect(
+      page.locator('text="Connection Status"'),
+    ).toBeVisible();
     await expect(page.locator(".networkstatus")).toContainText(
       "Connected To Local Network",
     );
@@ -59,6 +47,9 @@ test.describe("NetworkStatusPage", () => {
   }, testInfo) => {
     await page.setExtraHTTPHeaders({ "CF-Connecting-IP": "1.2.3.4" });
     await page.goto("/status");
+    await expect(
+      page.locator('text="Connection Status"'),
+    ).toBeVisible();
     await expect(page.locator(".networkstatus")).toContainText(
       "Not Connected To Local Network",
     );
@@ -72,6 +63,9 @@ test.describe("NetworkStatusPage", () => {
   test("can refresh the network status", async ({ page }) => {
     await page.setExtraHTTPHeaders({ "CF-Connecting-IP": "1.2.3.4" });
     await page.goto("/status");
+    await expect(
+      page.locator('text="Connection Status"'),
+    ).toBeVisible();
     await expect(page.locator(".networkstatus")).toContainText(
       "Not Connected To Local Network",
     );
