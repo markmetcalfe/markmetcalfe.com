@@ -1,5 +1,3 @@
-import { buildLocalDevProxy } from "./dev-proxy";
-
 const isPlaywrightTest = process.env.IS_PLAYWRIGHT === "1";
 const isApiLocal = process.env.API_LOCAL === "1";
 const siteDomain = "markmetcalfe.com";
@@ -61,8 +59,26 @@ export default defineNuxtConfig({
     storesDirs: ["stores"],
   },
   nitro: {
+    // If updating here, also update api/dev.sh and playwright.docker-compose.yml
     devProxy: isApiLocal
-      ? buildLocalDevProxy()
+      ? {
+          "/api/countries": {
+            target: "http://localhost:8787/api/countries",
+            changeOrigin: true,
+          },
+          "/api/doodle": {
+            target: "http://localhost:8788/api/doodle",
+            changeOrigin: true,
+          },
+          "/api/network-status": {
+            target: "http://localhost:8789/api/network-status",
+            changeOrigin: true,
+          },
+          "/resume.pdf": {
+            target: "http://localhost:8790/resume.pdf",
+            changeOrigin: true,
+          },
+        }
       : {
           "/api": {
             target: `https://${siteDomain}/api`,
