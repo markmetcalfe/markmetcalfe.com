@@ -2,6 +2,7 @@
   <div
     class="countrymap"
     :class="{ 'countrymap-complete': props.complete }"
+    :data-map-loaded="mapLoaded"
   >
     <div ref="mapContainerRef" class="countrymap-canvas" />
   </div>
@@ -32,6 +33,14 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const mapContainerRef = ref<HTMLDivElement>();
+// The countries themselves (fetched/rendered async, see onMounted) can
+// still be loading when gameplay's earliest UI is already interactive --
+// Chromatic's takeSnapshot() reads the map canvas via toDataURL(), so a
+// snapshot fired before the first real frame lands captures nothing but
+// the background layer. Exposed so tests can wait on it before snapshotting.
+const mapLoaded = ref(false);
+
+const isPlaywrightTest = useRuntimeConfig().public.isPlaywrightTest;
 
 const SOURCE_ID = "countries";
 const FILL_LAYER = "countries-fill";
@@ -123,7 +132,7 @@ let completeAnimLatPeriodA = LAT_WANDER_PERIOD_MS_MIN;
 let completeAnimLatPeriodB = LAT_WANDER_PERIOD_MS_MAX;
 
 function scheduleFrame() {
-  if (rafId !== null) {
+  if (isPlaywrightTest || rafId !== null) {
     return;
   }
   rafId = requestAnimationFrame(frame);
@@ -212,7 +221,13 @@ function applyRole(code: string) {
   const role = roleFor(code);
   const state: Record<string, unknown> = { role };
   if (role === "target" || (role === "guessed" && props.complete)) {
-    state.pulseColor = pulseColorAt(performance.now());
+    // A fixed color rather than pulseColorAt(performance.now()) under
+    // Playwright -- that's a function of wall-clock time since page
+    // load, so it'd differ between snapshot runs even with the pulse
+    // loop itself frozen.
+    state.pulseColor = isPlaywrightTest
+      ? colorHighlight
+      : pulseColorAt(performance.now());
   }
   map.setFeatureState({ source: SOURCE_ID, id: code }, state);
 }
@@ -238,6 +253,17 @@ function startCompleteRotationIfNeeded() {
     LAT_WANDER_PERIOD_MS_MIN +
     Math.random() *
       (LAT_WANDER_PERIOD_MS_MAX - LAT_WANDER_PERIOD_MS_MIN);
+
+  // frame() drives the recap's zoom-in/rotation via scheduleFrame(),
+  // which is a no-op under Playwright -- so jump straight to the
+  // recap's resting view instead, rather than leaving the camera
+  // wherever the (also frozen) per-target zoom-out last left it.
+  if (isPlaywrightTest) {
+    map.jumpTo({
+      center: [completeAnimFromLng, completeAnimFromLat],
+      zoom: worldZoom + COMPLETE_ZOOM_OFFSET,
+    });
+  }
 }
 
 // Kicks off (or re-syncs) the flash loop. Called whenever the target
@@ -375,7 +401,7 @@ function buildStyle(): StyleSpecification {
 // then zoom *in*. Skip the animation entirely rather than do that;
 // holding still is preferable to zooming the wrong way.
 function startZoomOutAnimation() {
-  if (!map) {
+  if (!map || isPlaywrightTest) {
     return;
   }
   const targetZoom = worldZoom + ZOOM_OUT_MARGIN;
@@ -505,6 +531,9 @@ onMounted(async () => {
     },
     interactive: false,
     attributionControl: false,
+    canvasContextAttributes: {
+      preserveDrawingBuffer: isPlaywrightTest,
+    },
   });
 
   if (worldBounds) {
@@ -522,6 +551,7 @@ onMounted(async () => {
     if (props.targetCode) {
       startZoomOutAnimation();
     }
+    mapLoaded.value = true;
   });
 
   resizeObserver = new ResizeObserver(() => map?.resize());
