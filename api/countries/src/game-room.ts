@@ -4,6 +4,7 @@ import type {
   RoomState,
   ClientMessage,
   ServerMessage,
+  CountryOrder,
 } from "./types";
 import { COUNTRIES, isCorrectGuess, type Country } from "./countries";
 import { containsProfanity } from "../../shared/profanity";
@@ -19,7 +20,11 @@ interface GameData {
   phase: RoomPhase;
   mode: "multiplayer" | "solo";
   players: Player[];
+  // Doubles as the host's live lobby pick while `phase === "waiting"`
+  // (see "update_settings" below) so a non-host player can see what's
+  // selected, and as the actual round length once a round starts.
   roundLength: number;
+  countryOrder: CountryOrder;
   timeLeft: number;
   // Epoch ms the current/most recent round began, purely to compute
   // `lastRoundElapsedSeconds` -- never shown to clients directly, since
@@ -48,6 +53,8 @@ interface GameData {
 }
 
 const CLUE_INTERVAL_SECONDS = 5;
+// See the `clueIntervalSeconds` getter below.
+const PLAYWRIGHT_CLUE_INTERVAL_SECONDS = 9999;
 const CLUE_REVEAL_CAP = 0.6;
 const AUTO_ADVANCE_GRACE_SECONDS = 8;
 // See the `autoAdvanceGraceSeconds` getter below.
@@ -81,21 +88,54 @@ const PLAYWRIGHT_GRACE_PERIOD_MS = 0;
 // bonus or penalty to speed it up) in real time.
 const PLAYWRIGHT_TICK_SPEEDUP = 4;
 
-// Playwright hardcodes guesses against the round order (see
-// `IS_PLAYWRIGHT` below), so its queue is alphabetical by name instead
-// of shuffled.
-function shuffledCodes(alphabetical: boolean): string[] {
-  if (alphabetical) {
-    return [...COUNTRIES]
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map(c => c.code);
-  }
+const VALID_COUNTRY_ORDERS: CountryOrder[] = [
+  "random",
+  "alphabetical",
+  "population",
+  "size",
+];
+
+function alphabeticalCodes(): string[] {
+  return [...COUNTRIES]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(c => c.code);
+}
+
+function shuffledCodes(): string[] {
   const codes = COUNTRIES.map(c => c.code);
   for (let i = codes.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [codes[i], codes[j]] = [codes[j] as string, codes[i] as string];
   }
   return codes;
+}
+
+// Playwright hardcodes guesses against the round order (see
+// `IS_PLAYWRIGHT` below), so "random" falls back to the same alphabetical
+// queue as before instead of a real shuffle -- an explicitly chosen order
+// is always honoured deterministically regardless, since a lobby test
+// picks one of these on purpose to verify it actually took effect.
+function queueForOrder(
+  order: CountryOrder,
+  alphabeticalUnderPlaywright: boolean,
+): string[] {
+  switch (order) {
+    case "alphabetical":
+      return alphabeticalCodes();
+    case "population":
+      return [...COUNTRIES]
+        .sort((a, b) => b.population - a.population)
+        .map(c => c.code);
+    case "size":
+      return [...COUNTRIES]
+        .sort((a, b) => b.area - a.area)
+        .map(c => c.code);
+    case "random":
+    default:
+      return alphabeticalUnderPlaywright
+        ? alphabeticalCodes()
+        : shuffledCodes();
+  }
 }
 
 function countryByCode(code: string): Country | undefined {
@@ -162,12 +202,41 @@ export class GameRoom implements DurableObject {
       : AUTO_ADVANCE_GRACE_SECONDS;
   }
 
+  // A clue reveal racing a test's own guess/skip clicks makes a guess's
+  // score (100 down to a floor of 20, 10 off per letter already
+  // revealed) depend on real click speed, same class of problem as
+  // `autoAdvanceGraceSeconds` above -- and a Chromatic game-over
+  // snapshot then flags every run as a visual diff since the displayed
+  // score differs. Widened past any realistic test's target dwell time
+  // so no clue ever reveals under Playwright at all.
+  private get clueIntervalSeconds(): number {
+    return this.env.IS_PLAYWRIGHT === "1"
+      ? PLAYWRIGHT_CLUE_INTERVAL_SECONDS
+      : CLUE_INTERVAL_SECONDS;
+  }
+
+  // Solo's clock is otherwise driven by two independent sources at once
+  // under Playwright: this per-tick decrement firing on a real-world
+  // schedule, and the test's own skip/guess clicks each nudging
+  // `timeLeft` by a fixed amount. Racing the two makes both the final
+  // "X skipped" count and the elapsed-time readout on the game-over
+  // screen vary run to run (Chromatic then flags every run as a visual
+  // diff). Multiplayer has no such race -- it has no skip/guess time
+  // penalty/bonus to fight with -- and still needs the passive tick to
+  // ever end a round, so this only ever suppresses solo's tick.
+  private get soloClockIsManual(): boolean {
+    return (
+      this.game.mode === "solo" && this.env.IS_PLAYWRIGHT === "1"
+    );
+  }
+
   private makeInitialState(): GameData {
     return {
       phase: "waiting",
       mode: "multiplayer",
       players: [],
       roundLength: 300,
+      countryOrder: "random",
       timeLeft: 0,
       roundStartedAt: 0,
       lastRoundElapsedSeconds: 0,
@@ -243,7 +312,9 @@ export class GameRoom implements DurableObject {
       }
       return;
     }
-    this.game.timeLeft--;
+    if (!this.soloClockIsManual) {
+      this.game.timeLeft--;
+    }
     if (this.game.timeLeft <= 0) {
       this.doEndRound();
       return;
@@ -446,7 +517,16 @@ export class GameRoom implements DurableObject {
               MAX_ROUND_LENGTH,
               Math.max(MIN_ROUND_LENGTH, msg.round_length ?? 300),
             );
-        this.doStartGame(roundLength, solo ? "solo" : "multiplayer");
+        const countryOrder = VALID_COUNTRY_ORDERS.includes(
+          msg.country_order as CountryOrder,
+        )
+          ? (msg.country_order as CountryOrder)
+          : "random";
+        this.doStartGame(
+          roundLength,
+          solo ? "solo" : "multiplayer",
+          countryOrder,
+        );
         break;
       }
 
@@ -539,6 +619,35 @@ export class GameRoom implements DurableObject {
         this.broadcast({ type: "returned_to_lobby" });
         break;
       }
+
+      // Lets a non-host player see the host's current picks live rather
+      // than only finding out once the round starts -- host-only and
+      // lobby-only for the same reason "start_game" is: nobody else
+      // should be able to change what the room's about to play.
+      case "update_settings": {
+        if (
+          !session.player ||
+          !session.player.isHost ||
+          this.game.phase !== "waiting"
+        ) {
+          return;
+        }
+        this.game.roundLength = Math.min(
+          MAX_ROUND_LENGTH,
+          Math.max(MIN_ROUND_LENGTH, msg.round_length),
+        );
+        this.game.countryOrder = VALID_COUNTRY_ORDERS.includes(
+          msg.country_order,
+        )
+          ? msg.country_order
+          : "random";
+        this.broadcast({
+          type: "settings_update",
+          round_length: this.game.roundLength,
+          country_order: this.game.countryOrder,
+        });
+        break;
+      }
     }
   }
 
@@ -605,12 +714,16 @@ export class GameRoom implements DurableObject {
   private doStartGame(
     roundLength: number,
     mode: "multiplayer" | "solo",
+    countryOrder: CountryOrder,
   ): void {
     this.game.mode = mode;
     this.game.roundLength = roundLength;
     this.game.timeLeft = roundLength;
     this.game.roundStartedAt = Date.now();
-    this.game.queue = shuffledCodes(this.env.IS_PLAYWRIGHT === "1");
+    this.game.queue = queueForOrder(
+      countryOrder,
+      this.env.IS_PLAYWRIGHT === "1",
+    );
     this.game.guessedCodes = [];
     this.game.players.forEach(p => {
       p.score = 0;
@@ -630,14 +743,14 @@ export class GameRoom implements DurableObject {
     if (!country) {
       return;
     }
-    if (this.game.targetElapsed % CLUE_INTERVAL_SECONDS === 0) {
+    if (this.game.targetElapsed % this.clueIntervalSeconds === 0) {
       this.revealLetter(country);
     }
     const cap = Math.ceil(
       letterCount(country.name) * CLUE_REVEAL_CAP,
     );
     const autoAdvanceAt =
-      cap * CLUE_INTERVAL_SECONDS + this.autoAdvanceGraceSeconds;
+      cap * this.clueIntervalSeconds + this.autoAdvanceGraceSeconds;
     // Safety net: force the room on even if some players never guessed
     // or skipped (e.g. gone AFK), so a stuck player can't block everyone
     // forever. Solo has no one else to block, so let the target sit
@@ -669,9 +782,15 @@ export class GameRoom implements DurableObject {
     if (hidden.length === 0) {
       return;
     }
-    const idx = hidden[
-      Math.floor(Math.random() * hidden.length)
-    ] as number;
+    // `hidden` is built in ascending index order, so under Playwright
+    // this always reveals the earliest unrevealed letter first (1st,
+    // then 2nd, etc.) instead of a random one -- otherwise Chromatic
+    // sees a different hint string on every run.
+    const idx = (
+      this.env.IS_PLAYWRIGHT === "1"
+        ? hidden[0]
+        : hidden[Math.floor(Math.random() * hidden.length)]
+    ) as number;
     this.game.revealedIndices.push(idx);
     this.broadcast({
       type: "hint_update",
@@ -716,9 +835,15 @@ export class GameRoom implements DurableObject {
     // its fresh "state" sync too, instead of the last-played country
     // re-triggering CountryMap's zoom-in/pull-back-out tween.
     this.game.currentCode = "";
-    this.game.lastRoundElapsedSeconds = Math.round(
-      (Date.now() - this.game.roundStartedAt) / 1000,
-    );
+    // Real elapsed wall time for everyone else, but that's exactly the
+    // quantity `soloClockIsManual` stops being deterministic once the
+    // passive tick is suppressed -- so derive it from the round's own
+    // bookkeeping instead: how much of `roundLength` got used up by
+    // skip penalties and guess bonuses, the only things still moving
+    // the clock in that mode.
+    this.game.lastRoundElapsedSeconds = this.soloClockIsManual
+      ? this.game.roundLength - this.game.timeLeft
+      : Math.round((Date.now() - this.game.roundStartedAt) / 1000);
     this.scheduleIdleAlarm();
     const sorted = [...this.game.players].sort(
       (a, b) => b.score - a.score,
@@ -765,6 +890,7 @@ export class GameRoom implements DurableObject {
       mode: this.game.mode,
       players: this.game.players,
       roundLength: this.game.roundLength,
+      countryOrder: this.game.countryOrder,
       timeLeft: this.game.timeLeft,
       elapsedSeconds: this.game.lastRoundElapsedSeconds,
       currentCode: this.game.currentCode,

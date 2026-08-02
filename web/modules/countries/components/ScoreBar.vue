@@ -1,7 +1,7 @@
 <template>
   <div class="scorebar">
     <span :class="['scorebar-timer', timerClass]">
-      {{ secondsLeft }}s
+      {{ timerLabel }}
     </span>
 
     <span v-if="!players" class="scorebar-progress">
@@ -52,6 +52,15 @@ const props = withDefaults(defineProps<Props>(), {
 const sortedPlayers = computed(() =>
   [...(props.players ?? [])].sort((a, b) => b.score - a.score),
 );
+
+const timerLabel = computed(() => {
+  if (props.secondsLeft < 60) {
+    return `${props.secondsLeft}s`;
+  }
+  const minutes = Math.floor(props.secondsLeft / 60);
+  const seconds = props.secondsLeft % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+});
 
 const timerClass = computed(() => {
   if (props.secondsLeft > 30) {

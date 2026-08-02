@@ -64,7 +64,10 @@ useSeoMeta({
   ogImage: "https://markmetcalfe.com/countries-social-card.jpg?v=1",
 });
 
-useHideDynamicBackground();
+// Deferred until the map itself has actually rendered a frame (rather
+// than hiding as soon as this page mounts) so there's no gap of nothing
+// behind the still-loading map -- see useMapReady().
+useHideDynamicBackground(useMapReady());
 
 useFixMobileViewport();
 
@@ -153,6 +156,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   store.disconnect();
+  // Reset for the next visit -- this is shared, page-lifetime state (see
+  // useMapReady()), not per-CountryMap-instance state, so it otherwise
+  // stays true from a previous visit and skips the defer entirely.
+  useMapReady().value = false;
 });
 </script>
 

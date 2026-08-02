@@ -7,6 +7,7 @@ import {
   drainRoundViaSkips,
   isolateRoomPerFile,
   joinLobby,
+  skipUntilTimerUnderOneMinute,
   testPerProject,
   waitForMapLoaded,
 } from "./helpers";
@@ -44,8 +45,10 @@ testPerProject(
       "0 / 197 guessed",
     );
     await expect(page.locator(".scorebar-score")).toHaveText("0 pts");
+    // Solo rounds start at SOLO_ROUND_LENGTH (120s, see game-room.ts) --
+    // a full minute or more always displays as "M:SS".
     await expect(page.locator(".scorebar-timer")).toHaveText(
-      /^\d{2,3}s\s*$/,
+      /^\d+:\d{2}\s*$/,
     );
 
     await waitForMapLoaded(page);
@@ -63,8 +66,9 @@ testPerProject(
     );
 
     // Correct guess advances and scores points (100 down to a floor of
-    // 20, depending on how many clue letters happened to be revealed
-    // before the guess landed).
+    // 20, 10 off per clue letter already revealed at guess time; clues
+    // never auto-reveal under Playwright though, see `clueIntervalSeconds`
+    // in game-room.ts, so this is always 100 here).
     await guessInput.fill("Afghanistan");
     await guessButton.click();
     await expect(page.locator(".scorebar-progress")).toHaveText(
@@ -83,12 +87,16 @@ testPerProject(
       "1 / 197 guessed",
     );
 
+    // Once the countdown drops under a minute, the timer switches from
+    // "M:SS" back to a plain "Ns".
+    await skipUntilTimerUnderOneMinute(page, skipButton);
+
     // Drain the clock via skips (10s penalty each, solo mode) to reach
     // game over quickly instead of waiting out the full round length.
-    // The exact number of skips needed isn't fixed -- the alarm also
-    // decrements the clock once per real second regardless of skips, so
-    // it depends on how long the clicks themselves take -- so the skip
-    // count below is read back rather than asserted as a literal.
+    // The exact number of skips needed is deterministic under Playwright
+    // (see `soloClockIsManual` in game-room.ts), but is still read back
+    // rather than asserted as a literal, since it's an implementation
+    // detail of the server's clock math this test shouldn't hardcode.
     const gameOverHeading = page.getByRole("heading", {
       name: "Game Over",
     });

@@ -53,32 +53,79 @@
         class="roomlobby-settings"
       />
 
+      <DropdownSelect
+        v-model="countryOrder"
+        label="Country order"
+        :options="countryOrderOptions"
+        class="roomlobby-settings"
+      />
+
       <LinkButton large text="Start Game" @click="startGame">
         <Icon name="bx:play" />
       </LinkButton>
     </template>
 
-    <p
-      v-else-if="!store.isHost && store.players.length > 1"
-      class="roomlobby-waiting"
-    >
-      Waiting for the host to start&hellip;
-    </p>
+    <template v-else-if="!store.isHost && store.players.length > 1">
+      <p class="roomlobby-settings-readonly">
+        Game length:
+        <span class="roomlobby-settings-value"
+          >{{ store.roundLength / 60 }} min</span
+        >
+      </p>
+      <p class="roomlobby-settings-readonly">
+        Country order:
+        <span class="roomlobby-settings-value">{{
+          countryOrderLabel
+        }}</span>
+      </p>
+      <p class="roomlobby-waiting">
+        Waiting for the host to start&hellip;
+      </p>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 import isMobile from "is-mobile";
+import type { CountryOrder } from "../stores/countryGuesserRoom";
 
 const store = useCountryGuesserRoomStore();
 const copied = ref(false);
 const gameLengthMinutes = ref(5);
 const startingSolo = ref(false);
 
+const countryOrder = ref<CountryOrder>("random");
+const countryOrderOptions: { label: string; value: CountryOrder }[] =
+  [
+    { label: "Random", value: "random" },
+    { label: "Alphabetical", value: "alphabetical" },
+    { label: "Population", value: "population" },
+    { label: "Size", value: "size" },
+  ];
+
+const countryOrderLabel = computed(
+  () =>
+    countryOrderOptions.find(
+      option => option.value === store.countryOrder,
+    )?.label ?? "Random",
+);
+
+// Pushed live so a non-host player can see the host's picks as they're
+// made, not just once the round starts (see the read-only display
+// above and "update_settings" in game-room.ts, which ignores this from
+// anyone but the host).
+watch([gameLengthMinutes, countryOrder], () => {
+  store.updateSettings(
+    gameLengthMinutes.value * 60,
+    countryOrder.value,
+  );
+});
+
 function startGame() {
   store.startGame(
     gameLengthMinutes.value * 60,
     store.players.length < 2,
+    countryOrder.value,
   );
 }
 
@@ -269,6 +316,17 @@ onUnmounted(() => {
   &-waiting {
     color: var(--color-light);
     font-size: 0.9rem;
+  }
+
+  &-settings-readonly {
+    margin: 0;
+    color: var(--color-light);
+    font-size: 0.9rem;
+  }
+
+  &-settings-value {
+    color: var(--color-highlight);
+    font-weight: 600;
   }
 }
 </style>

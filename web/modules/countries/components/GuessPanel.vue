@@ -28,8 +28,23 @@
 <script setup lang="ts">
 const store = useCountryGuesserRoomStore();
 
-const guessInputRef = ref<{ flashIncorrect: () => void }>();
+const guessInputRef = ref<{
+  flashIncorrect: () => void;
+  focus: () => void;
+}>();
 const skipping = ref(false);
+
+// GuessInput's own onMounted already covers the initial mount and any
+// remount (e.g. multiplayer swapping the "waiting" panel back in once a
+// new target arrives). This covers the same-instance case: the target
+// advancing without GuessInput unmounting at all (solo, or multiplayer
+// when this player wasn't left waiting).
+watch(
+  () => store.currentCode,
+  () => {
+    guessInputRef.value?.focus();
+  },
+);
 
 // "Done" (server-confirmed) rather than a fixed timeout so the button
 // stays disabled for exactly as long as the skip request is in flight.

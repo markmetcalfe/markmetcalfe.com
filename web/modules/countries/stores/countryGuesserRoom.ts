@@ -2,6 +2,12 @@ import { defineStore } from "pinia";
 
 export type RoomPhase = "waiting" | "playing" | "round_end";
 
+export type CountryOrder =
+  | "random"
+  | "alphabetical"
+  | "population"
+  | "size";
+
 export interface Player {
   id: string;
   name: string;
@@ -17,6 +23,7 @@ interface RoomState {
   mode: "multiplayer" | "solo";
   players: Player[];
   roundLength: number;
+  countryOrder: CountryOrder;
   timeLeft: number;
   elapsedSeconds: number;
   currentCode: string;
@@ -68,7 +75,12 @@ type ServerMessage =
   | { type: "score_submitted" }
   | { type: "error"; message: string }
   | { type: "ping" }
-  | { type: "returned_to_lobby" };
+  | { type: "returned_to_lobby" }
+  | {
+      type: "settings_update";
+      round_length: number;
+      country_order: CountryOrder;
+    };
 
 export interface RoomEvent {
   kind: "correct" | "no_guess" | "error";
@@ -157,6 +169,7 @@ export const useCountryGuesserRoomStore = defineStore(
       phase: "waiting" as RoomPhase,
       players: [] as Player[],
       roundLength: 300,
+      countryOrder: "random" as CountryOrder,
       timeLeft: 0,
       elapsedSeconds: 0,
       currentCode: "",
@@ -300,12 +313,31 @@ export const useCountryGuesserRoomStore = defineStore(
         });
       },
 
-      startGame(roundLength: number, solo = false) {
+      startGame(
+        roundLength: number,
+        solo = false,
+        countryOrder: CountryOrder = "random",
+      ) {
         this.soloMode = solo;
         this.send({
           type: "start_game",
           round_length: roundLength,
           solo,
+          country_order: countryOrder,
+        });
+      },
+
+      // Lets a non-host player see the host's picks live -- see
+      // "update_settings" in game-room.ts, which silently no-ops this
+      // for anyone else.
+      updateSettings(
+        roundLength: number,
+        countryOrder: CountryOrder,
+      ) {
+        this.send({
+          type: "update_settings",
+          round_length: roundLength,
+          country_order: countryOrder,
         });
       },
 
@@ -343,6 +375,7 @@ export const useCountryGuesserRoomStore = defineStore(
             this.soloMode = msg.state.mode === "solo";
             this.players = msg.state.players;
             this.roundLength = msg.state.roundLength;
+            this.countryOrder = msg.state.countryOrder;
             this.timeLeft = msg.state.timeLeft;
             this.elapsedSeconds = msg.state.elapsedSeconds;
             this.currentCode = msg.state.currentCode;
@@ -436,6 +469,11 @@ export const useCountryGuesserRoomStore = defineStore(
 
           case "returned_to_lobby":
             this.phase = "waiting";
+            break;
+
+          case "settings_update":
+            this.roundLength = msg.round_length;
+            this.countryOrder = msg.country_order;
             break;
 
           case "ping":

@@ -2,229 +2,315 @@
   {
     "code": "af",
     "name": "Afghanistan",
-    "aliases": []
+    "aliases": [],
+    "population": 43844111,
+    "area": 652230
   },
   {
     "code": "al",
     "name": "Albania",
-    "aliases": []
+    "aliases": [],
+    "population": 2349580,
+    "area": 28748
   },
   {
     "code": "dz",
     "name": "Algeria",
-    "aliases": []
+    "aliases": [],
+    "population": 47435312,
+    "area": 2381741
   },
   {
     "code": "ad",
     "name": "Andorra",
-    "aliases": []
+    "aliases": [],
+    "population": 82904,
+    "area": 468
   },
   {
     "code": "ao",
     "name": "Angola",
-    "aliases": []
+    "aliases": [],
+    "population": 39040039,
+    "area": 1246700
   },
   {
     "code": "ag",
     "name": "Antigua and Barbuda",
-    "aliases": []
+    "aliases": [],
+    "population": 94209,
+    "area": 442
   },
   {
     "code": "ar",
     "name": "Argentina",
-    "aliases": []
+    "aliases": [],
+    "population": 45851378,
+    "area": 2780400
   },
   {
     "code": "am",
     "name": "Armenia",
-    "aliases": []
+    "aliases": [],
+    "population": 3086700,
+    "area": 29743
   },
   {
     "code": "au",
     "name": "Australia",
-    "aliases": []
+    "aliases": [],
+    "population": 27614411,
+    "area": 7692024
   },
   {
     "code": "at",
     "name": "Austria",
-    "aliases": []
+    "aliases": [],
+    "population": 9208163,
+    "area": 83871
   },
   {
     "code": "az",
     "name": "Azerbaijan",
-    "aliases": []
+    "aliases": [],
+    "population": 10246996,
+    "area": 86600
   },
   {
     "code": "bs",
     "name": "Bahamas",
     "aliases": [
       "The Bahamas"
-    ]
+    ],
+    "population": 403033,
+    "area": 13943
   },
   {
     "code": "bh",
     "name": "Bahrain",
-    "aliases": []
+    "aliases": [],
+    "population": 1600366,
+    "area": 765
   },
   {
     "code": "bd",
     "name": "Bangladesh",
-    "aliases": []
+    "aliases": [],
+    "population": 175686899,
+    "area": 147570
   },
   {
     "code": "bb",
     "name": "Barbados",
-    "aliases": []
+    "aliases": [],
+    "population": 282623,
+    "area": 430
   },
   {
     "code": "by",
     "name": "Belarus",
-    "aliases": []
+    "aliases": [],
+    "population": 9085991,
+    "area": 207600
   },
   {
     "code": "be",
     "name": "Belgium",
-    "aliases": []
+    "aliases": [],
+    "population": 11941781,
+    "area": 30528
   },
   {
     "code": "bz",
     "name": "Belize",
-    "aliases": []
+    "aliases": [],
+    "population": 422924,
+    "area": 22966
   },
   {
     "code": "bj",
     "name": "Benin",
-    "aliases": []
+    "aliases": [],
+    "population": 14814460,
+    "area": 112622
   },
   {
     "code": "bt",
     "name": "Bhutan",
-    "aliases": []
+    "aliases": [],
+    "population": 796682,
+    "area": 38394
   },
   {
     "code": "bo",
     "name": "Bolivia",
-    "aliases": []
+    "aliases": [],
+    "population": 12581843,
+    "area": 1098581
   },
   {
     "code": "ba",
     "name": "Bosnia and Herzegovina",
     "aliases": [
       "Bosnia"
-    ]
+    ],
+    "population": 3140095,
+    "area": 51209
   },
   {
     "code": "bw",
     "name": "Botswana",
-    "aliases": []
+    "aliases": [],
+    "population": 2562122,
+    "area": 582000
   },
   {
     "code": "br",
     "name": "Brazil",
-    "aliases": []
+    "aliases": [],
+    "population": 212812405,
+    "area": 8515767
   },
   {
     "code": "bn",
     "name": "Brunei",
     "aliases": [
       "Brunei Darussalam"
-    ]
+    ],
+    "population": 466330,
+    "area": 5765
   },
   {
     "code": "bg",
     "name": "Bulgaria",
-    "aliases": []
+    "aliases": [],
+    "population": 6433302,
+    "area": 110879
   },
   {
     "code": "bf",
     "name": "Burkina Faso",
-    "aliases": []
+    "aliases": [],
+    "population": 24074580,
+    "area": 272967
   },
   {
     "code": "bi",
     "name": "Burundi",
-    "aliases": []
+    "aliases": [],
+    "population": 14390003,
+    "area": 27834
   },
   {
     "code": "kh",
     "name": "Cambodia",
-    "aliases": []
+    "aliases": [],
+    "population": 17847982,
+    "area": 181035
   },
   {
     "code": "cm",
     "name": "Cameroon",
-    "aliases": []
+    "aliases": [],
+    "population": 29879337,
+    "area": 475442
   },
   {
     "code": "ca",
     "name": "Canada",
-    "aliases": []
+    "aliases": [],
+    "population": 41651653,
+    "area": 9984670
   },
   {
     "code": "cv",
     "name": "Cape Verde",
     "aliases": [
       "Cabo Verde"
-    ]
+    ],
+    "population": 527326,
+    "area": 4033
   },
   {
     "code": "cf",
     "name": "Central African Republic",
-    "aliases": []
+    "aliases": [],
+    "population": 5513282,
+    "area": 622984
   },
   {
     "code": "td",
     "name": "Chad",
-    "aliases": []
+    "aliases": [],
+    "population": 21003705,
+    "area": 1284000
   },
   {
     "code": "cl",
     "name": "Chile",
-    "aliases": []
+    "aliases": [],
+    "population": 19859921,
+    "area": 756102
   },
   {
     "code": "cn",
     "name": "China",
     "aliases": [
       "People's Republic of China"
-    ]
+    ],
+    "population": 1406585000,
+    "area": 9706961
   },
   {
     "code": "co",
     "name": "Colombia",
-    "aliases": []
+    "aliases": [],
+    "population": 53425635,
+    "area": 1141748
   },
   {
     "code": "km",
     "name": "Comoros",
-    "aliases": []
+    "aliases": [],
+    "population": 882847,
+    "area": 1862
   },
   {
     "code": "cr",
     "name": "Costa Rica",
-    "aliases": []
+    "aliases": [],
+    "population": 5152950,
+    "area": 51100
   },
   {
     "code": "hr",
     "name": "Croatia",
-    "aliases": []
+    "aliases": [],
+    "population": 3876200,
+    "area": 56594
   },
   {
     "code": "cu",
     "name": "Cuba",
-    "aliases": []
+    "aliases": [],
+    "population": 10937203,
+    "area": 109884
   },
   {
     "code": "cy",
     "name": "Cyprus",
-    "aliases": []
+    "aliases": [],
+    "population": 1370754,
+    "area": 9251
   },
   {
     "code": "cz",
     "name": "Czechia",
     "aliases": [
       "Czech Republic"
-    ]
+    ],
+    "population": 10886878,
+    "area": 78865
   },
   {
     "code": "cd",
@@ -233,515 +319,711 @@
       "DR Congo",
       "Congo-Kinshasa",
       "DRC"
-    ]
+    ],
+    "population": 112832473,
+    "area": 2344858
   },
   {
     "code": "dk",
     "name": "Denmark",
-    "aliases": []
+    "aliases": [],
+    "population": 6009169,
+    "area": 43094
   },
   {
     "code": "dj",
     "name": "Djibouti",
-    "aliases": []
+    "aliases": [],
+    "population": 1184076,
+    "area": 23200
   },
   {
     "code": "dm",
     "name": "Dominica",
-    "aliases": []
+    "aliases": [],
+    "population": 65871,
+    "area": 751
   },
   {
     "code": "do",
     "name": "Dominican Republic",
-    "aliases": []
+    "aliases": [],
+    "population": 11520487,
+    "area": 48671
   },
   {
     "code": "ec",
     "name": "Ecuador",
-    "aliases": []
+    "aliases": [],
+    "population": 18289896,
+    "area": 276841
   },
   {
     "code": "eg",
     "name": "Egypt",
-    "aliases": []
+    "aliases": [],
+    "population": 118365995,
+    "area": 1002450
   },
   {
     "code": "sv",
     "name": "El Salvador",
-    "aliases": []
+    "aliases": [],
+    "population": 6365503,
+    "area": 21041
   },
   {
     "code": "gq",
     "name": "Equatorial Guinea",
-    "aliases": []
+    "aliases": [],
+    "population": 1938431,
+    "area": 28051
   },
   {
     "code": "er",
     "name": "Eritrea",
-    "aliases": []
+    "aliases": [],
+    "population": 3607003,
+    "area": 117600
   },
   {
     "code": "ee",
     "name": "Estonia",
-    "aliases": []
+    "aliases": [],
+    "population": 1366475,
+    "area": 45227
   },
   {
     "code": "sz",
     "name": "Eswatini",
     "aliases": [
       "Swaziland"
-    ]
+    ],
+    "population": 1256174,
+    "area": 17364
   },
   {
     "code": "et",
     "name": "Ethiopia",
-    "aliases": []
+    "aliases": [],
+    "population": 135472051,
+    "area": 1104300
   },
   {
     "code": "fj",
     "name": "Fiji",
-    "aliases": []
+    "aliases": [],
+    "population": 933154,
+    "area": 18272
   },
   {
     "code": "fi",
     "name": "Finland",
-    "aliases": []
+    "aliases": [],
+    "population": 5646436,
+    "area": 338424
   },
   {
     "code": "fr",
     "name": "France",
-    "aliases": []
+    "aliases": [],
+    "population": 68720337,
+    "area": 551695
   },
   {
     "code": "ga",
     "name": "Gabon",
-    "aliases": []
+    "aliases": [],
+    "population": 2593130,
+    "area": 267668
   },
   {
     "code": "gm",
     "name": "Gambia",
     "aliases": [
       "The Gambia"
-    ]
+    ],
+    "population": 2822093,
+    "area": 10689
   },
   {
     "code": "ge",
     "name": "Georgia",
-    "aliases": []
+    "aliases": [],
+    "population": 3935766,
+    "area": 69700
   },
   {
     "code": "de",
     "name": "Germany",
-    "aliases": []
+    "aliases": [],
+    "population": 83491249,
+    "area": 357114
   },
   {
     "code": "gh",
     "name": "Ghana",
-    "aliases": []
+    "aliases": [],
+    "population": 35064272,
+    "area": 238533
   },
   {
     "code": "gr",
     "name": "Greece",
-    "aliases": []
+    "aliases": [],
+    "population": 10413962,
+    "area": 131990
   },
   {
     "code": "gd",
     "name": "Grenada",
-    "aliases": []
+    "aliases": [],
+    "population": 117303,
+    "area": 344
   },
   {
     "code": "gt",
     "name": "Guatemala",
-    "aliases": []
+    "aliases": [],
+    "population": 18687881,
+    "area": 108889
   },
   {
     "code": "gn",
     "name": "Guinea",
-    "aliases": []
+    "aliases": [],
+    "population": 15099727,
+    "area": 245857
   },
   {
     "code": "gw",
     "name": "Guinea-Bissau",
-    "aliases": []
+    "aliases": [],
+    "population": 2249515,
+    "area": 36125
   },
   {
     "code": "gy",
     "name": "Guyana",
-    "aliases": []
+    "aliases": [],
+    "population": 835986,
+    "area": 214969
   },
   {
     "code": "ht",
     "name": "Haiti",
-    "aliases": []
+    "aliases": [],
+    "population": 11906095,
+    "area": 27750
   },
   {
     "code": "hn",
     "name": "Honduras",
-    "aliases": []
+    "aliases": [],
+    "population": 11005850,
+    "area": 112492
   },
   {
     "code": "hu",
     "name": "Hungary",
-    "aliases": []
+    "aliases": [],
+    "population": 9514251,
+    "area": 93028
   },
   {
     "code": "is",
     "name": "Iceland",
-    "aliases": []
+    "aliases": [],
+    "population": 392404,
+    "area": 103000
   },
   {
     "code": "in",
     "name": "India",
-    "aliases": []
+    "aliases": [],
+    "population": 1463865525,
+    "area": 3287590
   },
   {
     "code": "id",
     "name": "Indonesia",
-    "aliases": []
+    "aliases": [],
+    "population": 285721236,
+    "area": 1904569
   },
   {
     "code": "ir",
     "name": "Iran",
-    "aliases": []
+    "aliases": [],
+    "population": 92417681,
+    "area": 1648195
   },
   {
     "code": "iq",
     "name": "Iraq",
-    "aliases": []
+    "aliases": [],
+    "population": 47020774,
+    "area": 438317
   },
   {
     "code": "ie",
     "name": "Ireland",
-    "aliases": []
+    "aliases": [],
+    "population": 5484367,
+    "area": 70273
   },
   {
     "code": "il",
     "name": "Israel",
-    "aliases": []
+    "aliases": [],
+    "population": 10122800,
+    "area": 20770
   },
   {
     "code": "it",
     "name": "Italy",
-    "aliases": []
+    "aliases": [],
+    "population": 58915656,
+    "area": 301336
   },
   {
     "code": "ci",
     "name": "Ivory Coast",
     "aliases": [
       "Cote d'Ivoire",
-      "Côte d'Ivoire"
-    ]
+      "C\u00f4te d'Ivoire"
+    ],
+    "population": 32711547,
+    "area": 322463
   },
   {
     "code": "jm",
     "name": "Jamaica",
-    "aliases": []
+    "aliases": [],
+    "population": 2837077,
+    "area": 10991
   },
   {
     "code": "jp",
     "name": "Japan",
-    "aliases": []
+    "aliases": [],
+    "population": 123366734,
+    "area": 377930
   },
   {
     "code": "jo",
     "name": "Jordan",
-    "aliases": []
+    "aliases": [],
+    "population": 11520684,
+    "area": 89342
   },
   {
     "code": "kz",
     "name": "Kazakhstan",
-    "aliases": []
+    "aliases": [],
+    "population": 20843754,
+    "area": 2724900
   },
   {
     "code": "ke",
     "name": "Kenya",
-    "aliases": []
+    "aliases": [],
+    "population": 57532493,
+    "area": 580367
   },
   {
     "code": "ki",
     "name": "Kiribati",
-    "aliases": []
+    "aliases": [],
+    "population": 136488,
+    "area": 811
   },
   {
     "code": "xk",
     "name": "Kosovo",
-    "aliases": []
+    "aliases": [],
+    "population": 1576876,
+    "area": 10908
   },
   {
     "code": "kw",
     "name": "Kuwait",
-    "aliases": []
+    "aliases": [],
+    "population": 4865298,
+    "area": 17818
   },
   {
     "code": "kg",
     "name": "Kyrgyzstan",
-    "aliases": []
+    "aliases": [],
+    "population": 7343064,
+    "area": 199951
   },
   {
     "code": "la",
     "name": "Laos",
     "aliases": [
       "Lao People's Democratic Republic"
-    ]
+    ],
+    "population": 7873046,
+    "area": 236800
   },
   {
     "code": "lv",
     "name": "Latvia",
-    "aliases": []
+    "aliases": [],
+    "population": 1847785,
+    "area": 64559
   },
   {
     "code": "lb",
     "name": "Lebanon",
-    "aliases": []
+    "aliases": [],
+    "population": 5849421,
+    "area": 10452
   },
   {
     "code": "ls",
     "name": "Lesotho",
-    "aliases": []
+    "aliases": [],
+    "population": 2363325,
+    "area": 30355
   },
   {
     "code": "lr",
     "name": "Liberia",
-    "aliases": []
+    "aliases": [],
+    "population": 5731206,
+    "area": 111369
   },
   {
     "code": "ly",
     "name": "Libya",
-    "aliases": []
+    "aliases": [],
+    "population": 7458555,
+    "area": 1759540
   },
   {
     "code": "li",
     "name": "Liechtenstein",
-    "aliases": []
+    "aliases": [],
+    "population": 41024,
+    "area": 160
   },
   {
     "code": "lt",
     "name": "Lithuania",
-    "aliases": []
+    "aliases": [],
+    "population": 2888774,
+    "area": 65300
   },
   {
     "code": "lu",
     "name": "Luxembourg",
-    "aliases": []
+    "aliases": [],
+    "population": 686970,
+    "area": 2586
   },
   {
     "code": "mg",
     "name": "Madagascar",
-    "aliases": []
+    "aliases": [],
+    "population": 32740678,
+    "area": 587041
   },
   {
     "code": "mw",
     "name": "Malawi",
-    "aliases": []
+    "aliases": [],
+    "population": 22216120,
+    "area": 118484
   },
   {
     "code": "my",
     "name": "Malaysia",
-    "aliases": []
+    "aliases": [],
+    "population": 35977838,
+    "area": 330803
   },
   {
     "code": "mv",
     "name": "Maldives",
-    "aliases": []
+    "aliases": [],
+    "population": 529676,
+    "area": 300
   },
   {
     "code": "ml",
     "name": "Mali",
-    "aliases": []
+    "aliases": [],
+    "population": 25198821,
+    "area": 1240192
   },
   {
     "code": "mt",
     "name": "Malta",
-    "aliases": []
+    "aliases": [],
+    "population": 579704,
+    "area": 316
   },
   {
     "code": "mh",
     "name": "Marshall Islands",
-    "aliases": []
+    "aliases": [],
+    "population": 36282,
+    "area": 181
   },
   {
     "code": "mr",
     "name": "Mauritania",
-    "aliases": []
+    "aliases": [],
+    "population": 5315065,
+    "area": 1030700
   },
   {
     "code": "mu",
     "name": "Mauritius",
-    "aliases": []
+    "aliases": [],
+    "population": 1243741,
+    "area": 2040
   },
   {
     "code": "mx",
     "name": "Mexico",
-    "aliases": []
+    "aliases": [],
+    "population": 131946900,
+    "area": 1964375
   },
   {
     "code": "fm",
     "name": "Micronesia",
     "aliases": [
       "Federated States of Micronesia"
-    ]
+    ],
+    "population": 113683,
+    "area": 702
   },
   {
     "code": "md",
     "name": "Moldova",
-    "aliases": []
+    "aliases": [],
+    "population": 2360527,
+    "area": 33846
   },
   {
     "code": "mc",
     "name": "Monaco",
-    "aliases": []
+    "aliases": [],
+    "population": 38341,
+    "area": 2.02
   },
   {
     "code": "mn",
     "name": "Mongolia",
-    "aliases": []
+    "aliases": [],
+    "population": 3568978,
+    "area": 1564110
   },
   {
     "code": "me",
     "name": "Montenegro",
-    "aliases": []
+    "aliases": [],
+    "population": 623129,
+    "area": 13812
   },
   {
     "code": "ma",
     "name": "Morocco",
-    "aliases": []
+    "aliases": [],
+    "population": 38430770,
+    "area": 446550
   },
   {
     "code": "mz",
     "name": "Mozambique",
-    "aliases": []
+    "aliases": [],
+    "population": 35631653,
+    "area": 801590
   },
   {
     "code": "mm",
     "name": "Myanmar",
     "aliases": [
       "Burma"
-    ]
+    ],
+    "population": 54850648,
+    "area": 676578
   },
   {
     "code": "na",
     "name": "Namibia",
-    "aliases": []
+    "aliases": [],
+    "population": 3092816,
+    "area": 825615
   },
   {
     "code": "nr",
     "name": "Nauru",
-    "aliases": []
+    "aliases": [],
+    "population": 12025,
+    "area": 21
   },
   {
     "code": "np",
     "name": "Nepal",
-    "aliases": []
+    "aliases": [],
+    "population": 29618118,
+    "area": 147181
   },
   {
     "code": "nl",
     "name": "Netherlands",
     "aliases": [
       "Holland"
-    ]
+    ],
+    "population": 18087633,
+    "area": 41850
   },
   {
     "code": "nz",
     "name": "New Zealand",
     "aliases": [
       "Aotearoa"
-    ]
+    ],
+    "population": 5324700,
+    "area": 270467
   },
   {
     "code": "ni",
     "name": "Nicaragua",
-    "aliases": []
+    "aliases": [],
+    "population": 7007502,
+    "area": 130373
   },
   {
     "code": "ne",
     "name": "Niger",
-    "aliases": []
+    "aliases": [],
+    "population": 27917831,
+    "area": 1267000
   },
   {
     "code": "ng",
     "name": "Nigeria",
-    "aliases": []
+    "aliases": [],
+    "population": 237527782,
+    "area": 923768
   },
   {
     "code": "kp",
     "name": "North Korea",
     "aliases": [
       "Democratic People's Republic of Korea"
-    ]
+    ],
+    "population": 26571036,
+    "area": 120538
   },
   {
     "code": "mk",
     "name": "North Macedonia",
     "aliases": [
       "Macedonia"
-    ]
+    ],
+    "population": 1820909,
+    "area": 25713
   },
   {
     "code": "no",
     "name": "Norway",
-    "aliases": []
+    "aliases": [],
+    "population": 5610870,
+    "area": 323802
   },
   {
     "code": "om",
     "name": "Oman",
-    "aliases": []
+    "aliases": [],
+    "population": 5494691,
+    "area": 309500
   },
   {
     "code": "pk",
     "name": "Pakistan",
-    "aliases": []
+    "aliases": [],
+    "population": 255219554,
+    "area": 881912
   },
   {
     "code": "pw",
     "name": "Palau",
-    "aliases": []
+    "aliases": [],
+    "population": 17663,
+    "area": 459
   },
   {
     "code": "ps",
     "name": "Palestine",
     "aliases": [
       "State of Palestine"
-    ]
+    ],
+    "population": 5413596,
+    "area": 6220
   },
   {
     "code": "pa",
     "name": "Panama",
-    "aliases": []
+    "aliases": [],
+    "population": 4571189,
+    "area": 75417
   },
   {
     "code": "pg",
     "name": "Papua New Guinea",
-    "aliases": []
+    "aliases": [],
+    "population": 10762817,
+    "area": 462840
   },
   {
     "code": "py",
     "name": "Paraguay",
-    "aliases": []
+    "aliases": [],
+    "population": 7013078,
+    "area": 406752
   },
   {
     "code": "pe",
     "name": "Peru",
-    "aliases": []
+    "aliases": [],
+    "population": 34576665,
+    "area": 1285216
   },
   {
     "code": "ph",
     "name": "Philippines",
-    "aliases": []
+    "aliases": [],
+    "population": 116786962,
+    "area": 342353
   },
   {
     "code": "pl",
     "name": "Poland",
-    "aliases": []
+    "aliases": [],
+    "population": 36435861,
+    "area": 312679
   },
   {
     "code": "pt",
     "name": "Portugal",
-    "aliases": []
+    "aliases": [],
+    "population": 10804871,
+    "area": 92090
   },
   {
     "code": "qa",
     "name": "Qatar",
-    "aliases": []
+    "aliases": [],
+    "population": 2972215,
+    "area": 11586
   },
   {
     "code": "cg",
@@ -749,49 +1031,69 @@
     "aliases": [
       "Congo",
       "Congo-Brazzaville"
-    ]
+    ],
+    "population": 6484437,
+    "area": 342000
   },
   {
     "code": "ro",
     "name": "Romania",
-    "aliases": []
+    "aliases": [],
+    "population": 19020271,
+    "area": 238391
   },
   {
     "code": "ru",
     "name": "Russia",
     "aliases": [
       "Russian Federation"
-    ]
+    ],
+    "population": 143513328,
+    "area": 17098242
   },
   {
     "code": "rw",
     "name": "Rwanda",
-    "aliases": []
+    "aliases": [],
+    "population": 14569341,
+    "area": 26338
   },
   {
     "code": "kn",
     "name": "Saint Kitts and Nevis",
-    "aliases": []
+    "aliases": [],
+    "population": 46922,
+    "area": 261
   },
   {
     "code": "lc",
     "name": "Saint Lucia",
-    "aliases": []
+    "aliases": [],
+    "population": 180149,
+    "area": 616
   },
   {
     "code": "vc",
     "name": "Saint Vincent and the Grenadines",
-    "aliases": ["St Vincent and the Grenadines"]
+    "aliases": [
+      "St Vincent and the Grenadines"
+    ],
+    "population": 99924,
+    "area": 389
   },
   {
     "code": "ws",
     "name": "Samoa",
-    "aliases": []
+    "aliases": [],
+    "population": 219306,
+    "area": 2842
   },
   {
     "code": "sm",
     "name": "San Marino",
-    "aliases": []
+    "aliases": [],
+    "population": 34109,
+    "area": 61
   },
   {
     "code": "st",
@@ -799,62 +1101,86 @@
     "aliases": [
       "Sao Tome e Principe",
       "Sao Tome"
-    ]
+    ],
+    "population": 240254,
+    "area": 964
   },
   {
     "code": "sa",
     "name": "Saudi Arabia",
-    "aliases": []
+    "aliases": [],
+    "population": 36973555,
+    "area": 2149690
   },
   {
     "code": "sn",
     "name": "Senegal",
-    "aliases": []
+    "aliases": [],
+    "population": 18931966,
+    "area": 196722
   },
   {
     "code": "rs",
     "name": "Serbia",
-    "aliases": []
+    "aliases": [],
+    "population": 6549143,
+    "area": 88361
   },
   {
     "code": "sc",
     "name": "Seychelles",
-    "aliases": []
+    "aliases": [],
+    "population": 122730,
+    "area": 452
   },
   {
     "code": "sl",
     "name": "Sierra Leone",
-    "aliases": []
+    "aliases": [],
+    "population": 8819794,
+    "area": 71740
   },
   {
     "code": "sg",
     "name": "Singapore",
-    "aliases": []
+    "aliases": [],
+    "population": 6111175,
+    "area": 710
   },
   {
     "code": "sk",
     "name": "Slovakia",
-    "aliases": []
+    "aliases": [],
+    "population": 5413813,
+    "area": 49037
   },
   {
     "code": "si",
     "name": "Slovenia",
-    "aliases": []
+    "aliases": [],
+    "population": 2130986,
+    "area": 20273
   },
   {
     "code": "sb",
     "name": "Solomon Islands",
-    "aliases": []
+    "aliases": [],
+    "population": 838645,
+    "area": 28896
   },
   {
     "code": "so",
     "name": "Somalia",
-    "aliases": []
+    "aliases": [],
+    "population": 19654739,
+    "area": 637657
   },
   {
     "code": "za",
     "name": "South Africa",
-    "aliases": []
+    "aliases": [],
+    "population": 64747319,
+    "area": 1221037
   },
   {
     "code": "kr",
@@ -862,133 +1188,181 @@
     "aliases": [
       "Korea",
       "Republic of Korea"
-    ]
+    ],
+    "population": 51684564,
+    "area": 100210
   },
   {
     "code": "ss",
     "name": "South Sudan",
-    "aliases": []
+    "aliases": [],
+    "population": 12188788,
+    "area": 619745
   },
   {
     "code": "es",
     "name": "Spain",
-    "aliases": []
+    "aliases": [],
+    "population": 49355143,
+    "area": 505992
   },
   {
     "code": "lk",
     "name": "Sri Lanka",
-    "aliases": []
+    "aliases": [],
+    "population": 21756000,
+    "area": 65610
   },
   {
     "code": "sd",
     "name": "Sudan",
-    "aliases": []
+    "aliases": [],
+    "population": 51662147,
+    "area": 1886068
   },
   {
     "code": "sr",
     "name": "Suriname",
-    "aliases": []
+    "aliases": [],
+    "population": 639850,
+    "area": 163820
   },
   {
     "code": "se",
     "name": "Sweden",
-    "aliases": []
+    "aliases": [],
+    "population": 10596620,
+    "area": 450295
   },
   {
     "code": "ch",
     "name": "Switzerland",
-    "aliases": []
+    "aliases": [],
+    "population": 9092436,
+    "area": 41284
   },
   {
     "code": "sy",
     "name": "Syria",
     "aliases": [
       "Syrian Arab Republic"
-    ]
+    ],
+    "population": 25620427,
+    "area": 185180
   },
   {
     "code": "tw",
     "name": "Taiwan",
-    "aliases": []
+    "aliases": [],
+    "population": 23400000,
+    "area": 36193
   },
   {
     "code": "tj",
     "name": "Tajikistan",
-    "aliases": []
+    "aliases": [],
+    "population": 10786734,
+    "area": 143100
   },
   {
     "code": "tz",
     "name": "Tanzania",
     "aliases": [
       "United Republic of Tanzania"
-    ]
+    ],
+    "population": 70545865,
+    "area": 945087
   },
   {
     "code": "th",
     "name": "Thailand",
-    "aliases": []
+    "aliases": [],
+    "population": 71619863,
+    "area": 513120
   },
   {
     "code": "tl",
     "name": "Timor-Leste",
     "aliases": [
       "East Timor"
-    ]
+    ],
+    "population": 1418517,
+    "area": 14874
   },
   {
     "code": "tg",
     "name": "Togo",
-    "aliases": []
+    "aliases": [],
+    "population": 8591626,
+    "area": 56785
   },
   {
     "code": "to",
     "name": "Tonga",
-    "aliases": []
+    "aliases": [],
+    "population": 103742,
+    "area": 747
   },
   {
     "code": "tt",
     "name": "Trinidad and Tobago",
-    "aliases": []
+    "aliases": [],
+    "population": 1367764,
+    "area": 5130
   },
   {
     "code": "tn",
     "name": "Tunisia",
-    "aliases": []
+    "aliases": [],
+    "population": 12348573,
+    "area": 163610
   },
   {
     "code": "tr",
     "name": "Turkey",
     "aliases": [
       "Turkiye",
-      "Türkiye"
-    ]
+      "T\u00fcrkiye"
+    ],
+    "population": 85878556,
+    "area": 783562
   },
   {
     "code": "tm",
     "name": "Turkmenistan",
-    "aliases": []
+    "aliases": [],
+    "population": 7618847,
+    "area": 488100
   },
   {
     "code": "tv",
     "name": "Tuvalu",
-    "aliases": []
+    "aliases": [],
+    "population": 9492,
+    "area": 26
   },
   {
     "code": "ug",
     "name": "Uganda",
-    "aliases": []
+    "aliases": [],
+    "population": 51384894,
+    "area": 241550
   },
   {
     "code": "ua",
     "name": "Ukraine",
-    "aliases": []
+    "aliases": [],
+    "population": 38980376,
+    "area": 603500
   },
   {
     "code": "ae",
     "name": "United Arab Emirates",
     "aliases": [
       "UAE"
-    ]
+    ],
+    "population": 11513149,
+    "area": 83600
   },
   {
     "code": "gb",
@@ -997,7 +1371,9 @@
       "UK",
       "Great Britain",
       "Britain"
-    ]
+    ],
+    "population": 69487000,
+    "area": 242900
   },
   {
     "code": "us",
@@ -1007,22 +1383,30 @@
       "USA",
       "US",
       "America"
-    ]
+    ],
+    "population": 341784857,
+    "area": 9372610
   },
   {
     "code": "uy",
     "name": "Uruguay",
-    "aliases": []
+    "aliases": [],
+    "population": 3384688,
+    "area": 181034
   },
   {
     "code": "uz",
     "name": "Uzbekistan",
-    "aliases": []
+    "aliases": [],
+    "population": 37053428,
+    "area": 447400
   },
   {
     "code": "vu",
     "name": "Vanuatu",
-    "aliases": []
+    "aliases": [],
+    "population": 335169,
+    "area": 12189
   },
   {
     "code": "va",
@@ -1030,31 +1414,43 @@
     "aliases": [
       "Holy See",
       "Vatican"
-    ]
+    ],
+    "population": 764,
+    "area": 0.44
   },
   {
     "code": "ve",
     "name": "Venezuela",
-    "aliases": []
+    "aliases": [],
+    "population": 28516896,
+    "area": 916445
   },
   {
     "code": "vn",
     "name": "Vietnam",
-    "aliases": []
+    "aliases": [],
+    "population": 101598527,
+    "area": 331212
   },
   {
     "code": "ye",
     "name": "Yemen",
-    "aliases": []
+    "aliases": [],
+    "population": 41773878,
+    "area": 527968
   },
   {
     "code": "zm",
     "name": "Zambia",
-    "aliases": []
+    "aliases": [],
+    "population": 21913874,
+    "area": 752612
   },
   {
     "code": "zw",
     "name": "Zimbabwe",
-    "aliases": []
+    "aliases": [],
+    "population": 16950795,
+    "area": 390757
   }
 ]
