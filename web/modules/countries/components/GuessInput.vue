@@ -124,7 +124,10 @@ onUnmounted(() => {
   clearInterval(resetScrollInterval);
 });
 
-defineExpose({ flashIncorrect });
+defineExpose({
+  flashIncorrect,
+  focus: () => textFieldRef.value?.focus(),
+});
 </script>
 
 <style lang="scss">

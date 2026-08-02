@@ -20,6 +20,7 @@
       :aria-disabled="disabled"
       :aria-controls="listboxId"
       :aria-expanded="isOpen"
+      :aria-labelledby="label ? labelId : undefined"
       aria-haspopup="listbox"
       @keydown.space.prevent="toggleDropdown"
       @keydown.enter.prevent="toggleDropdown"

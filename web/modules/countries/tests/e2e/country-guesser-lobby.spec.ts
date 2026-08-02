@@ -165,12 +165,42 @@ test.describe("Country Guesser Lobby", () => {
         localStorage.setItem("countryGuesserHighScore", "555"),
       );
 
+      // The leaderboard is a single global Durable Object shared by every
+      // room (see LEADERBOARD.idFromName("global") in game-room.ts), so
+      // whether it already has entries by the time this test runs depends
+      // on which other tests happened to submit a score first -- on a
+      // clean backend it's genuinely empty, which left the modal showing
+      // "Loading…" (or "No scores yet") forever and made the Chromatic
+      // snapshot flaky. Mocking the response makes both the content and
+      // the load timing deterministic regardless of any other test.
+      await page.route(
+        "**/api/countries/leaderboard",
+        route =>
+          void route.fulfill({
+            json: [
+              { name: "Alex", score: 320 },
+              { name: "Sam", score: 210 },
+            ],
+          }),
+      );
+
       await joinLobby(page, "Alex");
       await page.getByRole("button", { name: "Leaderboard" }).click();
 
       await expect(
         page.getByRole("heading", { name: "Leaderboard" }),
       ).toBeVisible();
+
+      const entries = page.locator(".leaderboardmodal-entry");
+      await expect(entries).toHaveCount(2);
+      await expect(entries.nth(0)).toContainText("Alex");
+      await expect(
+        entries.nth(0).locator(".leaderboardmodal-score"),
+      ).toHaveText("320");
+      await expect(entries.nth(1)).toContainText("Sam");
+      await expect(
+        entries.nth(1).locator(".leaderboardmodal-score"),
+      ).toHaveText("210");
 
       await expect(
         page.locator(".leaderboardmodal-personal"),

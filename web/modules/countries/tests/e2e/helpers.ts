@@ -138,12 +138,40 @@ export async function clickRobustly(locator: Locator) {
   }
 }
 
-// Repeatedly skips until the round ends, checking before each click
-// rather than firing a fixed count -- the server's alarm decrements the
-// clock once per real second independent of skips, so how many skips
-// it actually takes depends on how long the clicks themselves take,
-// which varies with test-runner speed. Bounded so a genuine bug can't
-// spin forever.
+// Repeatedly skips until the countdown drops under a minute (solo's 10s
+// skip penalty makes this reliably reachable). The number of skips this
+// takes is deterministic under Playwright (see `soloClockIsManual` in
+// game-room.ts, which stops the passive per-second tick from racing
+// these clicks), but this still checks before each click rather than
+// firing a fixed count, since the exact figure is an implementation
+// detail of the server's clock math this test shouldn't hardcode.
+export async function skipUntilTimerUnderOneMinute(
+  page: Page,
+  skipButton: Locator,
+) {
+  const timer = page.locator(".scorebar-timer");
+  for (let i = 0; i < 20; i++) {
+    if (
+      /^\d{1,2}s\s*$/.test(((await timer.textContent()) ?? "").trim())
+    ) {
+      return;
+    }
+    try {
+      await skipButton.click({ timeout: 2000 });
+    } catch {
+      // Ignored -- same rationale as drainRoundViaSkips below.
+    }
+  }
+  await expect(timer).toHaveText(/^\d{1,2}s\s*$/);
+}
+
+// Repeatedly skips until the round ends. Solo's clock under Playwright
+// only moves via skip/guess actions (see `soloClockIsManual` in
+// game-room.ts), so the number of skips this takes is deterministic --
+// still checked before each click rather than fired as a fixed count,
+// since that exact figure is an implementation detail of the server's
+// clock math this test shouldn't hardcode. Bounded so a genuine bug
+// can't spin forever.
 export async function drainRoundViaSkips(
   skipButton: Locator,
   gameOverHeading: Locator,

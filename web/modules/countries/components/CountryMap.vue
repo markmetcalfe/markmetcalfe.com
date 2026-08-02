@@ -552,6 +552,7 @@ onMounted(async () => {
       startZoomOutAnimation();
     }
     mapLoaded.value = true;
+    useMapReady().value = true;
   });
 
   resizeObserver = new ResizeObserver(() => map?.resize());

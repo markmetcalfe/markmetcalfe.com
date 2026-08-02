@@ -13,11 +13,18 @@ export interface Player {
 
 export type RoomPhase = "waiting" | "playing" | "round_end";
 
+export type CountryOrder =
+  | "random"
+  | "alphabetical"
+  | "population"
+  | "size";
+
 export interface RoomState {
   phase: RoomPhase;
   mode: "multiplayer" | "solo";
   players: Player[];
   roundLength: number;
+  countryOrder: CountryOrder;
   timeLeft: number;
   // How long the most recently finished round actually took, wall-clock
   // -- server-computed so a client reconnecting straight into
@@ -33,11 +40,21 @@ export interface RoomState {
 
 export type ClientMessage =
   | { type: "join"; id: string; name: string }
-  | { type: "start_game"; round_length?: number; solo?: boolean }
+  | {
+      type: "start_game";
+      round_length?: number;
+      solo?: boolean;
+      country_order?: CountryOrder;
+    }
   | { type: "guess"; text: string }
   | { type: "skip" }
   | { type: "submit_score" }
-  | { type: "return_to_lobby" };
+  | { type: "return_to_lobby" }
+  | {
+      type: "update_settings";
+      round_length: number;
+      country_order: CountryOrder;
+    };
 
 export type ServerMessage =
   | { type: "state"; state: RoomState }
@@ -82,4 +99,9 @@ export type ServerMessage =
   | { type: "score_submitted" }
   | { type: "error"; message: string }
   | { type: "ping" }
-  | { type: "returned_to_lobby" };
+  | { type: "returned_to_lobby" }
+  | {
+      type: "settings_update";
+      round_length: number;
+      country_order: CountryOrder;
+    };
