@@ -1,0 +1,40 @@
+{
+  "name": "play",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-11-11",
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "markmetcalfe.com/api/play/*",
+      "zone_name": "markmetcalfe.com",
+    },
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "LOBBY_ROOMS",
+        "class_name": "LobbyRoom",
+      },
+    ],
+  },
+  "services": [
+    {
+      "binding": "COUNTRIES",
+      "service": "countries",
+    },
+    {
+      "binding": "DOODLE",
+      "service": "doodle",
+    },
+  ],
+  "vars": {
+    "ENVIRONMENT": "production",
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["LobbyRoom"],
+    },
+  ],
+}

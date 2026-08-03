@@ -61,9 +61,8 @@
         <Icon name="bx:refresh" />
       </LinkButton>
       <LinkButton
-        v-if="store.isHost"
         text="Back to Lobby"
-        @click="store.returnToLobby()"
+        @click="playLobby.returnToLobby()"
       >
         <Icon name="bx:arrow-back" />
       </LinkButton>
@@ -84,9 +83,6 @@
       >
         <Icon name="bx:trophy" />
       </LinkButton>
-      <p v-if="!store.isHost" class="gameoverscreen-waiting">
-        Waiting for the host to return to the lobby&hellip;
-      </p>
     </div>
   </div>
 </template>
@@ -100,6 +96,7 @@ const TIME_BONUS_SECONDS = 10;
 const totalCount = COUNTRIES.length;
 
 const store = useCountryGuesserRoomStore();
+const playLobby = usePlayLobbyStore();
 const { recordScore } = useCountryGuesserHighScore();
 
 const sortedPlayers = computed(() =>
@@ -241,11 +238,6 @@ onMounted(() => {
     justify-content: center;
     padding: 1rem 1rem 1.5rem;
     flex-shrink: 0;
-  }
-
-  &-waiting {
-    font-size: 0.9rem;
-    color: var(--color-light);
   }
 }
 </style>

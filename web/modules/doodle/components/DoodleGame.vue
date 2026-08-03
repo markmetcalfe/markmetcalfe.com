@@ -26,11 +26,12 @@
       </span>
     </HeaderBar>
 
-    <!-- Main canvas / lobby area -->
+    <!-- Main canvas area -->
     <main class="doodleroom-main">
-      <DoodleLobby v-if="store.phase === 'waiting'" />
-
-      <template v-else>
+      <!-- Only ever seen for a moment while the host's own auto-start
+           (below) round-trips -- seed() has already registered us as
+           players, the round just hasn't officially begun yet. -->
+      <template v-if="store.phase !== 'waiting'">
         <div class="doodleroom-canvas-wrap">
           <DoodleCanvas />
 
@@ -45,65 +46,20 @@
       <PlayerList />
       <DoodleChat />
     </aside>
-
-    <!-- Name prompt modal -->
-    <ModalDialog v-if="showNamePrompt">
-      <h2>Enter your name</h2>
-      <form @submit.prevent="submitName">
-        <TextField
-          ref="nameInput"
-          v-model="nameValue"
-          maxlength="24"
-          placeholder="Your name..."
-          aria-label="Your name"
-          :autofill="false"
-        />
-        <LinkButton
-          :disabled="!canSubmitName || submittingName"
-          type="submit"
-          text="Join Game"
-        >
-          <Icon name="bx:log-in" />
-        </LinkButton>
-      </form>
-      <p v-if="nameError" class="doodleroom-nameprompt-error">
-        {{ nameError }}
-      </p>
-    </ModalDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ ssr: false });
-
-useSeoMeta({
-  title: "Doodle - Mark Metcalfe",
-  ogTitle: "Doodle - Mark Metcalfe",
-  description: "A multiplayer drawing and guessing game",
-  ogDescription: "A multiplayer drawing and guessing game",
-  ogImage: "https://markmetcalfe.com/doodle-social-card.jpg?v=1",
-});
-
-useHideDynamicBackground();
+import { getPersistentPlayerName } from "@play/composables/usePersistentPlayer";
 
 const route = useRoute();
 const config = useRuntimeConfig();
 const store = useDoodleStore();
+const playLobby = usePlayLobbyStore();
 
 useDoodleSound();
 
 const roomId = computed(() => route.params.room as string);
-const showNamePrompt = ref(false);
-const nameValue = ref(store.myName);
-const nameInput = ref<{ focus: () => void }>();
-const nameError = ref("");
-const submittingName = ref(false);
-
-const canSubmitName = computed(
-  () =>
-    nameValue.value.trim().length > 0 &&
-    nameValue.value.trim().length <= 20,
-);
 
 const timerClass = computed(() => {
   if (store.timeLeft > 30) {
@@ -115,40 +71,30 @@ const timerClass = computed(() => {
   return "doodleroom-header-timer-danger";
 });
 
-// Wait for you_are then show name prompt (if no name saved)
+// seed() (see api/doodle/src/game-room.ts) pre-registered the lobby's
+// host here (with any words submitted in the lobby already merged in),
+// so our own reconnect-by-id join lands as host immediately -- well
+// before a guest's fresh join to this same room necessarily has (that's
+// a genuinely separate browser establishing a brand new connection, not
+// a reconnect). Starting the instant we're confirmed as host would race
+// that and hit the server's own "need at least 2 players" rejection, so
+// this also waits for a second player to show up in *this* room's own
+// roster first.
 watch(
-  () => store.myId,
-  id => {
-    if (!id) {
-      return;
-    }
-    if (store.myName) {
-      store.send({ type: "join", name: store.myName });
-    } else {
-      showNamePrompt.value = true;
-      void nextTick(() => nameInput.value?.focus());
+  [() => store.isHost, () => store.players.length],
+  ([isHost, playerCount]) => {
+    if (isHost && store.phase === "waiting" && playerCount >= 2) {
+      store.roundLength = playLobby.roundLength;
+      store.startGame();
     }
   },
 );
 
-async function submitName() {
-  const name = nameValue.value.trim();
-  if (!name || name.length > 20) {
-    return;
-  }
-  nameError.value = "";
-  submittingName.value = true;
-  try {
-    await store.join(name);
-    showNamePrompt.value = false;
-  } catch (message) {
-    nameError.value = message as string;
-  } finally {
-    submittingName.value = false;
-  }
-}
-
 onMounted(() => {
+  const rememberedName = getPersistentPlayerName();
+  if (rememberedName) {
+    store.myName = rememberedName;
+  }
   store.connect(roomId.value, config.public.doodleApiUrl as string);
 });
 
@@ -239,39 +185,6 @@ onUnmounted(() => {
       border-top: 1px solid var(--color-light);
       max-height: 220px;
     }
-  }
-
-  &-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgb(0 0 0 / 75%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 30;
-    padding: 1rem;
-  }
-
-  .modaldialog {
-    h2 {
-      font-size: 1.3rem;
-      font-weight: 400;
-      text-align: center;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-    }
-  }
-
-  &-nameprompt-error {
-    margin: 0.5rem 0 0;
-    color: var(--color-error);
-    font-size: 0.85rem;
-    text-align: center;
   }
 }
 </style>

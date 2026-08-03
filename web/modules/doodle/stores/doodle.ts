@@ -1,4 +1,8 @@
 import { defineStore } from "pinia";
+import {
+  getPersistentPlayerId,
+  setPersistentPlayerName,
+} from "@play/composables/usePersistentPlayer";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -40,7 +44,6 @@ export interface DoodleMessage {
 }
 
 type ServerMessage =
-  | { type: "you_are"; id: string }
   | { type: "state"; state: StatePayload }
   | { type: "player_joined"; player: Player; players: Player[] }
   | { type: "player_left"; playerId: string; players: Player[] }
@@ -177,6 +180,17 @@ export const useDoodleStore = defineStore("doodle", {
       });
       socket.addEventListener("open", () => {
         this.connected = true;
+        this.myId = getPersistentPlayerId();
+        // Rejoin automatically on every (re)connect once we already know
+        // who we are -- see countryGuesserRoom.ts's connect(), which
+        // this reconnect-by-persisted-id scheme is ported from.
+        if (this.myName) {
+          this.send({
+            type: "join",
+            id: this.myId,
+            name: this.myName,
+          });
+        }
       });
       socket.addEventListener("close", () => {
         this.connected = false;
@@ -218,10 +232,12 @@ export const useDoodleStore = defineStore("doodle", {
     // Resolves once the server confirms the join ("player_joined" for
     // this player), or rejects with the server's error message.
     join(name: string): Promise<void> {
+      this.myId = getPersistentPlayerId();
       this.myName = name;
+      setPersistentPlayerName(name);
       return new Promise((resolve, reject) => {
         _joinResolver = { resolve, reject };
-        this.send({ type: "join", name });
+        this.send({ type: "join", id: this.myId, name });
       });
     },
 
@@ -279,13 +295,6 @@ export const useDoodleStore = defineStore("doodle", {
 
     _handleMessage(msg: ServerMessage) {
       switch (msg.type) {
-        case "you_are":
-          this.myId = msg.id;
-          if (this.myName) {
-            this.send({ type: "join", name: this.myName });
-          }
-          break;
-
         case "state":
           this.phase = msg.state.phase;
           this.players = msg.state.players;

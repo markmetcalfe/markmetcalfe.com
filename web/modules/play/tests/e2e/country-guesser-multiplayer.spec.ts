@@ -237,14 +237,17 @@ test.describe("Country Guesser Multiplayer", () => {
         testInfo,
       );
 
+      // "Back to Lobby" isn't host-gated -- either player can leave the
+      // game-over screen on their own, but the host's click alone is
+      // enough to send both of them back (see "return_to_lobby" in
+      // api/play/src/lobby-room.ts, broadcast to every connected lobby
+      // session regardless of who sent it).
       const backToLobbyButton = page.getByRole("button", {
         name: "Back to Lobby",
       });
       await expect(backToLobbyButton).toBeVisible();
       await expect(
-        guestPage.getByText(
-          "Waiting for the host to return to the lobby…",
-        ),
+        guestPage.getByRole("button", { name: "Back to Lobby" }),
       ).toBeVisible();
 
       await backToLobbyButton.click();

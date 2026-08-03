@@ -1,3 +1,5 @@
+import { WorkerEntrypoint } from "cloudflare:workers";
+import type { Env } from "../types";
 import { GameRoom } from "./game-room";
 
 export { GameRoom };
@@ -26,8 +28,27 @@ function generateRoomId(env: Env): string {
     .slice(0, 6);
 }
 
-export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+export default class extends WorkerEntrypoint<Env> {
+  // Called via a service binding from api/play's LobbyRoom -- see
+  // api/countries/src/index.ts's seedRoom() for the full explanation.
+  async seedRoom(payload: {
+    roomId: string;
+    hostId: string;
+    hostName: string;
+    suggestedWords: Record<string, string>;
+  }): Promise<void> {
+    const stub = this.env.GAME_ROOMS.get(
+      this.env.GAME_ROOMS.idFromName(payload.roomId),
+    );
+    await stub.seed(
+      payload.hostId,
+      payload.hostName,
+      payload.suggestedWords,
+    );
+  }
+
+  async fetch(request: Request): Promise<Response> {
+    const env = this.env;
     const url = new URL(request.url);
     const { pathname } = url;
 
@@ -71,5 +92,5 @@ export default {
     }
 
     return new Response("Not found", { status: 404 });
-  },
-};
+  }
+}

@@ -36,7 +36,7 @@ export type DrawEvent =
   | { kind: "clear" };
 
 export type ClientMessage =
-  | { type: "join"; name: string }
+  | { type: "join"; id: string; name: string }
   | { type: "start_game"; round_length?: number }
   | { type: "draw"; event: DrawEvent }
   | { type: "guess"; text: string }
@@ -44,7 +44,6 @@ export type ClientMessage =
   | { type: "suggest_word"; word: string };
 
 export type ServerMessage =
-  | { type: "you_are"; id: string }
   | { type: "state"; state: GameState }
   | { type: "player_joined"; player: Player; players: Player[] }
   | { type: "player_left"; playerId: string; players: Player[] }

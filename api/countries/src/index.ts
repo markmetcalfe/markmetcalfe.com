@@ -1,3 +1,5 @@
+import { WorkerEntrypoint } from "cloudflare:workers";
+import type { Env } from "../types";
 import { GameRoom } from "./game-room";
 import { Leaderboard } from "./leaderboard";
 
@@ -71,8 +73,25 @@ function generateRoomId(request: Request, env: Env): string {
     .slice(0, 6);
 }
 
-export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+export default class extends WorkerEntrypoint<Env> {
+  // Called via a service binding from api/play's LobbyRoom once a host
+  // starts a Country Guesser room from the shared lobby -- pre-registers
+  // them as the first (host) player before anyone actually connects, so
+  // they can't lose the host race to whoever's WebSocket happens to
+  // land first. See GameRoom.seed() below.
+  async seedRoom(payload: {
+    roomId: string;
+    hostId: string;
+    hostName: string;
+  }): Promise<void> {
+    const stub = this.env.GAME_ROOMS.get(
+      this.env.GAME_ROOMS.idFromName(payload.roomId),
+    );
+    await stub.seed(payload.hostId, payload.hostName);
+  }
+
+  async fetch(request: Request): Promise<Response> {
+    const env = this.env;
     const url = new URL(request.url);
     const { pathname } = url;
     const allowedOrigin = resolveAllowedOrigin(request, env);
@@ -129,5 +148,5 @@ export default {
       status: 404,
       headers: corsHeaders(allowedOrigin),
     });
-  },
-};
+  }
+}

@@ -92,37 +92,13 @@ test.describe("HomePage", () => {
     );
   });
 
-  test("can navigate to the doodle page", async ({
-    page,
-    isMobile,
-  }) => {
-    test.skip(isMobile, "Doodle link is not shown on mobile");
-
+  test("can navigate to the games page", async ({ page }) => {
     await page.goto("/");
 
-    const link = page.locator('a:has-text("Doodle")');
+    const link = page.locator('a:has-text("Games")');
 
-    await Promise.all([
-      page.waitForURL(/\/doodle\/.+/),
-      link.click(),
-    ]);
+    await Promise.all([page.waitForURL(/\/play\/.+/), link.click()]);
 
-    await expect(page.locator("body")).toContainText("Doodle");
-    await expect(page.locator("body")).toContainText(
-      "Waiting for players",
-    );
-  });
-
-  test("doodle link is hidden on mobile", async ({
-    page,
-    isMobile,
-  }) => {
-    test.skip(!isMobile, "Only relevant on mobile");
-
-    await page.goto("/");
-
-    await expect(
-      page.locator('a:has-text("Doodle")'),
-    ).not.toBeVisible();
+    await expect(page.locator("body")).toContainText("Games");
   });
 });

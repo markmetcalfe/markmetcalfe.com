@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     "./modules/doodle",
     "./modules/minecraft",
     "./modules/network-status",
+    "./modules/play",
     "./modules/pulsar",
     "./modules/resume",
     "./modules/sequencer",
@@ -72,6 +73,10 @@ export default defineNuxtConfig({
           },
           "/api/network-status": {
             target: "http://localhost:8789/api/network-status",
+            changeOrigin: true,
+          },
+          "/api/play": {
+            target: "http://localhost:8791/api/play",
             changeOrigin: true,
           },
           "/resume.pdf": {
