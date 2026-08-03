@@ -49,7 +49,6 @@ export type ClientMessage =
   | { type: "guess"; text: string }
   | { type: "skip" }
   | { type: "submit_score" }
-  | { type: "return_to_lobby" }
   | {
       type: "update_settings";
       round_length: number;
@@ -99,7 +98,6 @@ export type ServerMessage =
   | { type: "score_submitted" }
   | { type: "error"; message: string }
   | { type: "ping" }
-  | { type: "returned_to_lobby" }
   | {
       type: "settings_update";
       round_length: number;

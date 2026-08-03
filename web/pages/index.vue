@@ -60,29 +60,14 @@
       <LinkButton text="Sequencer" href="/sequencer" large>
         <Icon name="fad:waveform" />
       </LinkButton>
-      <LinkButton
-        text="Country Guesser"
-        href="/countries"
-        large
-        class="country-guesser"
-      >
-        <Icon name="bx:world" />
-      </LinkButton>
-      <LinkButton
-        v-if="!isMobile()"
-        text="Doodle"
-        href="/doodle"
-        large
-      >
-        <Icon name="bx:paint" />
+      <LinkButton text="Games" href="/play" large>
+        <Icon name="mdi:puzzle-outline" />
       </LinkButton>
     </SectionBlock>
   </PageCard>
 </template>
 
 <script setup lang="ts">
-import isMobile from "is-mobile";
-
 const { mailtoLink } = useAppConfig();
 </script>
 
@@ -186,16 +171,6 @@ const { mailtoLink } = useAppConfig();
           color: var(--color-highlight);
         }
       }
-    }
-  }
-
-  .country-guesser a {
-    @include vars.desktop-only {
-      font-size: 1.25rem;
-    }
-
-    @include vars.mobile-only {
-      font-size: 0.85rem;
     }
   }
 }

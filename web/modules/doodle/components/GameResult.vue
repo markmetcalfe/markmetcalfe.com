@@ -22,14 +22,18 @@
       </li>
     </ul>
 
-    <p class="doodlegameresult-returning">
-      Returning to lobby shortly&hellip;
-    </p>
+    <LinkButton
+      text="Back to Lobby"
+      @click="playLobby.returnToLobby()"
+    >
+      <Icon name="bx:arrow-back" />
+    </LinkButton>
   </div>
 </template>
 
 <script setup lang="ts">
 const store = useDoodleStore();
+const playLobby = usePlayLobbyStore();
 
 const sorted = computed(() =>
   [...store.players].sort((a, b) => b.score - a.score),
@@ -100,11 +104,6 @@ const winner = computed(() => sorted.value[0]);
       color: var(--color-highlight);
       font-weight: 600;
     }
-  }
-
-  &-returning {
-    font-size: 0.85rem;
-    color: var(--color-light);
   }
 }
 </style>

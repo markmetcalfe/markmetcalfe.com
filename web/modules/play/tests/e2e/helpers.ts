@@ -52,9 +52,9 @@ export function testPerProject(name: string, fn: TestFn) {
   }
 }
 
-// Every e2e file that hits /countries otherwise shares Playwright's two
+// Every e2e file that hits /play otherwise shares Playwright's two
 // fixed per-project rooms ("abc123-desktop"/"abc123-mobile", see
-// generateRoomId in api/countries/src/index.ts). Splitting gameplay
+// generateRoomId in api/play/src/index.ts). Splitting gameplay
 // into separate spec files only pays off if those files can still run
 // in parallel (Playwright's fullyParallel default schedules different
 // files onto different workers) without corrupting each other's shared
@@ -80,15 +80,16 @@ export async function isolateRoomPerFile(
   });
 }
 
-// Only for a fresh room: navigates to /countries, which creates a room
-// and redirects to it. A guest joining an existing room already knows
-// its URL (e.g. copied from the host) and must navigate straight there
-// with `page.goto` instead -- routing it through here too would
-// re-trigger room *creation* on a plain, untagged request and land it
-// in the wrong (new, empty) room instead of the host's.
+// Only for a fresh room: navigates to /play, which creates a room and
+// redirects to it (the shared lobby -- see web/modules/play). A guest
+// joining an existing room already knows its URL (e.g. copied from the
+// host) and must navigate straight there with `page.goto` instead --
+// routing it through here too would re-trigger room *creation* on a
+// plain, untagged request and land it in the wrong (new, empty) room
+// instead of the host's.
 export async function joinLobby(page: Page, name: string) {
-  await page.goto("/countries");
-  await expect(page).toHaveURL(/\/countries\/abc123(-[\w-]+)?$/, {
+  await page.goto("/play");
+  await expect(page).toHaveURL(/\/play\/abc123(-[\w-]+)?$/, {
     timeout: 15000,
   });
   await submitName(page, name);
@@ -99,7 +100,7 @@ export async function submitName(page: Page, name: string) {
     page.getByRole("heading", { name: "Enter your name" }),
   ).toBeVisible();
   await page.getByRole("searchbox", { name: "Your name" }).fill(name);
-  await page.getByRole("button", { name: "Join Room" }).click();
+  await page.getByRole("button", { name: "Join" }).click();
   await expect(
     page.getByRole("heading", { name: "Enter your name" }),
   ).toBeHidden();

@@ -1,3 +1,5 @@
+import { DurableObject } from "cloudflare:workers";
+import type { Env } from "../types";
 import type {
   GamePhase,
   Player,
@@ -17,7 +19,7 @@ interface Session {
   player: Player | null;
 }
 
-type AlarmMode = "idle" | "countdown" | "post_round" | "post_game";
+type AlarmMode = "idle" | "countdown" | "post_round";
 
 interface GameData {
   phase: GamePhase;
@@ -39,15 +41,16 @@ interface GameData {
   wordPoolIndex: number;
 }
 
-export class GameRoom implements DurableObject {
+// See api/countries/src/game-room.ts for why this extends the
+// RPC-branded base class instead of just `implements DurableObject`.
+export class GameRoom extends DurableObject<Env> {
   private readonly state: DurableObjectState;
-  private readonly env: Env;
   private sessions: Map<string, Session>;
   private game: GameData;
 
   constructor(state: DurableObjectState, env: Env) {
+    super(state, env);
     this.state = state;
-    this.env = env;
     this.sessions = new Map();
     this.game = this.makeInitialState();
   }
@@ -74,6 +77,30 @@ export class GameRoom implements DurableObject {
     };
   }
 
+  // Called via RPC (see seedRoom() in index.ts) from api/play's
+  // LobbyRoom when its host starts a Doodle room -- pre-adds them as
+  // the first (host) player, and carries over any words submitted in
+  // the lobby, before anyone connects. See GameRoom.seed() in
+  // api/countries/src/game-room.ts for why this needs to happen before
+  // the host's own WebSocket connects rather than after.
+  seed(
+    hostId: string,
+    hostName: string,
+    suggestedWords: Record<string, string>,
+  ): void {
+    if (this.game.players.length > 0) {
+      return;
+    }
+    const player: Player = {
+      id: hostId,
+      name: hostName,
+      score: 0,
+      isHost: true,
+    };
+    this.game.players.push(player);
+    Object.assign(this.game.suggestedWords, suggestedWords);
+  }
+
   async fetch(request: Request): Promise<Response> {
     if (request.headers.get("Upgrade") !== "websocket") {
       return new Response("Expected WebSocket upgrade", {
@@ -83,13 +110,15 @@ export class GameRoom implements DurableObject {
 
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
-    const playerId = crypto.randomUUID();
+    // Purely an internal handle for this socket in `sessions` -- player
+    // identity is the client-supplied, localStorage-persisted id carried
+    // on every "join" (see the "join" case below), not this.
+    const connectionId = crypto.randomUUID();
 
-    this.sessions.set(playerId, { ws: server, player: null });
+    this.sessions.set(connectionId, { ws: server, player: null });
     server.accept();
 
-    this.send(server, { type: "you_are", id: playerId });
-    this.sendFullState(server, playerId);
+    this.sendFullState(server, connectionId);
 
     server.addEventListener("message", event => {
       void (async () => {
@@ -97,7 +126,7 @@ export class GameRoom implements DurableObject {
           const msg = JSON.parse(
             event.data as string,
           ) as ClientMessage;
-          await this.handleMessage(playerId, msg);
+          await this.handleMessage(connectionId, msg);
         } catch {
           this.send(server, {
             type: "error",
@@ -107,7 +136,7 @@ export class GameRoom implements DurableObject {
       })();
     });
 
-    const cleanup = () => this.handleDisconnect(playerId);
+    const cleanup = () => this.handleDisconnect(connectionId);
     server.addEventListener("close", cleanup);
     server.addEventListener("error", cleanup);
 
@@ -151,33 +180,14 @@ export class GameRoom implements DurableObject {
       } else {
         await this.state.storage.setAlarm(Date.now() + 1000);
       }
-      return;
-    }
-
-    if (this.game.alarmMode === "post_game") {
-      this.game.transitionTimer--;
-      if (this.game.transitionTimer <= 0) {
-        this.game.phase = "waiting";
-        this.game.alarmMode = "idle";
-        this.game.drawOrder = [];
-        this.game.suggestedWords = {};
-        this.game.wordPool = [];
-        this.game.wordPoolIndex = 0;
-        this.game.players.forEach(p => {
-          p.score = 0;
-        });
-        this.broadcastFullState();
-      } else {
-        await this.state.storage.setAlarm(Date.now() + 1000);
-      }
     }
   }
 
   private async handleMessage(
-    playerId: string,
+    connectionId: string,
     msg: ClientMessage,
   ): Promise<void> {
-    const session = this.sessions.get(playerId);
+    const session = this.sessions.get(connectionId);
     if (!session) {
       return;
     }
@@ -187,6 +197,32 @@ export class GameRoom implements DurableObject {
         if (session.player) {
           return;
         }
+
+        // Reconnecting -- msg.id is the client's localStorage-persisted
+        // id. Reattach to the existing player instead of creating a
+        // duplicate; this is also how a host pre-registered by seed()
+        // (see below) picks up their real connection.
+        const existing = this.game.players.find(p => p.id === msg.id);
+        if (existing) {
+          for (const [otherId, otherSession] of this.sessions) {
+            if (
+              otherId !== connectionId &&
+              otherSession.player === existing
+            ) {
+              otherSession.ws.close();
+              this.sessions.delete(otherId);
+            }
+          }
+          session.player = existing;
+          this.broadcast({
+            type: "player_joined",
+            player: existing,
+            players: this.game.players,
+          });
+          this.updateRoomListing();
+          break;
+        }
+
         const name = msg.name.trim().slice(0, 24);
         if (!name) {
           this.send(session.ws, {
@@ -209,7 +245,7 @@ export class GameRoom implements DurableObject {
         }
         const isHost = this.game.players.length === 0;
         const player: Player = {
-          id: playerId,
+          id: msg.id,
           name,
           score: 0,
           isHost,
@@ -255,7 +291,10 @@ export class GameRoom implements DurableObject {
         if (this.game.phase !== "drawing") {
           return;
         }
-        if (playerId !== this.currentDrawerId()) {
+        if (
+          !session.player ||
+          session.player.id !== this.currentDrawerId()
+        ) {
           return;
         }
         const { event } = msg;
@@ -268,7 +307,7 @@ export class GameRoom implements DurableObject {
               this.game.drawHistory.slice(-1600);
           }
         }
-        this.broadcast({ type: "draw", event }, playerId);
+        this.broadcast({ type: "draw", event }, connectionId);
         break;
       }
 
@@ -279,6 +318,7 @@ export class GameRoom implements DurableObject {
         if (!session.player) {
           return;
         }
+        const playerId = session.player.id;
         if (playerId === this.currentDrawerId()) {
           return;
         }
@@ -301,7 +341,7 @@ export class GameRoom implements DurableObject {
           );
           session.player.score += points;
 
-          const drawerSession = this.sessions.get(
+          const drawerSession = this.findSessionByPlayerId(
             this.currentDrawerId(),
           );
           if (drawerSession?.player) {
@@ -344,7 +384,7 @@ export class GameRoom implements DurableObject {
         }
         this.broadcast({
           type: "chat",
-          playerId,
+          playerId: session.player.id,
           name: session.player.name,
           text: await censorText(text),
         });
@@ -355,6 +395,7 @@ export class GameRoom implements DurableObject {
         if (!session.player) {
           return;
         }
+        const playerId = session.player.id;
         if (this.game.phase !== "waiting") {
           this.send(session.ws, {
             type: "error",
@@ -440,7 +481,7 @@ export class GameRoom implements DurableObject {
       totalRounds: this.game.totalRounds,
     });
 
-    const drawerSession = this.sessions.get(drawerId);
+    const drawerSession = this.findSessionByPlayerId(drawerId);
     if (drawerSession) {
       this.send(drawerSession.ws, {
         type: "your_word",
@@ -479,15 +520,16 @@ export class GameRoom implements DurableObject {
     this.doStartRound();
   }
 
+  // The room stays on the game-over screen indefinitely -- players leave
+  // via "Back to Lobby" (see web/modules/doodle/components/GameResult.vue)
+  // rather than the room resetting itself back to "waiting" in place.
   private doEndGame(): void {
     this.game.phase = "game_end";
-    this.game.alarmMode = "post_game";
-    this.game.transitionTimer = 10;
+    this.game.alarmMode = "idle";
     const sorted = [...this.game.players].sort(
       (a, b) => b.score - a.score,
     );
     this.broadcast({ type: "game_end", players: sorted });
-    void this.state.storage.setAlarm(Date.now() + 1000);
   }
 
   private revealHintLetter(): void {
@@ -507,15 +549,16 @@ export class GameRoom implements DurableObject {
     this.broadcast({ type: "hint_update", hint: this.game.wordHint });
   }
 
-  private handleDisconnect(playerId: string): void {
-    const session = this.sessions.get(playerId);
+  private handleDisconnect(connectionId: string): void {
+    const session = this.sessions.get(connectionId);
     if (!session) {
       return;
     }
-    this.sessions.delete(playerId);
+    this.sessions.delete(connectionId);
     if (!session.player) {
       return;
     }
+    const playerId = session.player.id;
 
     this.game.players = this.game.players.filter(
       p => p.id !== playerId,
@@ -548,6 +591,17 @@ export class GameRoom implements DurableObject {
     return this.game.drawOrder[this.game.currentDrawerIndex] ?? "";
   }
 
+  private findSessionByPlayerId(
+    playerId: string,
+  ): Session | undefined {
+    for (const session of this.sessions.values()) {
+      if (session.player?.id === playerId) {
+        return session;
+      }
+    }
+    return undefined;
+  }
+
   private sendFullState(ws: WebSocket, forPlayerId: string): void {
     const state: GameState = {
       phase: this.game.phase,
@@ -569,14 +623,6 @@ export class GameRoom implements DurableObject {
         type: "your_word",
         word: this.game.currentWord,
       });
-    }
-  }
-
-  private broadcastFullState(): void {
-    for (const [id, session] of this.sessions) {
-      if (session.player) {
-        this.sendFullState(session.ws, id);
-      }
     }
   }
 

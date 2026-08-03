@@ -30,9 +30,7 @@ testPerProject(
     test.setTimeout(120000);
 
     await joinLobby(page, "Alex");
-    await page
-      .getByRole("button", { name: "Start Solo Game" })
-      .click();
+    await page.getByRole("button", { name: "Start Game" }).click();
 
     const guessInput = page.getByRole("searchbox", { name: "Guess" });
     const guessButton = page.getByRole("button", { name: "Guess" });
@@ -153,7 +151,67 @@ testPerProject(
 
     await page.getByRole("button", { name: "Back to Lobby" }).click();
     await expect(
-      page.getByRole("button", { name: "Start Solo Game" }),
+      page.getByRole("button", { name: "Start Game" }),
     ).toBeVisible();
+
+    // Starting again from the lobby reconnects into the same, still
+    // finished GameRoom DO -- this must restart it exactly like "Play
+    // Again" does rather than reshowing the previous game's Game Over
+    // screen (see the "round_end" branch in CountryGuesserGame.vue's
+    // auto-start watcher).
+    await page.getByRole("button", { name: "Start Game" }).click();
+    await expect(guessInput).toBeVisible();
+    await expect(page.locator(".scorebar-progress")).toHaveText(
+      "0 / 197 guessed",
+    );
+  },
+);
+
+testPerProject(
+  "blocks a stranger from joining an in-progress solo game",
+  async ({ page, context, browser }, testInfo) => {
+    // A fresh room, isolated from the long session above -- this one
+    // needs a second browser mid-round, which would otherwise collide
+    // with (or get flipped into multiplayer by) that shared room.
+    await isolateRoomPerFile(context, testInfo, "solo-intruder");
+
+    await joinLobby(page, "Alex");
+    const roomUrl = page.url();
+    await page.getByRole("button", { name: "Start Game" }).click();
+
+    const guessInput = page.getByRole("searchbox", { name: "Guess" });
+    await expect(guessInput).toBeVisible();
+    await waitForMapLoaded(page);
+
+    // Solo, one player -- the score readout, not a player list.
+    await expect(page.locator(".scorebar-score")).toBeVisible();
+    await expect(page.locator(".scorebar-players")).toHaveCount(0);
+
+    // A stranger who already has a remembered name (e.g. played here
+    // before) auto-joins on connect -- exactly the path the server
+    // must reject once a solo game is already under way.
+    const guestContext = await browser.newContext();
+    await guestContext.addInitScript(() => {
+      window.localStorage.setItem("playerName", "Steve");
+    });
+    const guestPage = await guestContext.newPage();
+    await guestPage.goto(roomUrl);
+    await waitForMapLoaded(guestPage);
+
+    // The room stays solo on both ends -- the stranger's join was
+    // rejected server-side, so they never appear as a real player.
+    await expect(page.locator(".scorebar-players")).toHaveCount(0);
+    await expect(page.locator(".scorebar-score")).toBeVisible();
+    await expect(guestPage.locator(".scorebar-players")).toHaveCount(
+      0,
+    );
+
+    await takeSnapshot(
+      page,
+      "Country Guesser Solo Blocks Intruder",
+      testInfo,
+    );
+
+    await guestContext.close();
   },
 );

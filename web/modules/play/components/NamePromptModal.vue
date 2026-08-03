@@ -1,7 +1,7 @@
 <template>
   <ModalDialog class="namepromptmodal">
     <h2>Enter your name</h2>
-    <form @submit.prevent="submitName">
+    <form @submit.prevent="onSubmit">
       <TextField
         ref="nameInput"
         v-model="nameValue"
@@ -11,52 +11,47 @@
         :autofill="false"
       />
       <LinkButton
-        :disabled="!canSubmitName || submittingName"
+        :disabled="!canSubmit || submitting"
         type="submit"
-        text="Join Room"
+        text="Join"
       >
         <Icon name="bx:log-in" />
       </LinkButton>
     </form>
-    <p v-if="nameError" class="namepromptmodal-error">
-      {{ nameError }}
-    </p>
+    <p v-if="error" class="namepromptmodal-error">{{ error }}</p>
   </ModalDialog>
 </template>
 
 <script setup lang="ts">
-import { getPersistentPlayerName } from "../stores/countryGuesserRoom";
+import { getPersistentPlayerName } from "../composables/usePersistentPlayer";
 
-const emit = defineEmits<{ joined: [] }>();
+interface Props {
+  error?: string;
+  submitting?: boolean;
+}
 
-const store = useCountryGuesserRoomStore();
+withDefaults(defineProps<Props>(), {
+  error: "",
+  submitting: false,
+});
+
+const emit = defineEmits<{ submit: [name: string] }>();
 
 const nameValue = ref(getPersistentPlayerName());
 const nameInput = ref<{ focus: () => void }>();
-const nameError = ref("");
-const submittingName = ref(false);
 
-const canSubmitName = computed(
+const canSubmit = computed(
   () =>
     nameValue.value.trim().length > 0 &&
     nameValue.value.trim().length <= 20,
 );
 
-async function submitName() {
+function onSubmit() {
   const name = nameValue.value.trim();
   if (!name || name.length > 20) {
     return;
   }
-  nameError.value = "";
-  submittingName.value = true;
-  try {
-    await store.join(name);
-    emit("joined");
-  } catch (message) {
-    nameError.value = message as string;
-  } finally {
-    submittingName.value = false;
-  }
+  emit("submit", name);
 }
 
 onMounted(() => {

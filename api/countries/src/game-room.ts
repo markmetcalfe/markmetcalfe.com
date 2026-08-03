@@ -1,3 +1,5 @@
+import { DurableObject } from "cloudflare:workers";
+import type { Env } from "../types";
 import type {
   Player,
   RoomPhase,
@@ -160,15 +162,20 @@ function buildHint(name: string, revealedIndices: number[]): string {
     .join("");
 }
 
-export class GameRoom implements DurableObject {
+// Extends the RPC-branded base class (rather than just `implements
+// DurableObject`) so seedRoom() in index.ts can call seed() below
+// directly through a typed stub -- see api/play/src/lobby-room.ts's
+// "start_game", which is the only caller. `state` is kept as its own
+// field (distinct from the base class's own `ctx`/`env`) purely to
+// avoid renaming every existing `this.state.*` reference below.
+export class GameRoom extends DurableObject<Env> {
   private readonly state: DurableObjectState;
-  private readonly env: Env;
   private sessions: Map<string, Session>;
   private game: GameData;
 
   constructor(state: DurableObjectState, env: Env) {
+    super(state, env);
     this.state = state;
-    this.env = env;
     this.sessions = new Map();
     this.game = this.makeInitialState();
   }
@@ -249,6 +256,29 @@ export class GameRoom implements DurableObject {
       anyCorrectThisTarget: false,
       alarmMode: "idle",
     };
+  }
+
+  // Called via RPC (see seedRoom() in index.ts) from api/play's
+  // LobbyRoom when its host starts a Country Guesser room -- pre-adds
+  // them as the first (host) player before anyone connects, so the
+  // player who arrives first here is deterministically the lobby's
+  // actual host rather than whoever's socket happens to connect first.
+  // No-ops outside a genuinely fresh room (defensive -- this should
+  // only ever be called once, right before the room is first visited).
+  seed(hostId: string, hostName: string): void {
+    if (this.game.players.length > 0) {
+      return;
+    }
+    const player: Player = {
+      id: hostId,
+      name: hostName,
+      score: 0,
+      isHost: true,
+      correctGuesses: 0,
+      skips: 0,
+      disconnectedAt: null,
+    };
+    this.game.players.push(player);
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -436,6 +466,22 @@ export class GameRoom implements DurableObject {
           break;
         }
 
+        // A solo room is seeded for one specific player -- once their
+        // game has actually started, nobody who merely guesses/finds
+        // the room code should be able to join it (the reconnect branch
+        // above still lets the original player themself back in
+        // regardless of phase).
+        if (
+          this.game.mode === "solo" &&
+          this.game.phase !== "waiting"
+        ) {
+          this.send(session.ws, {
+            type: "error",
+            message: "This game has already started",
+          });
+          return;
+        }
+
         const name = msg.name.trim().slice(0, 24);
         if (!name) {
           this.send(session.ws, {
@@ -603,20 +649,6 @@ export class GameRoom implements DurableObject {
           return;
         }
         void this.submitScore(session);
-        break;
-      }
-
-      // Any player can send everyone back to the lobby -- lower-stakes
-      // than starting a round, so unlike "start_game" this isn't
-      // restricted to the host.
-      case "return_to_lobby": {
-        if (this.game.phase !== "round_end" || !session.player) {
-          return;
-        }
-        this.game.phase = "waiting";
-        this.game.alarmMode = "idle";
-        this.scheduleIdleAlarm();
-        this.broadcast({ type: "returned_to_lobby" });
         break;
       }
 
@@ -877,6 +909,15 @@ export class GameRoom implements DurableObject {
       playerId: session.player.id,
       players: this.game.players,
     });
+    // Solo has nobody else to keep a round running for, and (unlike
+    // multiplayer) no one else is allowed to join and take their place
+    // -- so there's nothing worth a grace period here. End it
+    // immediately instead of leaving the round ticking down against an
+    // empty room; reconnecting (or restarting from the lobby, see
+    // CountryGuesserGame.vue) then lands straight on "round_end".
+    if (this.game.mode === "solo" && this.game.phase === "playing") {
+      this.doEndRound();
+    }
     // A no-op in production (nothing's past its grace period yet) --
     // only actually drops anyone when gracePeriodMs is 0 (playwright).
     this.sweepDisconnectedPlayers();

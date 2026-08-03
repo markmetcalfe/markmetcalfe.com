@@ -15,10 +15,10 @@
     </HeaderBar>
 
     <main class="countryguesser-main">
-      <WaitingRoomScreen
-        v-if="store.phase === 'waiting'"
-        @show-leaderboard="showLeaderboard = true"
-      />
+      <!-- Only ever seen for a moment while the host's own auto-start
+           (below) round-trips -- seed() has already registered us as
+           players, the round just hasn't officially begun yet. -->
+      <div v-if="store.phase === 'waiting'" />
 
       <div v-else class="countryguesser-play">
         <GameOverScreen
@@ -36,11 +36,6 @@
       </div>
     </main>
 
-    <NamePromptModal
-      v-if="showNamePrompt"
-      @joined="showNamePrompt = false"
-    />
-
     <LeaderboardModal
       v-if="showLeaderboard"
       @close="showLeaderboard = false"
@@ -49,33 +44,15 @@
 </template>
 
 <script setup lang="ts">
-import { COUNTRIES } from "../../data/countries";
-import { getPersistentPlayerName } from "../../stores/countryGuesserRoom";
-
-definePageMeta({ ssr: false });
-
-useSeoMeta({
-  title: "Country Guesser - Mark Metcalfe",
-  ogTitle: "Country Guesser - Mark Metcalfe",
-  description:
-    "A singleplayer and multiplayer country name guessing game",
-  ogDescription:
-    "A singleplayer and multiplayer country name guessing game",
-  ogImage: "https://markmetcalfe.com/countries-social-card.jpg?v=1",
-});
-
-// Deferred until the map itself has actually rendered a frame (rather
-// than hiding as soon as this page mounts) so there's no gap of nothing
-// behind the still-loading map -- see useMapReady().
-useHideDynamicBackground(useMapReady());
-
-useFixMobileViewport();
+import { COUNTRIES } from "../data/countries";
+import { getPersistentPlayerName } from "../stores/countryGuesserRoom";
 
 const totalCount = COUNTRIES.length;
 
 const route = useRoute();
 const config = useRuntimeConfig();
 const store = useCountryGuesserRoomStore();
+const playLobby = usePlayLobbyStore();
 const { playCorrect, playIncorrect, playRoundEnd, playNextTarget } =
   useCountryGuesserSound(
     computed(() => store.timeLeft),
@@ -83,7 +60,6 @@ const { playCorrect, playIncorrect, playRoundEnd, playNextTarget } =
   );
 
 const roomId = computed(() => route.params.room as string);
-const showNamePrompt = ref(false);
 const showLeaderboard = ref(false);
 const guessPanelRef = ref<{ flashIncorrect: () => void }>();
 
@@ -97,15 +73,34 @@ const scoreBarProps = computed(() =>
     : { players: store.players, myPlayerId: store.myId },
 );
 
-// The store itself auto-rejoins on every (re)connect once `myName` is
-// known (including across a brief drop or a backgrounded-tab reconnect)
-// -- this only needs to handle the one case it can't: a first-time
-// visitor with no remembered name yet.
+// seed() (see api/countries/src/game-room.ts) pre-registered the lobby's
+// host here, so our own reconnect-by-id join lands as host immediately
+// -- well before a guest's fresh join to this same room necessarily has
+// (that's a genuinely separate browser establishing a brand new
+// connection, not a reconnect). Starting the instant we're confirmed as
+// host would race that and hit the server's own "need at least 2
+// players" rejection, so this also waits for however many players the
+// lobby actually had at hand-off (unless it was solo to begin with) to
+// show up in *this* room's own roster first.
+// Also fires from "round_end" -- returning to the lobby after a solo
+// game and starting again reconnects into this same, still-finished
+// GameRoom DO (seed() only ever touches a genuinely empty room), so
+// this has to restart it exactly like GameOverScreen's "Play Again"
+// does rather than only handling a room's very first start.
+const soloStart = playLobby.players.length < 2;
 watch(
-  () => store.connected,
-  connected => {
-    if (connected && !store.myName) {
-      showNamePrompt.value = true;
+  [() => store.isHost, () => store.players.length],
+  ([isHost, playerCount]) => {
+    if (
+      isHost &&
+      (store.phase === "waiting" || store.phase === "round_end") &&
+      (soloStart || playerCount >= 2)
+    ) {
+      store.startGame(
+        playLobby.roundLength,
+        soloStart,
+        playLobby.countryOrder,
+      );
     }
   },
 );
@@ -156,10 +151,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   store.disconnect();
-  // Reset for the next visit -- this is shared, page-lifetime state (see
-  // useMapReady()), not per-CountryMap-instance state, so it otherwise
-  // stays true from a previous visit and skips the defer entirely.
-  useMapReady().value = false;
 });
 </script>
 
