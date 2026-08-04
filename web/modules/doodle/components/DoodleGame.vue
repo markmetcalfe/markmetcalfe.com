@@ -123,6 +123,23 @@ onUnmounted(() => {
       / 1fr;
   }
 
+  // The shared HeaderBar hides its title on mobile everywhere else (see
+  // HeaderBar.vue) since most pages just show the back button there --
+  // Doodle needs it back, because the word/hint can be too long for a
+  // single mobile-width line alongside round/timer, and needs its own
+  // second line instead of clipping the page.
+  .headerbar {
+    @include vars.mobile-only {
+      flex-wrap: wrap;
+    }
+  }
+
+  .headerbar-title {
+    @include vars.mobile-only {
+      display: inline;
+    }
+  }
+
   &-header {
     &-round {
       font-size: 0.85rem;
@@ -140,6 +157,13 @@ onUnmounted(() => {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+
+      // Pushed onto its own second line, after round/timer (which stay
+      // at the default order) rather than between them.
+      @include vars.mobile-only {
+        order: 10;
+        flex-basis: 100%;
+      }
     }
 
     &-timer {

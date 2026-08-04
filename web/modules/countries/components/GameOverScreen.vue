@@ -28,7 +28,12 @@
         <p v-if="winner" class="gameoverscreen-winner">
           <span class="highlight">{{ winner.name }}</span> wins!
         </p>
-        <ul class="gameoverscreen-scores">
+        <ul
+          class="gameoverscreen-scores"
+          :class="{
+            'gameoverscreen-scores-2col': sortedPlayers.length >= 4,
+          }"
+        >
           <li
             v-for="(player, i) in sortedPlayers"
             :key="player.id"
@@ -193,6 +198,18 @@ onMounted(() => {
     overflow-y: auto;
     margin: 0.25rem 0 0;
     padding: 0;
+
+    &-2col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 480px;
+
+      // The winner keeps top billing -- spans both columns instead of
+      // sharing a row with 2nd place.
+      .gameoverscreen-score-top {
+        grid-column: 1 / -1;
+      }
+    }
   }
 
   &-score {

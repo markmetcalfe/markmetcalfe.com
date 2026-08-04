@@ -5,7 +5,10 @@
       <span class="highlight">{{ winner.name }}</span> wins!
     </p>
 
-    <ul class="doodlegameresult-scores">
+    <ul
+      class="doodlegameresult-scores"
+      :class="{ 'doodlegameresult-scores-2col': sorted.length >= 4 }"
+    >
       <li
         v-for="(player, i) in sorted"
         :key="player.id"
@@ -44,7 +47,9 @@ const winner = computed(() => sorted.value[0]);
 
 <style lang="scss">
 .doodlegameresult {
-  position: absolute;
+  // Fixed, not absolute -- see the comment on .doodleroundresult in
+  // RoundResult.vue, same underlying issue.
+  position: fixed;
   inset: 0;
   background: rgb(0 0 0 / 92%);
   display: flex;
@@ -74,6 +79,18 @@ const winner = computed(() => sorted.value[0]);
     gap: 0.4rem;
     width: 100%;
     max-width: 300px;
+
+    &-2col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 500px;
+
+      // The winner keeps top billing -- spans both columns instead of
+      // sharing a row with 2nd place.
+      .doodlegameresult-score-top {
+        grid-column: 1 / -1;
+      }
+    }
   }
 
   &-score {

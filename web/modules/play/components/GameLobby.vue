@@ -325,7 +325,8 @@ onUnmounted(() => {
     align-items: center;
     justify-content: center;
     gap: 1.5rem;
-    padding: 1rem 0.5rem;
+    padding: 0 0.5rem;
+    padding-bottom: 1rem;
     text-align: center;
   }
 
@@ -395,7 +396,9 @@ onUnmounted(() => {
       gap: 0.75rem;
 
       &-3col {
-        grid-template-columns: repeat(3, minmax(140px, 1fr));
+        @include vars.desktop-only {
+          grid-template-columns: repeat(3, minmax(140px, 1fr));
+        }
       }
     }
   }

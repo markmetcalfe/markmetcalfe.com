@@ -58,7 +58,7 @@ function isDrawing(playerId: string) {
     grid-area: players;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.3rem 0.75rem;
+    gap: 0.3rem 1.5rem;
     border-bottom: none;
     border-top: 1px solid var(--color-light);
   }

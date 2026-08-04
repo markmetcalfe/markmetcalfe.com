@@ -6,7 +6,10 @@
       <strong class="highlight">{{ store.wordHint }}</strong>
     </p>
 
-    <ul class="doodleroundresult-scores">
+    <ul
+      class="doodleroundresult-scores"
+      :class="{ 'doodleroundresult-scores-2col': sorted.length >= 4 }"
+    >
       <li
         v-for="(player, i) in sorted"
         :key="player.id"
@@ -42,7 +45,14 @@ const sorted = computed(() =>
 
 <style lang="scss">
 .doodleroundresult {
-  position: absolute;
+  // Fixed, not absolute -- its DOM parent (.doodleroom-canvas-wrap) is
+  // only as tall as the canvas itself on mobile (see DoodleGame.vue's
+  // mobile grid, where "main" is sized to its content rather than
+  // stretched), so an absolutely-positioned overlay there only covered
+  // the canvas, leaving the player list/chat rows uncovered. Fixed
+  // positioning covers the true viewport regardless of which grid row
+  // it happens to be nested in.
+  position: fixed;
   inset: 0;
   background: rgb(0 0 0 / 88%);
   display: flex;
@@ -73,6 +83,18 @@ const sorted = computed(() =>
     gap: 0.4rem;
     width: 100%;
     max-width: 280px;
+
+    &-2col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 480px;
+
+      // The winner keeps top billing -- spans both columns instead of
+      // sharing a row with 2nd place.
+      .doodleroundresult-score-top {
+        grid-column: 1 / -1;
+      }
+    }
   }
 
   &-score {
