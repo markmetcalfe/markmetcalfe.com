@@ -63,6 +63,7 @@ type ServerMessage =
       hint: string;
       guessedCodes: string[];
       timeLeft: number;
+      players: Player[];
     }
   | { type: "hint_update"; hint: string }
   | { type: "no_guess"; code: string; countryName: string }
@@ -80,6 +81,7 @@ type ServerMessage =
       elapsedSeconds: number;
     }
   | { type: "score_submitted" }
+  | { type: "join_rejected" }
   | { type: "error"; message: string }
   | { type: "ping" }
   | {
@@ -147,6 +149,11 @@ export const useCountryGuesserRoomStore = defineStore(
       events: [] as RoomEvent[],
       scoreSubmitted: false,
       soloMode: false,
+      // Set once the server rejects a genuinely new join (as opposed to
+      // a reconnect) because a solo game here is already under way --
+      // see CountryGuesserGame.vue, which redirects back to /play once
+      // this flips true.
+      joinRejected: false,
     }),
 
     getters: {
@@ -398,6 +405,7 @@ export const useCountryGuesserRoomStore = defineStore(
             this.hint = msg.hint;
             this.guessedCodes = msg.guessedCodes;
             this.timeLeft = msg.timeLeft;
+            this.players = msg.players;
             this.donePlayerIds = [];
             this.lastGuessCorrect = null;
             break;
@@ -428,6 +436,10 @@ export const useCountryGuesserRoomStore = defineStore(
 
           case "score_submitted":
             this.scoreSubmitted = true;
+            break;
+
+          case "join_rejected":
+            this.joinRejected = true;
             break;
 
           case "settings_update":
@@ -477,6 +489,7 @@ export const useCountryGuesserRoomStore = defineStore(
         this.events = [];
         this.scoreSubmitted = false;
         this.soloMode = false;
+        this.joinRejected = false;
       },
     },
   },

@@ -79,6 +79,7 @@ export type ServerMessage =
       hint: string;
       guessedCodes: string[];
       timeLeft: number;
+      players: Player[];
     }
   | { type: "hint_update"; hint: string }
   | { type: "no_guess"; code: string; countryName: string }
@@ -96,6 +97,7 @@ export type ServerMessage =
       elapsedSeconds: number;
     }
   | { type: "score_submitted" }
+  | { type: "join_rejected" }
   | { type: "error"; message: string }
   | { type: "ping" }
   | {
