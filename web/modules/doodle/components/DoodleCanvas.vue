@@ -261,8 +261,9 @@ onUnmounted(() => {
     flex-shrink: 0;
 
     @include vars.mobile-only {
+      height: auto;
       padding: 0.4rem 0.6rem;
-      gap: 0.5rem;
+      gap: 0.4rem 0.5rem;
     }
   }
 
@@ -270,6 +271,10 @@ onUnmounted(() => {
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
+
+    @include vars.mobile-only {
+      flex-basis: 100%;
+    }
   }
 
   &-color {

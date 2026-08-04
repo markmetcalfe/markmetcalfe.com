@@ -115,7 +115,12 @@ onUnmounted(() => {
   z-index: 20;
 
   @include vars.mobile-only {
-    grid-template: "header" auto "main" 1fr "sidebar" auto / 1fr;
+    grid-template:
+      "header" auto
+      "players" auto
+      "main" auto
+      "chat" 1fr
+      / 1fr;
   }
 
   &-header {
@@ -181,9 +186,7 @@ onUnmounted(() => {
     overflow: hidden;
 
     @include vars.mobile-only {
-      border-left: none;
-      border-top: 1px solid var(--color-light);
-      max-height: 220px;
+      display: contents;
     }
   }
 }

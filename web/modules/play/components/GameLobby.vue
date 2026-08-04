@@ -52,31 +52,33 @@
       <div v-if="store.players.length > 1" class="gamelobby-players">
         <h3>Players</h3>
 
-        <div class="gamelobby-players-list">
+        <div
+          class="gamelobby-players-list"
+          :class="{
+            'gamelobby-players-list-3col': store.players.length > 4,
+          }"
+        >
           <div
             v-for="player in store.players"
             :key="player.id"
             class="gamelobby-player"
           >
-            <span class="gamelobby-player-name">{{
-              player.name
-            }}</span>
+            <span
+              class="gamelobby-player-name"
+              :class="{ highlight: player.id === store.myId }"
+              >{{ player.name }}</span
+            >
             <span class="gamelobby-player-badges">
               <span
                 v-if="player.disconnectedAt"
                 class="gamelobby-player-status"
                 >connection lost</span
               >
-              <template v-else>
-                <span
-                  v-if="player.id === store.myId"
-                  class="highlight"
-                  >you</span
-                >
-                <span v-if="player.isHost" class="highlight"
-                  >host</span
-                >
-              </template>
+              <Icon
+                v-else-if="player.isHost"
+                name="bx:crown"
+                class="gamelobby-player-crown"
+              />
             </span>
           </div>
         </div>
@@ -392,12 +394,8 @@ onUnmounted(() => {
       grid-template-columns: repeat(2, minmax(180px, 1fr));
       gap: 0.75rem;
 
-      // Center a trailing odd-one-out instead of leaving it stuck to
-      // the left column.
-      .gamelobby-player:last-child:nth-child(odd) {
-        grid-column: 1 / -1;
-        max-width: calc(50% - 0.375rem);
-        justify-self: center;
+      &-3col {
+        grid-template-columns: repeat(3, minmax(140px, 1fr));
       }
     }
   }
@@ -425,6 +423,11 @@ onUnmounted(() => {
     &-status {
       color: var(--color-error);
       font-size: 0.85rem;
+    }
+
+    &-crown {
+      color: var(--color-highlight);
+      flex-shrink: 0;
     }
   }
 

@@ -214,10 +214,15 @@ test.describe("Game Lobby", () => {
       await guestPage.goto(inviteUrl);
       await submitName(guestPage, "Steve");
 
+      // The host badge is an icon, not text (see .gamelobby-player-crown
+      // in GameLobby.vue) -- Mark's own name is shown in green instead
+      // of a separate "you" label.
       await expect(
-        page.getByText("host", { exact: true }),
+        page.locator(".gamelobby-player-crown"),
       ).toBeVisible();
-      await expect(page.getByText("Mark")).toBeVisible();
+      await expect(
+        page.locator(".gamelobby-player-name.highlight"),
+      ).toHaveText("Mark");
       await expect(page.getByText("Steve")).toBeVisible();
 
       // Host sees editable controls...

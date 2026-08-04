@@ -135,8 +135,8 @@ testPerProject(
       /^\d+s\s*$/,
     );
 
-    // Player list: Mark first (join order), host star, drawing marker;
-    // Steve second, neither.
+    // Player list: Mark first (join order), host crown + drawing pencil
+    // icons; Steve second, neither icon.
     const hostPlayers = page.locator(".doodleplayers-item");
     await expect(hostPlayers).toHaveCount(2);
     await expect(hostPlayers.nth(0)).toHaveClass(
@@ -144,7 +144,10 @@ testPerProject(
     );
     await expect(
       hostPlayers.nth(0).locator(".doodleplayers-item-name"),
-    ).toContainText("Mark ★");
+    ).toContainText("Mark");
+    await expect(
+      hostPlayers.nth(0).locator(".doodleplayers-item-icon"),
+    ).toHaveCount(2);
     await expect(
       hostPlayers.nth(0).locator(".doodleplayers-item-score"),
     ).toHaveText("0");
@@ -154,6 +157,9 @@ testPerProject(
     await expect(
       hostPlayers.nth(1).locator(".doodleplayers-item-name"),
     ).toContainText("Steve");
+    await expect(
+      hostPlayers.nth(1).locator(".doodleplayers-item-icon"),
+    ).toHaveCount(0);
     await expect(
       hostPlayers.nth(1).locator(".doodleplayers-item-score"),
     ).toHaveText("0");

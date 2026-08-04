@@ -16,8 +16,8 @@ export function usePlayPageMeta() {
   });
 
   useSeoMeta({
-    title: `${pageTitle.value} - Mark Metcalfe`,
-    ogTitle: `${pageTitle.value} - Mark Metcalfe`,
+    title: () => `${pageTitle.value} - Mark Metcalfe`,
+    ogTitle: `Games - Mark Metcalfe`,
     description: "Invite others to play Country Guesser or Doodle",
     ogDescription: "Invite others to play Country Guesser or Doodle",
     ogImage: "https://markmetcalfe.com/games-social-card.jpg?v=1",

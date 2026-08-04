@@ -16,8 +16,18 @@
       <span class="doodleplayers-item-avatar">
         {{ player.name.charAt(0).toUpperCase() }}
       </span>
-      <span class="doodleplayers-item-name">
-        {{ player.name }}{{ player.isHost ? " ★" : "" }}
+      <span class="doodleplayers-item-name"
+        >{{ player.name }}
+        <Icon
+          v-if="player.isHost"
+          name="bx:crown"
+          class="doodleplayers-item-icon"
+        />
+        <Icon
+          v-if="isDrawing(player.id)"
+          name="bx:pencil"
+          class="doodleplayers-item-icon"
+        />
       </span>
       <span class="doodleplayers-item-score">
         {{ player.score }}
@@ -44,6 +54,15 @@ function isDrawing(playerId: string) {
   border-bottom: 1px solid var(--color-light);
   flex-shrink: 0;
 
+  @include vars.mobile-only {
+    grid-area: players;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem 0.75rem;
+    border-bottom: none;
+    border-top: 1px solid var(--color-light);
+  }
+
   &-heading {
     font-size: 0.7rem;
     text-transform: uppercase;
@@ -51,6 +70,10 @@ function isDrawing(playerId: string) {
     color: var(--color-light);
     font-weight: 400;
     margin-bottom: 0.5rem;
+
+    @include vars.mobile-only {
+      display: none;
+    }
   }
 
   &-item {
@@ -81,16 +104,15 @@ function isDrawing(playerId: string) {
       white-space: nowrap;
     }
 
+    &-icon {
+      margin-left: 0.3rem;
+      vertical-align: -2px;
+    }
+
     &-score {
       font-weight: 600;
       font-size: 0.8rem;
       color: var(--color-light);
-    }
-
-    &-drawing {
-      .doodleplayers-item-name::after {
-        content: " ✏";
-      }
     }
 
     &-guessed {

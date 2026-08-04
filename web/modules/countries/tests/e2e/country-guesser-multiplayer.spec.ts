@@ -60,9 +60,11 @@ test.describe("Country Guesser Multiplayer", () => {
       // Host sees both players, the host badge, and the round-length
       // controls (a slider plus a linked numeric field) and Start Game.
       await expect(
-        page.getByText("host", { exact: true }),
+        page.locator(".gamelobby-player-crown"),
       ).toBeVisible();
-      await expect(page.getByText("Mark")).toBeVisible();
+      await expect(
+        page.locator(".gamelobby-player-name.highlight"),
+      ).toHaveText("Mark");
       await expect(page.getByText("Steve")).toBeVisible();
       await expect(
         page.getByRole("slider", { name: "Game length (min)" }),

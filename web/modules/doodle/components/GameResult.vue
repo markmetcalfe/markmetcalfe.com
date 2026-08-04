@@ -67,6 +67,8 @@ const winner = computed(() => sorted.value[0]);
 
   &-scores {
     list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
