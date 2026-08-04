@@ -117,10 +117,15 @@ watch(
   },
 );
 
+// Only a genuine live round ending should chime -- reconnecting
+// straight into an already-finished room (e.g. restarting a solo game
+// from the lobby remounts this component, whose fresh "state" sync
+// briefly reports "round_end" before the auto-restart above kicks in)
+// isn't a round actually ending, so that transition is excluded.
 watch(
   () => store.phase,
-  phase => {
-    if (phase === "round_end") {
+  (phase, previousPhase) => {
+    if (phase === "round_end" && previousPhase === "playing") {
       playRoundEnd();
     }
   },
@@ -134,6 +139,19 @@ watch(
   (code, previousCode) => {
     if (previousCode && code) {
       playNextTarget();
+    }
+  },
+);
+
+// A solo room only ever has room for the one player it was seeded for
+// (see the "join" handler in api/countries/src/game-room.ts) -- anyone
+// else who lands here (e.g. guessing/finding the room code) never
+// registers as a real player, so there's nothing for them to do here.
+watch(
+  () => store.joinRejected,
+  rejected => {
+    if (rejected) {
+      void navigateTo("/play");
     }
   },
 );

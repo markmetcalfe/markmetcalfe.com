@@ -475,10 +475,7 @@ export class GameRoom extends DurableObject<Env> {
           this.game.mode === "solo" &&
           this.game.phase !== "waiting"
         ) {
-          this.send(session.ws, {
-            type: "error",
-            message: "This game has already started",
-          });
+          this.send(session.ws, { type: "join_rejected" });
           return;
         }
 
@@ -852,6 +849,11 @@ export class GameRoom extends DurableObject<Env> {
       hint: buildHint(country.name, []),
       guessedCodes: this.game.guessedCodes,
       timeLeft: this.game.timeLeft,
+      // The first target_start of a (re)started game is also the only
+      // broadcast telling clients doStartGame() just reset every
+      // player's score/stats back to 0 -- without it, a restarted solo
+      // game keeps showing the previous game's final score client-side.
+      players: this.game.players,
     });
   }
 
