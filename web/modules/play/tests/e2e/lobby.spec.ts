@@ -340,6 +340,18 @@ test.describe("Game Lobby", () => {
       const guestWordInput = guestPage.getByRole("textbox", {
         name: "Suggest a word",
       });
+
+      await guestWordInput.fill("fuck");
+      await guestPage
+        .getByRole("button", { name: "Submit", exact: true })
+        .click();
+      await expect(
+        guestPage.getByText("Word contains inappropriate language"),
+      ).toBeVisible();
+      await expect(
+        guestPage.getByRole("button", { name: "Word submitted!" }),
+      ).toHaveCount(0);
+
       await guestWordInput.fill("giraffe");
       await guestPage
         .getByRole("button", { name: "Submit", exact: true })
