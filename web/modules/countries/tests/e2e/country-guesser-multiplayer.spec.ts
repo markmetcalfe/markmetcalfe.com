@@ -10,7 +10,7 @@ import {
   submitName,
   testPerProject,
   waitForMapLoaded,
-} from "./helpers";
+} from "../../../play/tests/e2e/helpers";
 
 test.beforeEach(async ({ context }, testInfo) => {
   await isolateRoomPerFile(context, testInfo, "multiplayer");
