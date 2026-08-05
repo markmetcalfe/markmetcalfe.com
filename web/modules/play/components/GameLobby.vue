@@ -17,12 +17,7 @@
       />
     </video>
 
-    <HeaderBar
-      title="Games"
-      back-href="/"
-      back-label="Leave"
-      class="gamelobby-header"
-    />
+    <HeaderBar title="Games" back-href="/" back-label="Leave" />
 
     <main class="gamelobby-main">
       <h1 class="gamelobby-title">Games</h1>
@@ -319,10 +314,6 @@ onUnmounted(() => {
     object-fit: cover;
     opacity: 0.1;
     pointer-events: none;
-  }
-
-  &-header {
-    border-bottom: none;
   }
 
   &-main {

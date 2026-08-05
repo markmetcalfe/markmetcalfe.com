@@ -1,5 +1,18 @@
 <template>
   <div class="doodlecanvas">
+    <div
+      v-if="store.phase === 'drawing'"
+      class="doodlecanvas-word-row"
+    >
+      <span class="doodlecanvas-word">{{
+        store.amIDrawing ? store.myWord : store.formattedHint
+      }}</span>
+      <CountdownTimer
+        :seconds-left="store.timeLeft"
+        class="doodlecanvas-word-timer"
+      />
+    </div>
+
     <div class="doodlecanvas-wrap">
       <div class="doodlecanvas-frame">
         <canvas
@@ -226,6 +239,7 @@ onUnmounted(() => {
 
 .doodlecanvas {
   display: flex;
+  justify-content: center;
   flex-direction: column;
   overflow: hidden;
 
@@ -234,13 +248,68 @@ onUnmounted(() => {
   }
 
   @include vars.desktop-only {
+    min-height: 0;
     padding: 1rem;
     padding-top: 0;
+  }
 
-    // No longer flex: 1 here (see mobile-only above), so this now
-    // sizes to its own content -- if that's taller than the space
-    // available, let the toolbar spill over rather than clipping it.
-    overflow: visible;
+  &-word-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    padding: 0.5rem 0;
+
+    @include vars.mobile-only {
+      padding-bottom: 1rem;
+    }
+
+    @include vars.desktop-only {
+      padding-bottom: 0.25rem;
+
+      // Lets the word below be centred against this row as a whole
+      // (see position: absolute on .doodleroom-word) rather than just
+      // whatever space the timer's width happens to leave it.
+      position: relative;
+    }
+  }
+
+  &-word {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    flex: 1;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-family: monospace;
+    letter-spacing: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include vars.desktop-only {
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &-word-timer {
+    flex-shrink: 0;
+    padding: 0.3rem 0.6rem;
+    margin-left: auto;
+
+    // CountdownTimer.vue's own .countdowntimer sets font-size: 1.1rem --
+    // the compound selector's extra specificity guarantees this wins
+    // regardless of the two components' stylesheet order, to match the
+    // word above it instead.
+    &.countdowntimer {
+      font-size: 1.3rem;
+    }
+
+    @include vars.mobile-only {
+      padding-right: 0.75rem;
+    }
   }
 
   &-wrap {
@@ -250,6 +319,14 @@ onUnmounted(() => {
     justify-content: center;
     background: #111;
     overflow: hidden;
+
+    // Column direction makes -frame a main-axis flex item below, which
+    // is what lets its resolved height count as definite -- needed for
+    // the canvas's max-height: 100% (two levels down) to resolve
+    // against an actual pixel value instead of an auto/content height.
+    @include vars.desktop-only {
+      flex-direction: column;
+    }
   }
 
   &-frame {
@@ -260,8 +337,14 @@ onUnmounted(() => {
     // A second, outer border around the canvas's own border -- like a
     // picture frame -- with a 0.5rem gap between the two. Desktop only;
     // box-sizing keeps the padding inside the max-width/height cap
-    // above rather than adding to it.
+    // above rather than adding to it. flex: 1 + min-height: 0 fills
+    // -wrap's full (now definite) height so the canvas's own
+    // max-height: 100% has something real to scale against.
     @include vars.desktop-only {
+      flex: 1;
+      min-height: 0;
+      align-items: center;
+      justify-content: center;
       box-sizing: border-box;
       padding: 0.5rem;
       border: 1px solid var(--color-highlight);
@@ -283,7 +366,6 @@ onUnmounted(() => {
 
   &-toolbar {
     display: flex;
-    height: 35px;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.75rem;

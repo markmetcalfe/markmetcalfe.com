@@ -61,7 +61,6 @@ withDefaults(defineProps<Props>(), {
   align-items: center;
   gap: 1rem;
   padding: 0.6rem 1rem;
-  border-bottom: 1px solid var(--color-light);
 
   &--floating {
     position: absolute;

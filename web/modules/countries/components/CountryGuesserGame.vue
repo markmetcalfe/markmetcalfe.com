@@ -196,7 +196,6 @@ onUnmounted(() => {
   & > .headerbar {
     grid-area: header;
     flex-wrap: wrap;
-    border-bottom: none;
   }
 
   &-header {

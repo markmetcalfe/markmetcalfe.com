@@ -20,19 +20,6 @@
       <template v-if="store.phase !== 'waiting'">
         <div class="doodleroom-canvas-col">
           <div class="doodleroom-canvas-wrap">
-            <div
-              v-if="store.phase === 'drawing'"
-              class="doodleroom-word-row"
-            >
-              <span class="doodleroom-word">{{
-                store.amIDrawing ? store.myWord : store.formattedHint
-              }}</span>
-              <CountdownTimer
-                :seconds-left="store.timeLeft"
-                class="doodleroom-word-timer"
-              />
-            </div>
-
             <DoodleCanvas />
 
             <RoundResult v-if="store.phase === 'round_end'" />
@@ -129,7 +116,6 @@ onUnmounted(() => {
   }
 
   .headerbar {
-    border-bottom: none;
     position: relative;
   }
 
@@ -173,65 +159,6 @@ onUnmounted(() => {
       width: fit-content;
       max-width: 100%;
       margin: 0 auto;
-    }
-  }
-
-  &-word-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-shrink: 0;
-    padding: 0.5rem;
-
-    @include vars.mobile-only {
-      padding-bottom: 1rem;
-    }
-
-    @include vars.desktop-only {
-      padding-bottom: 0.25rem;
-
-      // Lets the word below be centred against this row as a whole
-      // (see position: absolute on .doodleroom-word) rather than just
-      // whatever space the timer's width happens to leave it.
-      position: relative;
-    }
-  }
-
-  &-word {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    flex: 1;
-    text-align: center;
-    font-size: 1.3rem;
-    font-weight: 700;
-    font-family: monospace;
-    letter-spacing: 3px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    @include vars.desktop-only {
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
-  }
-
-  &-word-timer {
-    flex-shrink: 0;
-    padding: 0.3rem 0.6rem;
-    margin-left: auto;
-
-    // CountdownTimer.vue's own .countdowntimer sets font-size: 1.1rem --
-    // the compound selector's extra specificity guarantees this wins
-    // regardless of the two components' stylesheet order, to match the
-    // word above it instead.
-    &.countdowntimer {
-      font-size: 1.3rem;
-    }
-
-    @include vars.mobile-only {
-      padding-right: 0.75rem;
     }
   }
 
