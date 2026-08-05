@@ -26,11 +26,15 @@
     </ul>
 
     <LinkButton
+      v-if="playLobby.isHost"
       text="Back to Lobby"
       @click="playLobby.returnToLobby()"
     >
       <Icon name="bx:arrow-back" />
     </LinkButton>
+    <p v-else class="doodlegameresult-waiting">
+      <em>Waiting for the host to return to the lobby&hellip;</em>
+    </p>
   </div>
 </template>
 
@@ -51,7 +55,7 @@ const winner = computed(() => sorted.value[0]);
   // RoundResult.vue, same underlying issue.
   position: fixed;
   inset: 0;
-  background: rgb(0 0 0 / 92%);
+  background: rgb(0 0 0 / 85%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -78,12 +82,14 @@ const winner = computed(() => sorted.value[0]);
     flex-direction: column;
     gap: 0.4rem;
     width: 100%;
-    max-width: 300px;
+
+    // Same on mobile and desktop, using desktop's narrower width.
+    max-width: 240px;
 
     &-2col {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      max-width: 500px;
+      max-width: 380px;
 
       // The winner keeps top billing -- spans both columns instead of
       // sharing a row with 2nd place.
@@ -97,6 +103,7 @@ const winner = computed(() => sorted.value[0]);
     display: flex;
     align-items: center;
     gap: 0.6rem;
+    background: var(--color-dark);
     border: 1px solid var(--color-light);
     padding: 0.4rem 0.75rem;
     font-size: 0.95rem;
@@ -123,6 +130,12 @@ const winner = computed(() => sorted.value[0]);
       color: var(--color-highlight);
       font-weight: 600;
     }
+  }
+
+  &-waiting {
+    margin: 0;
+    color: var(--color-light);
+    font-size: 0.9rem;
   }
 }
 </style>

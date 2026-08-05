@@ -1,6 +1,8 @@
 <template>
-  <div class="doodleplayers">
-    <h3 class="doodleplayers-heading">Players</h3>
+  <div
+    class="doodleplayers"
+    :class="{ 'doodleplayers-3col': store.players.length > 4 }"
+  >
     <div
       v-for="player in store.players"
       :key="player.id"
@@ -13,9 +15,6 @@
         },
       ]"
     >
-      <span class="doodleplayers-item-avatar">
-        {{ player.name.charAt(0).toUpperCase() }}
-      </span>
       <span class="doodleplayers-item-name"
         >{{ player.name }}
         <Icon
@@ -51,16 +50,26 @@ function isDrawing(playerId: string) {
 
 .doodleplayers {
   padding: 0.75rem;
-  border-bottom: 1px solid var(--color-light);
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  @include vars.desktop-only {
+    padding-left: 0;
+  }
 
   @include vars.mobile-only {
     grid-area: players;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.3rem 1.5rem;
-    border-bottom: none;
-    border-top: 1px solid var(--color-light);
+    gap: 0.5rem;
+  }
+
+  &-3col {
+    @include vars.mobile-only {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 
   &-heading {
@@ -80,28 +89,19 @@ function isDrawing(playerId: string) {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.3rem 0;
+    border: 1px solid var(--color-highlight);
+    padding: 0.3rem 0.6rem;
     font-size: 0.875rem;
-
-    &-avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--color-light);
-      color: var(--color-dark);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
 
     &-name {
       flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+
+      @include vars.mobile-only {
+        font-size: 0.8rem;
+      }
     }
 
     &-icon {
@@ -118,10 +118,6 @@ function isDrawing(playerId: string) {
     &-guessed {
       .doodleplayers-item-name {
         color: var(--color-highlight);
-      }
-
-      .doodleplayers-item-avatar {
-        background: var(--color-highlight);
       }
     }
   }

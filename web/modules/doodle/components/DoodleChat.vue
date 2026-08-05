@@ -71,7 +71,12 @@ watch(
 
   @include vars.mobile-only {
     grid-area: chat;
-    border-top: 1px solid var(--color-light);
+  }
+
+  @include vars.desktop-only {
+    border: 1px solid var(--color-light);
+    margin-right: 0.75rem;
+    margin-bottom: 0.75rem;
   }
 
   &-messages {
@@ -121,7 +126,6 @@ watch(
     height: 38px;
     gap: 0.4rem;
     padding: 0.5rem;
-    border-top: 1px solid var(--color-light);
     flex-shrink: 0;
 
     .textfield,

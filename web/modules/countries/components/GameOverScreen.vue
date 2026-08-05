@@ -66,11 +66,15 @@
         <Icon name="bx:refresh" />
       </LinkButton>
       <LinkButton
+        v-if="!isMultiplayer || playLobby.isHost"
         text="Back to Lobby"
         @click="playLobby.returnToLobby()"
       >
         <Icon name="bx:arrow-back" />
       </LinkButton>
+      <p v-else class="gameoverscreen-waiting">
+        <em>Waiting for the host to return to the lobby&hellip;</em>
+      </p>
       <LinkButton
         v-if="!isMultiplayer"
         :disabled="store.scoreSubmitted"
@@ -255,6 +259,12 @@ onMounted(() => {
     justify-content: center;
     padding: 1rem 1rem 1.5rem;
     flex-shrink: 0;
+  }
+
+  &-waiting {
+    margin: 0;
+    color: var(--color-light);
+    font-size: 0.9rem;
   }
 }
 </style>

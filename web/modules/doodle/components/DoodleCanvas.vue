@@ -1,13 +1,15 @@
 <template>
   <div class="doodlecanvas">
     <div class="doodlecanvas-wrap">
-      <canvas
-        ref="canvasEl"
-        class="doodlecanvas-el"
-        :class="{ 'doodlecanvas-el-active': store.amIDrawing }"
-        width="800"
-        height="600"
-      />
+      <div class="doodlecanvas-frame">
+        <canvas
+          ref="canvasEl"
+          class="doodlecanvas-el"
+          :class="{ 'doodlecanvas-el-active': store.amIDrawing }"
+          width="800"
+          height="600"
+        />
+      </div>
     </div>
 
     <!-- Toolbar shown only for the current drawer -->
@@ -225,8 +227,21 @@ onUnmounted(() => {
 .doodlecanvas {
   display: flex;
   flex-direction: column;
-  flex: 1;
   overflow: hidden;
+
+  @include vars.mobile-only {
+    flex: 1;
+  }
+
+  @include vars.desktop-only {
+    padding: 1rem;
+    padding-top: 0;
+
+    // No longer flex: 1 here (see mobile-only above), so this now
+    // sizes to its own content -- if that's taller than the space
+    // available, let the toolbar spill over rather than clipping it.
+    overflow: visible;
+  }
 
   &-wrap {
     flex: 1;
@@ -235,6 +250,22 @@ onUnmounted(() => {
     justify-content: center;
     background: #111;
     overflow: hidden;
+  }
+
+  &-frame {
+    display: flex;
+    max-width: 100%;
+    max-height: 100%;
+
+    // A second, outer border around the canvas's own border -- like a
+    // picture frame -- with a 0.5rem gap between the two. Desktop only;
+    // box-sizing keeps the padding inside the max-width/height cap
+    // above rather than adding to it.
+    @include vars.desktop-only {
+      box-sizing: border-box;
+      padding: 0.5rem;
+      border: 1px solid var(--color-highlight);
+    }
   }
 
   &-el {
@@ -256,11 +287,17 @@ onUnmounted(() => {
     align-items: center;
     flex-wrap: wrap;
     gap: 0.75rem;
-    padding: 0.6rem 1rem;
-    border-top: 1px solid var(--color-light);
+    padding: 0.75rem 1rem;
     flex-shrink: 0;
 
+    @include vars.desktop-only {
+      margin-bottom: 0.5rem;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
     @include vars.mobile-only {
+      border-bottom: 1px solid var(--color-light);
       height: auto;
       padding: 0.4rem 0.6rem;
       gap: 0.4rem 0.5rem;
@@ -271,6 +308,15 @@ onUnmounted(() => {
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
+
+    // Without this, the first swatch sits flush against the toolbar's
+    // left edge (it has no horizontal padding on desktop -- see
+    // .doodlecanvas-toolbar) and its selected-state outline (2px
+    // outline-offset + 2px outline-width, see .doodlecanvas-color-active)
+    // gets clipped instead of rendering on all sides.
+    @include vars.desktop-only {
+      padding-left: 6px;
+    }
 
     @include vars.mobile-only {
       flex-basis: 100%;

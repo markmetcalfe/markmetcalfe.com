@@ -16,8 +16,13 @@ usePlayPageMeta();
 // Covers the whole page's lifetime (lobby and both games) -- called
 // once here rather than per-component, since each component's own
 // onUnmounted would otherwise fight over the same shared visibility
-// state (see useDynamicBackground.ts).
-useHideDynamicBackground();
+// state (see useDynamicBackground.ts). Only hidden once a game has
+// actually started -- the lobby itself keeps it visible (see
+// GameLobby.vue's video z-index for how the two layer together there).
+// A started game's own round/game-over screens are still part of the
+// same CountryGuesserGame/DoodleGame component tree, so this covers
+// those too without needing a separate check.
+useHideDynamicBackground(computed(() => store.startedGame !== null));
 useFixMobileViewport();
 
 const roomId = computed(() => route.params.room as string);

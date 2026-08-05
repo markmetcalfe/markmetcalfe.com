@@ -306,7 +306,14 @@ onUnmounted(() => {
   &-bg-video {
     position: absolute;
     inset: 0;
-    z-index: -1;
+
+    // More negative than DynamicBackground's own -100 (see
+    // DynamicBackground.vue) -- .gamelobby has no z-index of its own, so
+    // this compares against that globally rather than in a local
+    // stacking context. Puts the video furthest back, the dynamic
+    // background in front of it, and the rest of the lobby's content
+    // (default z-index: auto) in front of both.
+    z-index: -101;
     width: 100%;
     height: 100%;
     object-fit: cover;

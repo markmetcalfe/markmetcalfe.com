@@ -1,13 +1,13 @@
 <template>
   <div class="scorebar">
-    <span :class="['scorebar-timer', timerClass]">
-      {{ timerLabel }}
-    </span>
-
     <span v-if="!players" class="scorebar-progress">
       {{ guessedCount }} / {{ totalCount }} guessed
     </span>
-    <ul v-else class="scorebar-players">
+    <ul
+      v-else
+      class="scorebar-players"
+      :class="{ 'scorebar-players-grid': sortedPlayers.length > 4 }"
+    >
       <li
         v-for="player in sortedPlayers"
         :key="player.id"
@@ -22,6 +22,11 @@
     <span v-if="!players" class="scorebar-score"
       >{{ score }} pts</span
     >
+
+    <CountdownTimer
+      :seconds-left="props.secondsLeft"
+      class="scorebar-timer"
+    />
   </div>
 </template>
 
@@ -52,25 +57,6 @@ const props = withDefaults(defineProps<Props>(), {
 const sortedPlayers = computed(() =>
   [...(props.players ?? [])].sort((a, b) => b.score - a.score),
 );
-
-const timerLabel = computed(() => {
-  if (props.secondsLeft < 60) {
-    return `${props.secondsLeft}s`;
-  }
-  const minutes = Math.floor(props.secondsLeft / 60);
-  const seconds = props.secondsLeft % 60;
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
-});
-
-const timerClass = computed(() => {
-  if (props.secondsLeft > 30) {
-    return "scorebar-timer-ok";
-  }
-  if (props.secondsLeft > 10) {
-    return "scorebar-timer-warn";
-  }
-  return "scorebar-timer-danger";
-});
 </script>
 
 <style lang="scss">
@@ -79,31 +65,19 @@ const timerClass = computed(() => {
 .scorebar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
 
   // Not flex-shrink: 0 -- in the header, this needs to shrink to fit
   // next to the back button on mobile instead of wrapping onto its own
-  // line. The timer/progress/score text protect their own width below,
-  // and .scorebar-players scrolls horizontally instead of shrinking.
+  // line. The timer/progress/score text protect their own width below.
   min-width: 0;
 
   &-timer {
-    font-size: 1.1rem;
-    font-weight: 700;
-    min-width: 42px;
-
-    &-ok {
-      color: var(--color-light);
-    }
-
-    &-warn {
-      color: #ffb300;
-    }
-
-    &-danger {
-      color: var(--color-error);
-    }
+    // Always the last flex item in source order, so it lands on the
+    // header's right edge -- in multiplayer, .scorebar-players is
+    // absolutely positioned (see below) and so no longer occupies a
+    // flex slot, leaving this the row's only item either way.
+    margin-left: auto;
   }
 
   &-progress,
@@ -116,16 +90,49 @@ const timerClass = computed(() => {
   &-score {
     font-weight: 700;
     color: var(--color-highlight);
+
+    // True centre of the header, ignoring the back button/timer's
+    // widths -- same reasoning as .scorebar-players below.
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 
   &-players {
     list-style: none;
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
-    overflow-x: auto;
-    flex: 1;
-    justify-content: flex-end;
+    justify-content: center;
     margin: 0;
+
+    // Centred against the header as a whole (the floating header is
+    // already position: absolute, so this resolves its containing
+    // block up to that rather than .scorebar's own box) -- centring
+    // within .scorebar's own remaining flex space instead would still
+    // be off, since that space itself starts to the right of the back
+    // button rather than at the header's true left edge. Taken out of
+    // the flex flow entirely, so it shares the header's line with the
+    // back button/timer whenever it fits within max-width below, and
+    // only grows onto extra rows (via flex-wrap/grid) once it doesn't --
+    // rather than always claiming a whole line of its own regardless.
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: calc(100% - 9rem);
+
+    &-grid {
+      // A single wrapped row only stops being enough room past 4
+      // players -- switch to a 4-per-row grid, which grows vertically
+      // as needed, instead. Desktop never needs this: there's enough
+      // width there for one row regardless of player count.
+      @include vars.mobile-only {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
   }
 
   &-player {

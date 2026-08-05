@@ -1,6 +1,10 @@
 <template>
   <div class="doodleroom">
-    <HeaderBar title="Doodle" back-href="/" back-label="Leave game">
+    <HeaderBar
+      title="Doodle"
+      back-label="Back to Lobby"
+      :on-back="handleBack"
+    >
       <span
         v-if="
           store.totalRounds > 0 &&
@@ -10,38 +14,34 @@
       >
         Round {{ store.roundNumber }}/{{ store.totalRounds }}
       </span>
-
-      <span
-        v-if="store.phase === 'drawing'"
-        class="doodleroom-header-hint"
-      >
-        {{ store.amIDrawing ? store.myWord : store.formattedHint }}
-      </span>
-
-      <span
-        v-if="store.phase === 'drawing'"
-        :class="['doodleroom-header-timer', timerClass]"
-      >
-        {{ store.timeLeft }}s
-      </span>
     </HeaderBar>
 
-    <!-- Main canvas area -->
     <main class="doodleroom-main">
-      <!-- Only ever seen for a moment while the host's own auto-start
-           (below) round-trips -- seed() has already registered us as
-           players, the round just hasn't officially begun yet. -->
       <template v-if="store.phase !== 'waiting'">
-        <div class="doodleroom-canvas-wrap">
-          <DoodleCanvas />
+        <div class="doodleroom-canvas-col">
+          <div class="doodleroom-canvas-wrap">
+            <div
+              v-if="store.phase === 'drawing'"
+              class="doodleroom-word-row"
+            >
+              <span class="doodleroom-word">{{
+                store.amIDrawing ? store.myWord : store.formattedHint
+              }}</span>
+              <CountdownTimer
+                :seconds-left="store.timeLeft"
+                class="doodleroom-word-timer"
+              />
+            </div>
 
-          <RoundResult v-if="store.phase === 'round_end'" />
-          <GameResult v-if="store.phase === 'game_end'" />
+            <DoodleCanvas />
+
+            <RoundResult v-if="store.phase === 'round_end'" />
+            <GameResult v-if="store.phase === 'game_end'" />
+          </div>
         </div>
       </template>
     </main>
 
-    <!-- Sidebar: players + chat -->
     <aside class="doodleroom-sidebar">
       <PlayerList />
       <DoodleChat />
@@ -59,17 +59,18 @@ const playLobby = usePlayLobbyStore();
 
 useDoodleSound();
 
-const roomId = computed(() => route.params.room as string);
+// Only the host's "back" sends everyone back to the lobby -- anyone
+// else pressing it just leaves for themselves, landing back on /play's
+// fresh room rather than lingering in someone else's in-progress game.
+function handleBack() {
+  if (playLobby.isHost) {
+    playLobby.returnToLobby();
+  } else {
+    void navigateTo("/play");
+  }
+}
 
-const timerClass = computed(() => {
-  if (store.timeLeft > 30) {
-    return "doodleroom-header-timer-ok";
-  }
-  if (store.timeLeft > 10) {
-    return "doodleroom-header-timer-warn";
-  }
-  return "doodleroom-header-timer-danger";
-});
+const roomId = computed(() => route.params.room as string);
 
 // seed() (see api/doodle/src/game-room.ts) pre-registered the lobby's
 // host here (with any words submitted in the lobby already merged in),
@@ -110,7 +111,11 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   display: grid;
-  grid-template: "header header" auto "main   sidebar" 1fr / 1fr 260px;
+
+  // The sidebar spans both rows in its own column (rather than sharing
+  // a row with the header), so it runs the full viewport height instead
+  // of stopping below the header like "main" does.
+  grid-template: "header sidebar" auto "main   sidebar" 1fr / 1fr 260px;
   background: var(--color-dark);
   z-index: 20;
 
@@ -123,67 +128,27 @@ onUnmounted(() => {
       / 1fr;
   }
 
-  // The shared HeaderBar hides its title on mobile everywhere else (see
-  // HeaderBar.vue) since most pages just show the back button there --
-  // Doodle needs it back, because the word/hint can be too long for a
-  // single mobile-width line alongside round/timer, and needs its own
-  // second line instead of clipping the page.
   .headerbar {
-    @include vars.mobile-only {
-      flex-wrap: wrap;
-    }
-  }
-
-  .headerbar-title {
-    @include vars.mobile-only {
-      display: inline;
-    }
+    border-bottom: none;
+    position: relative;
   }
 
   &-header {
     &-round {
       font-size: 0.85rem;
       color: var(--color-light);
-      flex-shrink: 0;
-    }
 
-    &-hint {
-      flex: 1;
-      text-align: center;
-      font-size: 1.3rem;
-      font-weight: 700;
-      font-family: monospace;
-      letter-spacing: 3px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      // flex: 1; text-align: center would only centre this in whatever
+      // space is left over after the back button and title -- not the
+      // header as a whole, so it visibly drifts off-centre depending on
+      // the title's width. Absolutely positioning it against the
+      // header (position: relative above) centres it for real,
+      // independent of its siblings' widths.
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
       white-space: nowrap;
-
-      // Pushed onto its own second line, after round/timer (which stay
-      // at the default order) rather than between them.
-      @include vars.mobile-only {
-        order: 10;
-        flex-basis: 100%;
-      }
-    }
-
-    &-timer {
-      font-size: 1.1rem;
-      font-weight: 700;
-      min-width: 42px;
-      text-align: right;
-      flex-shrink: 0;
-
-      &-ok {
-        color: var(--color-light);
-      }
-
-      &-warn {
-        color: #ffb300;
-      }
-
-      &-danger {
-        color: var(--color-error);
-      }
     }
   }
 
@@ -194,19 +159,98 @@ onUnmounted(() => {
     flex-direction: column;
   }
 
+  &-canvas-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+
+    // Shrink-wraps to the canvas's own natural width (the widest
+    // content among its children) instead of stretching to fill the
+    // main area, so the word-row's width -- and so the timer's right
+    // edge -- lines up with the canvas rather than the wider container.
+    @include vars.desktop-only {
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+  }
+
+  &-word-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    padding: 0.5rem;
+
+    @include vars.mobile-only {
+      padding-bottom: 1rem;
+    }
+
+    @include vars.desktop-only {
+      padding-bottom: 0.25rem;
+
+      // Lets the word below be centred against this row as a whole
+      // (see position: absolute on .doodleroom-word) rather than just
+      // whatever space the timer's width happens to leave it.
+      position: relative;
+    }
+  }
+
+  &-word {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    flex: 1;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-family: monospace;
+    letter-spacing: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include vars.desktop-only {
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &-word-timer {
+    flex-shrink: 0;
+    padding: 0.3rem 0.6rem;
+    margin-left: auto;
+
+    // CountdownTimer.vue's own .countdowntimer sets font-size: 1.1rem --
+    // the compound selector's extra specificity guarantees this wins
+    // regardless of the two components' stylesheet order, to match the
+    // word above it instead.
+    &.countdowntimer {
+      font-size: 1.3rem;
+    }
+
+    @include vars.mobile-only {
+      padding-right: 0.75rem;
+    }
+  }
+
   &-canvas-wrap {
     flex: 1;
     position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+
+    @include vars.desktop-only {
+      justify-content: center;
+    }
   }
 
   &-sidebar {
     grid-area: sidebar;
     display: flex;
     flex-direction: column;
-    border-left: 1px solid var(--color-light);
     overflow: hidden;
 
     @include vars.mobile-only {

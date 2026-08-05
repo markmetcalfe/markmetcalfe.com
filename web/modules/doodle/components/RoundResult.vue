@@ -54,7 +54,7 @@ const sorted = computed(() =>
   // it happens to be nested in.
   position: fixed;
   inset: 0;
-  background: rgb(0 0 0 / 88%);
+  background: rgb(0 0 0 / 85%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -82,12 +82,16 @@ const sorted = computed(() =>
     flex-direction: column;
     gap: 0.4rem;
     width: 100%;
-    max-width: 280px;
+
+    // Same on mobile and desktop, using desktop's narrower width.
+    // Same as .doodlegameresult-scores, so round-over and game-over
+    // don't visibly change width between each other.
+    max-width: 240px;
 
     &-2col {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      max-width: 480px;
+      max-width: 380px;
 
       // The winner keeps top billing -- spans both columns instead of
       // sharing a row with 2nd place.
@@ -100,6 +104,7 @@ const sorted = computed(() =>
   &-score {
     display: flex;
     justify-content: space-between;
+    background: var(--color-dark);
     border: 1px solid var(--color-light);
     padding: 0.4rem 0.75rem;
     font-size: 0.95rem;
