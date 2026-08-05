@@ -80,9 +80,10 @@ test.describe("Game Lobby", () => {
     async ({ page }) => {
       await joinLobby(page, "Alex");
 
-      await expect(page.locator(".headerbar-title")).toHaveText(
-        "Games",
-      );
+      // GameLobby.vue passes hide-title -- the page already has its own
+      // "Games" <h1> in main (see the test above), so the header's own
+      // title would just be a redundant repeat of it.
+      await expect(page.locator(".headerbar-title")).toHaveCount(0);
 
       const backLink = page.getByRole("link", { name: "Leave" });
       await expect(backLink).toBeVisible();
