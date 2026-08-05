@@ -17,7 +17,12 @@
       />
     </video>
 
-    <HeaderBar title="Games" back-href="/" back-label="Leave" />
+    <HeaderBar
+      title="Games"
+      back-href="/"
+      back-label="Leave"
+      hide-title
+    />
 
     <main class="gamelobby-main">
       <h1 class="gamelobby-title">Games</h1>

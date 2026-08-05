@@ -1,5 +1,12 @@
 <template>
-  <div class="doodlecanvas">
+  <div
+    class="doodlecanvas"
+    :style="
+      frameWidth
+        ? { '--doodlecanvas-frame-width': `${frameWidth}px` }
+        : undefined
+    "
+  >
     <div
       v-if="store.phase === 'drawing'"
       class="doodlecanvas-word-row"
@@ -14,7 +21,7 @@
     </div>
 
     <div class="doodlecanvas-wrap">
-      <div class="doodlecanvas-frame">
+      <div ref="frameEl" class="doodlecanvas-frame">
         <canvas
           ref="canvasEl"
           class="doodlecanvas-el"
@@ -97,6 +104,10 @@ const SIZES = [3, 8, 16, 26];
 const canvasEl = ref<HTMLCanvasElement>();
 let ctx: CanvasRenderingContext2D | null = null;
 let isDrawing = false;
+
+const frameEl = ref<HTMLDivElement>();
+const frameWidth = ref(0);
+let frameResizeObserver: ResizeObserver | null = null;
 
 function applyEvent(event: DrawEvent): void {
   if (!ctx || !canvasEl.value) {
@@ -196,6 +207,11 @@ onMounted(() => {
     history => replayHistory(history),
   );
 
+  frameResizeObserver = new ResizeObserver(() => {
+    frameWidth.value = frameEl.value!.getBoundingClientRect().width;
+  });
+  frameResizeObserver.observe(frameEl.value!);
+
   // Mouse
   c.addEventListener("mousedown", e => onStart(normPos(e)));
   c.addEventListener("mousemove", e => onMove(normPos(e)));
@@ -231,6 +247,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   store.unregisterCanvasCallbacks();
+  frameResizeObserver?.disconnect();
 });
 </script>
 
@@ -266,11 +283,9 @@ onUnmounted(() => {
 
     @include vars.desktop-only {
       padding-bottom: 0.25rem;
-
-      // Lets the word below be centred against this row as a whole
-      // (see position: absolute on .doodleroom-word) rather than just
-      // whatever space the timer's width happens to leave it.
       position: relative;
+      width: var(--doodlecanvas-frame-width, 100%);
+      margin: 0 auto;
     }
   }
 
@@ -317,7 +332,6 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #111;
     overflow: hidden;
 
     // Column direction makes -frame a main-axis flex item below, which
@@ -376,6 +390,9 @@ onUnmounted(() => {
       margin-bottom: 0.5rem;
       padding-left: 0;
       padding-right: 0;
+      width: var(--doodlecanvas-frame-width, 100%);
+      margin-left: auto;
+      margin-right: auto;
     }
 
     @include vars.mobile-only {

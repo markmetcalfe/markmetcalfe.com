@@ -129,11 +129,11 @@ testPerProject(
     // as the room's first player before anyone's WebSocket connects (see
     // game-room.ts) -- so round 1 is always his to draw. The word and
     // timer are shown above the canvas, not in the header (see
-    // DoodleGame.vue).
-    await expect(page.locator(".doodleroom-word")).toHaveText(
+    // DoodleCanvas.vue).
+    await expect(page.locator(".doodlecanvas-word")).toHaveText(
       "elephant",
     );
-    await expect(page.locator(".doodleroom-word-timer")).toHaveText(
+    await expect(page.locator(".doodlecanvas-word-timer")).toHaveText(
       /^\d+\s*$/,
     );
 
