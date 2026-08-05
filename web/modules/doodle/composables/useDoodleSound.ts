@@ -4,38 +4,7 @@ export function useDoodleSound() {
   const store = useDoodleStore();
 
   let toneRef: typeof import("tone") | undefined;
-  let tickSynth: PolySynth<Synth> | undefined;
   let correctSynth: PolySynth<Synth> | undefined;
-  let tickTimer: ReturnType<typeof setTimeout> | undefined;
-
-  watch(
-    () => store.timeLeft,
-    timeLeft => {
-      clearTimeout(tickTimer);
-      if (
-        store.phase !== "drawing" ||
-        timeLeft >= 10 ||
-        timeLeft <= 0 ||
-        !tickSynth
-      ) {
-        return;
-      }
-      const urgent = timeLeft < 5;
-      tickSynth.triggerAttackRelease(urgent ? "A5" : "A4", "32n");
-      const extraTicks =
-        timeLeft < 3 ? [333, 666] : urgent ? [500] : [];
-      extraTicks.forEach((delay, i) => {
-        tickTimer = setTimeout(() => {
-          if (store.phase === "drawing") {
-            tickSynth?.triggerAttackRelease(
-              i % 2 === 0 ? "E5" : "A5",
-              "32n",
-            );
-          }
-        }, delay);
-      });
-    },
-  );
 
   watch(
     () => store.correctGuessers.length,
@@ -72,16 +41,6 @@ export function useDoodleSound() {
   onMounted(async () => {
     const Tone = await import("tone");
     toneRef = Tone;
-    tickSynth = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: "square" },
-      envelope: {
-        attack: 0.001,
-        decay: 0.04,
-        sustain: 0,
-        release: 0.01,
-      },
-    }).toDestination();
-    tickSynth.volume.value = -12;
     correctSynth = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: "triangle" },
       envelope: {
@@ -95,9 +54,6 @@ export function useDoodleSound() {
   });
 
   onUnmounted(() => {
-    clearTimeout(tickTimer);
-    tickSynth?.dispose();
-    tickSynth = undefined;
     correctSynth?.dispose();
     correctSynth = undefined;
   });

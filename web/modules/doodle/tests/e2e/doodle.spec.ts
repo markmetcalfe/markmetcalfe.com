@@ -127,16 +127,22 @@ testPerProject(
 
     // Mark (host) is drawOrder[0] -- seed() pre-registers the lobby host
     // as the room's first player before anyone's WebSocket connects (see
-    // game-room.ts) -- so round 1 is always his to draw.
-    await expect(page.locator(".doodleroom-header-hint")).toHaveText(
+    // game-room.ts) -- so round 1 is always his to draw. The word and
+    // timer are shown above the canvas, not in the header (see
+    // DoodleCanvas.vue). The round timer is frozen at its starting value
+    // under Playwright (see the IS_PLAYWRIGHT check in game-room.ts's
+    // alarm()) rather than ticking down in real time, so it's always
+    // exactly the 30s round length set below, through to the "Doodle
+    // Gameplay" snapshot further down.
+    await expect(page.locator(".doodlecanvas-word")).toHaveText(
       "elephant",
     );
-    await expect(page.locator(".doodleroom-header-timer")).toHaveText(
-      /^\d+s\s*$/,
+    await expect(page.locator(".doodlecanvas-word-timer")).toHaveText(
+      /^30\s*$/,
     );
 
-    // Player list: Mark first (join order), host star, drawing marker;
-    // Steve second, neither.
+    // Player list: Mark first (join order), host crown + drawing pencil
+    // icons; Steve second, neither icon.
     const hostPlayers = page.locator(".doodleplayers-item");
     await expect(hostPlayers).toHaveCount(2);
     await expect(hostPlayers.nth(0)).toHaveClass(
@@ -144,7 +150,10 @@ testPerProject(
     );
     await expect(
       hostPlayers.nth(0).locator(".doodleplayers-item-name"),
-    ).toContainText("Mark ★");
+    ).toContainText("Mark");
+    await expect(
+      hostPlayers.nth(0).locator(".doodleplayers-item-icon"),
+    ).toHaveCount(2);
     await expect(
       hostPlayers.nth(0).locator(".doodleplayers-item-score"),
     ).toHaveText("0");
@@ -154,6 +163,9 @@ testPerProject(
     await expect(
       hostPlayers.nth(1).locator(".doodleplayers-item-name"),
     ).toContainText("Steve");
+    await expect(
+      hostPlayers.nth(1).locator(".doodleplayers-item-icon"),
+    ).toHaveCount(0);
     await expect(
       hostPlayers.nth(1).locator(".doodleplayers-item-score"),
     ).toHaveText("0");
@@ -186,25 +198,28 @@ testPerProject(
     ).toContainText("Mark");
 
     // Offensive chat text isn't rejected with an error like a name or
-    // suggested word -- it's silently swapped server-side for a random
-    // "happy" word instead (see censorText() in api/shared/profanity.ts),
-    // so the sender never even finds out and the game keeps flowing.
-    // Guesses go through the exact same censorText() call (see the
-    // "guess" handler's incorrect-guess branch in game-room.ts), so this
-    // one check already covers both paths.
-    const HAPPY_WORDS =
-      /^Mark:\s*(rainbows|puppies|kittens|sunshine|cupcakes|butterflies|confetti|sparkles|friendship|hugs)\s*$/;
+    // suggested word -- it's silently swapped server-side for a "happy"
+    // word instead (see censorText() in api/shared/profanity.ts), so the
+    // sender never even finds out and the game keeps flowing. Guesses go
+    // through the exact same censorText() call (see the "guess" handler's
+    // incorrect-guess branch in game-room.ts), so this one check already
+    // covers both paths.
+    // Under Playwright, censorText() always picks the first happy word
+    // (see the IS_PLAYWRIGHT check in game-room.ts) instead of a random
+    // one, so this assertion -- and the Chromatic snapshot at the bottom
+    // of this test that captures the chat panel -- are deterministic.
+    const HAPPY_WORD = /^Mark:\s*rainbows\s*$/;
     const hostChatMessages = hostChat.locator(".doodlechat-msg-chat");
     await hostChatInput.fill("fuck");
     await hostChatInput.press("Enter");
     await expect(hostChatMessages).toHaveCount(2);
-    await expect(hostChatMessages.nth(1)).toHaveText(HAPPY_WORDS);
+    await expect(hostChatMessages.nth(1)).toHaveText(HAPPY_WORD);
     await expect(
       guestChat.locator(".doodlechat-msg-chat"),
     ).toHaveCount(2);
     await expect(
       guestChat.locator(".doodlechat-msg-chat").nth(1),
-    ).toHaveText(HAPPY_WORDS);
+    ).toHaveText(HAPPY_WORD);
 
     // Only the drawer sees the toolbar at all.
     await expect(
@@ -383,11 +398,14 @@ testPerProject(
 
     await takeSnapshot(page, "Doodle Game Over", testInfo);
 
-    // "Back to Lobby" isn't host-gated (see "return_to_lobby" in
-    // api/play/src/lobby-room.ts, broadcast to everyone regardless of
-    // sender) -- either player's click sends both back.
+    // Only the host gets a "Back to Lobby" button on the game-over
+    // screen (see GameResult.vue), but their click still sends everyone
+    // back (see "return_to_lobby" in api/play/src/lobby-room.ts,
+    // broadcast to everyone regardless of sender).
     await clickRobustly(
-      page.getByRole("button", { name: "Back to Lobby" }),
+      page
+        .getByRole("main")
+        .getByRole("button", { name: "Back to Lobby" }),
     );
     await expect(startGameButton).toBeVisible();
     await expect(

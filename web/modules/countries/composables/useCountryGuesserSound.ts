@@ -1,43 +1,11 @@
 import type { PolySynth, Synth } from "tone";
-import type { Ref } from "vue";
 
-export function useCountryGuesserSound(
-  secondsLeft: Ref<number>,
-  isPlaying: Ref<boolean>,
-) {
+export function useCountryGuesserSound() {
   let toneRef: typeof import("tone") | undefined;
   let correctSynth: PolySynth<Synth> | undefined;
   let incorrectSynth: PolySynth<Synth> | undefined;
   let roundEndSynth: PolySynth<Synth> | undefined;
   let nextTargetSynth: PolySynth<Synth> | undefined;
-  let tickSynth: PolySynth<Synth> | undefined;
-  let tickTimer: ReturnType<typeof setTimeout> | undefined;
-
-  watch(secondsLeft, timeLeft => {
-    clearTimeout(tickTimer);
-    if (
-      !isPlaying.value ||
-      timeLeft >= 10 ||
-      timeLeft <= 0 ||
-      !tickSynth
-    ) {
-      return;
-    }
-    const urgent = timeLeft < 5;
-    tickSynth.triggerAttackRelease(urgent ? "A5" : "A4", "32n");
-    const extraTicks =
-      timeLeft < 3 ? [333, 666] : urgent ? [500] : [];
-    extraTicks.forEach((delay, i) => {
-      tickTimer = setTimeout(() => {
-        if (isPlaying.value) {
-          tickSynth?.triggerAttackRelease(
-            i % 2 === 0 ? "E5" : "A5",
-            "32n",
-          );
-        }
-      }, delay);
-    });
-  });
 
   onMounted(async () => {
     const Tone = await import("tone");
@@ -86,21 +54,9 @@ export function useCountryGuesserSound(
       },
     }).toDestination();
     nextTargetSynth.volume.value = -14;
-
-    tickSynth = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: "square" },
-      envelope: {
-        attack: 0.001,
-        decay: 0.04,
-        sustain: 0,
-        release: 0.01,
-      },
-    }).toDestination();
-    tickSynth.volume.value = -12;
   });
 
   onUnmounted(() => {
-    clearTimeout(tickTimer);
     correctSynth?.dispose();
     correctSynth = undefined;
     incorrectSynth?.dispose();
@@ -109,8 +65,6 @@ export function useCountryGuesserSound(
     roundEndSynth = undefined;
     nextTargetSynth?.dispose();
     nextTargetSynth = undefined;
-    tickSynth?.dispose();
-    tickSynth = undefined;
   });
 
   function playCorrect() {

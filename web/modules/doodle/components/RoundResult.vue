@@ -6,7 +6,10 @@
       <strong class="highlight">{{ store.wordHint }}</strong>
     </p>
 
-    <ul class="doodleroundresult-scores">
+    <ul
+      class="doodleroundresult-scores"
+      :class="{ 'doodleroundresult-scores-2col': sorted.length >= 4 }"
+    >
       <li
         v-for="(player, i) in sorted"
         :key="player.id"
@@ -42,9 +45,16 @@ const sorted = computed(() =>
 
 <style lang="scss">
 .doodleroundresult {
-  position: absolute;
+  // Fixed, not absolute -- its DOM parent (.doodleroom-canvas-wrap) is
+  // only as tall as the canvas itself on mobile (see DoodleGame.vue's
+  // mobile grid, where "main" is sized to its content rather than
+  // stretched), so an absolutely-positioned overlay there only covered
+  // the canvas, leaving the player list/chat rows uncovered. Fixed
+  // positioning covers the true viewport regardless of which grid row
+  // it happens to be nested in.
+  position: fixed;
   inset: 0;
-  background: rgb(0 0 0 / 88%);
+  background: rgb(0 0 0 / 85%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,16 +76,35 @@ const sorted = computed(() =>
 
   &-scores {
     list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
     width: 100%;
-    max-width: 280px;
+
+    // Same on mobile and desktop, using desktop's narrower width.
+    // Same as .doodlegameresult-scores, so round-over and game-over
+    // don't visibly change width between each other.
+    max-width: 240px;
+
+    &-2col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 380px;
+
+      // The winner keeps top billing -- spans both columns instead of
+      // sharing a row with 2nd place.
+      .doodleroundresult-score-top {
+        grid-column: 1 / -1;
+      }
+    }
   }
 
   &-score {
     display: flex;
     justify-content: space-between;
+    background: var(--color-dark);
     border: 1px solid var(--color-light);
     padding: 0.4rem 0.75rem;
     font-size: 0.95rem;

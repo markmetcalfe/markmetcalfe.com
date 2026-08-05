@@ -1,6 +1,10 @@
 <template>
   <div class="doodleroom">
-    <HeaderBar title="Doodle" back-href="/" back-label="Leave game">
+    <HeaderBar
+      title="Doodle"
+      back-label="Back to Lobby"
+      :on-back="handleBack"
+    >
       <span
         v-if="
           store.totalRounds > 0 &&
@@ -10,38 +14,21 @@
       >
         Round {{ store.roundNumber }}/{{ store.totalRounds }}
       </span>
-
-      <span
-        v-if="store.phase === 'drawing'"
-        class="doodleroom-header-hint"
-      >
-        {{ store.amIDrawing ? store.myWord : store.formattedHint }}
-      </span>
-
-      <span
-        v-if="store.phase === 'drawing'"
-        :class="['doodleroom-header-timer', timerClass]"
-      >
-        {{ store.timeLeft }}s
-      </span>
     </HeaderBar>
 
-    <!-- Main canvas area -->
     <main class="doodleroom-main">
-      <!-- Only ever seen for a moment while the host's own auto-start
-           (below) round-trips -- seed() has already registered us as
-           players, the round just hasn't officially begun yet. -->
       <template v-if="store.phase !== 'waiting'">
-        <div class="doodleroom-canvas-wrap">
-          <DoodleCanvas />
+        <div class="doodleroom-canvas-col">
+          <div class="doodleroom-canvas-wrap">
+            <DoodleCanvas />
 
-          <RoundResult v-if="store.phase === 'round_end'" />
-          <GameResult v-if="store.phase === 'game_end'" />
+            <RoundResult v-if="store.phase === 'round_end'" />
+            <GameResult v-if="store.phase === 'game_end'" />
+          </div>
         </div>
       </template>
     </main>
 
-    <!-- Sidebar: players + chat -->
     <aside class="doodleroom-sidebar">
       <PlayerList />
       <DoodleChat />
@@ -59,17 +46,18 @@ const playLobby = usePlayLobbyStore();
 
 useDoodleSound();
 
-const roomId = computed(() => route.params.room as string);
+// Only the host's "back" sends everyone back to the lobby -- anyone
+// else pressing it just leaves for themselves, landing back on /play's
+// fresh room rather than lingering in someone else's in-progress game.
+function handleBack() {
+  if (playLobby.isHost) {
+    playLobby.returnToLobby();
+  } else {
+    void navigateTo("/play");
+  }
+}
 
-const timerClass = computed(() => {
-  if (store.timeLeft > 30) {
-    return "doodleroom-header-timer-ok";
-  }
-  if (store.timeLeft > 10) {
-    return "doodleroom-header-timer-warn";
-  }
-  return "doodleroom-header-timer-danger";
-});
+const roomId = computed(() => route.params.room as string);
 
 // seed() (see api/doodle/src/game-room.ts) pre-registered the lobby's
 // host here (with any words submitted in the lobby already merged in),
@@ -110,51 +98,43 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   display: grid;
-  grid-template: "header header" auto "main   sidebar" 1fr / 1fr 260px;
+
+  // The sidebar spans both rows in its own column (rather than sharing
+  // a row with the header), so it runs the full viewport height instead
+  // of stopping below the header like "main" does.
+  grid-template: "header sidebar" auto "main   sidebar" 1fr / 1fr 260px;
   background: var(--color-dark);
   z-index: 20;
 
   @include vars.mobile-only {
-    grid-template: "header" auto "main" 1fr "sidebar" auto / 1fr;
+    grid-template:
+      "header" auto
+      "players" auto
+      "main" auto
+      "chat" 1fr
+      / 1fr;
+  }
+
+  .headerbar {
+    position: relative;
   }
 
   &-header {
     &-round {
       font-size: 0.85rem;
       color: var(--color-light);
-      flex-shrink: 0;
-    }
 
-    &-hint {
-      flex: 1;
-      text-align: center;
-      font-size: 1.3rem;
-      font-weight: 700;
-      font-family: monospace;
-      letter-spacing: 3px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      // flex: 1; text-align: center would only centre this in whatever
+      // space is left over after the back button and title -- not the
+      // header as a whole, so it visibly drifts off-centre depending on
+      // the title's width. Absolutely positioning it against the
+      // header (position: relative above) centres it for real,
+      // independent of its siblings' widths.
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
       white-space: nowrap;
-    }
-
-    &-timer {
-      font-size: 1.1rem;
-      font-weight: 700;
-      min-width: 42px;
-      text-align: right;
-      flex-shrink: 0;
-
-      &-ok {
-        color: var(--color-light);
-      }
-
-      &-warn {
-        color: #ffb300;
-      }
-
-      &-danger {
-        color: var(--color-error);
-      }
     }
   }
 
@@ -165,25 +145,43 @@ onUnmounted(() => {
     flex-direction: column;
   }
 
+  &-canvas-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+
+    // Shrink-wraps to the canvas's own natural width (the widest
+    // content among its children) instead of stretching to fill the
+    // main area, so the word-row's width -- and so the timer's right
+    // edge -- lines up with the canvas rather than the wider container.
+    @include vars.desktop-only {
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+  }
+
   &-canvas-wrap {
     flex: 1;
     position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+
+    @include vars.desktop-only {
+      justify-content: center;
+    }
   }
 
   &-sidebar {
     grid-area: sidebar;
     display: flex;
     flex-direction: column;
-    border-left: 1px solid var(--color-light);
     overflow: hidden;
 
     @include vars.mobile-only {
-      border-left: none;
-      border-top: 1px solid var(--color-light);
-      max-height: 220px;
+      display: contents;
     }
   }
 }

@@ -1,13 +1,35 @@
 <template>
-  <div class="doodlecanvas">
-    <div class="doodlecanvas-wrap">
-      <canvas
-        ref="canvasEl"
-        class="doodlecanvas-el"
-        :class="{ 'doodlecanvas-el-active': store.amIDrawing }"
-        width="800"
-        height="600"
+  <div
+    class="doodlecanvas"
+    :style="
+      frameWidth
+        ? { '--doodlecanvas-frame-width': `${frameWidth}px` }
+        : undefined
+    "
+  >
+    <div
+      v-if="store.phase === 'drawing'"
+      class="doodlecanvas-word-row"
+    >
+      <span class="doodlecanvas-word">{{
+        store.amIDrawing ? store.myWord : store.formattedHint
+      }}</span>
+      <CountdownTimer
+        :seconds-left="store.timeLeft"
+        class="doodlecanvas-word-timer"
       />
+    </div>
+
+    <div class="doodlecanvas-wrap">
+      <div ref="frameEl" class="doodlecanvas-frame">
+        <canvas
+          ref="canvasEl"
+          class="doodlecanvas-el"
+          :class="{ 'doodlecanvas-el-active': store.amIDrawing }"
+          width="800"
+          height="600"
+        />
+      </div>
     </div>
 
     <!-- Toolbar shown only for the current drawer -->
@@ -82,6 +104,10 @@ const SIZES = [3, 8, 16, 26];
 const canvasEl = ref<HTMLCanvasElement>();
 let ctx: CanvasRenderingContext2D | null = null;
 let isDrawing = false;
+
+const frameEl = ref<HTMLDivElement>();
+const frameWidth = ref(0);
+let frameResizeObserver: ResizeObserver | null = null;
 
 function applyEvent(event: DrawEvent): void {
   if (!ctx || !canvasEl.value) {
@@ -181,6 +207,11 @@ onMounted(() => {
     history => replayHistory(history),
   );
 
+  frameResizeObserver = new ResizeObserver(() => {
+    frameWidth.value = frameEl.value!.getBoundingClientRect().width;
+  });
+  frameResizeObserver.observe(frameEl.value!);
+
   // Mouse
   c.addEventListener("mousedown", e => onStart(normPos(e)));
   c.addEventListener("mousemove", e => onMove(normPos(e)));
@@ -216,6 +247,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   store.unregisterCanvasCallbacks();
+  frameResizeObserver?.disconnect();
 });
 </script>
 
@@ -224,17 +256,113 @@ onUnmounted(() => {
 
 .doodlecanvas {
   display: flex;
+  justify-content: center;
   flex-direction: column;
-  flex: 1;
   overflow: hidden;
+
+  @include vars.mobile-only {
+    flex: 1;
+  }
+
+  @include vars.desktop-only {
+    min-height: 0;
+    padding: 1rem;
+    padding-top: 0;
+  }
+
+  &-word-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    padding: 0.5rem 0;
+
+    @include vars.mobile-only {
+      padding-bottom: 1rem;
+    }
+
+    @include vars.desktop-only {
+      padding-bottom: 0.25rem;
+      position: relative;
+      width: var(--doodlecanvas-frame-width, 100%);
+      margin: 0 auto;
+    }
+  }
+
+  &-word {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    flex: 1;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-family: monospace;
+    letter-spacing: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include vars.desktop-only {
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &-word-timer {
+    flex-shrink: 0;
+    padding: 0.3rem 0.6rem;
+    margin-left: auto;
+
+    // CountdownTimer.vue's own .countdowntimer sets font-size: 1.1rem --
+    // the compound selector's extra specificity guarantees this wins
+    // regardless of the two components' stylesheet order, to match the
+    // word above it instead.
+    &.countdowntimer {
+      font-size: 1.3rem;
+    }
+
+    @include vars.mobile-only {
+      padding-right: 0.75rem;
+    }
+  }
 
   &-wrap {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #111;
     overflow: hidden;
+
+    // Column direction makes -frame a main-axis flex item below, which
+    // is what lets its resolved height count as definite -- needed for
+    // the canvas's max-height: 100% (two levels down) to resolve
+    // against an actual pixel value instead of an auto/content height.
+    @include vars.desktop-only {
+      flex-direction: column;
+    }
+  }
+
+  &-frame {
+    display: flex;
+    max-width: 100%;
+    max-height: 100%;
+
+    // A second, outer border around the canvas's own border -- like a
+    // picture frame -- with a 0.5rem gap between the two. Desktop only;
+    // box-sizing keeps the padding inside the max-width/height cap
+    // above rather than adding to it. flex: 1 + min-height: 0 fills
+    // -wrap's full (now definite) height so the canvas's own
+    // max-height: 100% has something real to scale against.
+    @include vars.desktop-only {
+      flex: 1;
+      min-height: 0;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      padding: 0.5rem;
+      border: 1px solid var(--color-highlight);
+    }
   }
 
   &-el {
@@ -252,17 +380,26 @@ onUnmounted(() => {
 
   &-toolbar {
     display: flex;
-    height: 35px;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.75rem;
-    padding: 0.6rem 1rem;
-    border-top: 1px solid var(--color-light);
+    padding: 0.75rem 1rem;
     flex-shrink: 0;
 
+    @include vars.desktop-only {
+      margin-bottom: 0.5rem;
+      padding-left: 0;
+      padding-right: 0;
+      width: var(--doodlecanvas-frame-width, 100%);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     @include vars.mobile-only {
+      border-bottom: 1px solid var(--color-light);
+      height: auto;
       padding: 0.4rem 0.6rem;
-      gap: 0.5rem;
+      gap: 0.4rem 0.5rem;
     }
   }
 
@@ -270,6 +407,19 @@ onUnmounted(() => {
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
+
+    // Without this, the first swatch sits flush against the toolbar's
+    // left edge (it has no horizontal padding on desktop -- see
+    // .doodlecanvas-toolbar) and its selected-state outline (2px
+    // outline-offset + 2px outline-width, see .doodlecanvas-color-active)
+    // gets clipped instead of rendering on all sides.
+    @include vars.desktop-only {
+      padding-left: 6px;
+    }
+
+    @include vars.mobile-only {
+      flex-basis: 100%;
+    }
   }
 
   &-color {

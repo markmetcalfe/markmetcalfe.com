@@ -54,12 +54,18 @@ const HAPPY_WORDS = [
   "hugs",
 ];
 
-function randomHappyWord(): string {
-  return HAPPY_WORDS[
-    Math.floor(Math.random() * HAPPY_WORDS.length)
-  ] as string;
+function randomHappyWord(deterministic: boolean): string {
+  if (deterministic) {
+    return HAPPY_WORDS[0];
+  }
+  return HAPPY_WORDS[Math.floor(Math.random() * HAPPY_WORDS.length)];
 }
 
-export async function censorText(text: string): Promise<string> {
-  return (await containsProfanity(text)) ? randomHappyWord() : text;
+export async function censorText(
+  text: string,
+  deterministic = false,
+): Promise<string> {
+  return (await containsProfanity(text))
+    ? randomHappyWord(deterministic)
+    : text;
 }

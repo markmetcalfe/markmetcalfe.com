@@ -80,9 +80,10 @@ test.describe("Game Lobby", () => {
     async ({ page }) => {
       await joinLobby(page, "Alex");
 
-      await expect(page.locator(".headerbar-title")).toHaveText(
-        "Games",
-      );
+      // GameLobby.vue passes hide-title -- the page already has its own
+      // "Games" <h1> in main (see the test above), so the header's own
+      // title would just be a redundant repeat of it.
+      await expect(page.locator(".headerbar-title")).toHaveCount(0);
 
       const backLink = page.getByRole("link", { name: "Leave" });
       await expect(backLink).toBeVisible();
@@ -214,10 +215,15 @@ test.describe("Game Lobby", () => {
       await guestPage.goto(inviteUrl);
       await submitName(guestPage, "Steve");
 
+      // The host badge is an icon, not text (see .gamelobby-player-crown
+      // in GameLobby.vue) -- Mark's own name is shown in green instead
+      // of a separate "you" label.
       await expect(
-        page.getByText("host", { exact: true }),
+        page.locator(".gamelobby-player-crown"),
       ).toBeVisible();
-      await expect(page.getByText("Mark")).toBeVisible();
+      await expect(
+        page.locator(".gamelobby-player-name.highlight"),
+      ).toHaveText("Mark");
       await expect(page.getByText("Steve")).toBeVisible();
 
       // Host sees editable controls...

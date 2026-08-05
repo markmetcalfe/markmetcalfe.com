@@ -28,7 +28,12 @@
         <p v-if="winner" class="gameoverscreen-winner">
           <span class="highlight">{{ winner.name }}</span> wins!
         </p>
-        <ul class="gameoverscreen-scores">
+        <ul
+          class="gameoverscreen-scores"
+          :class="{
+            'gameoverscreen-scores-2col': sortedPlayers.length >= 4,
+          }"
+        >
           <li
             v-for="(player, i) in sortedPlayers"
             :key="player.id"
@@ -61,11 +66,15 @@
         <Icon name="bx:refresh" />
       </LinkButton>
       <LinkButton
+        v-if="!isMultiplayer || playLobby.isHost"
         text="Back to Lobby"
         @click="playLobby.returnToLobby()"
       >
         <Icon name="bx:arrow-back" />
       </LinkButton>
+      <p v-else class="gameoverscreen-waiting">
+        <em>Waiting for the host to return to the lobby&hellip;</em>
+      </p>
       <LinkButton
         v-if="!isMultiplayer"
         :disabled="store.scoreSubmitted"
@@ -193,6 +202,18 @@ onMounted(() => {
     overflow-y: auto;
     margin: 0.25rem 0 0;
     padding: 0;
+
+    &-2col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 480px;
+
+      // The winner keeps top billing -- spans both columns instead of
+      // sharing a row with 2nd place.
+      .gameoverscreen-score-top {
+        grid-column: 1 / -1;
+      }
+    }
   }
 
   &-score {
@@ -238,6 +259,12 @@ onMounted(() => {
     justify-content: center;
     padding: 1rem 1rem 1.5rem;
     flex-shrink: 0;
+  }
+
+  &-waiting {
+    margin: 0;
+    color: var(--color-light);
+    font-size: 0.9rem;
   }
 }
 </style>

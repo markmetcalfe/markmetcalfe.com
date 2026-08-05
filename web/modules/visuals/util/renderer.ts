@@ -135,7 +135,10 @@ export class Renderer {
       this.getWidth() / this.getHeight(),
     );
 
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({
+      alpha: true,
+    });
+    this.renderer.setClearColor(0x000000, 0);
     this.renderer.setSize(this.getWidth(), this.getHeight());
     this.renderer.setPixelRatio(window.devicePixelRatio);
 

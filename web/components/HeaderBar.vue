@@ -3,7 +3,17 @@
     class="headerbar"
     :class="{ 'headerbar--floating': floating }"
   >
+    <button
+      v-if="onBack"
+      type="button"
+      class="headerbar-back"
+      :aria-label="backLabel"
+      @click="onBack"
+    >
+      <Icon name="bx:arrow-back" />
+    </button>
     <NuxtLink
+      v-else
       :to="backHref"
       class="headerbar-back"
       :aria-label="backLabel"
@@ -11,7 +21,12 @@
       <Icon name="bx:arrow-back" />
     </NuxtLink>
 
-    <span class="headerbar-title">{{ title }}</span>
+    <span
+      v-if="!hideTitle"
+      class="headerbar-title"
+      :class="{ 'headerbar-title--hide-mobile': hideTitleOnMobile }"
+      >{{ title }}</span
+    >
 
     <slot />
   </header>
@@ -22,13 +37,18 @@ interface Props {
   title: string;
   backHref?: string;
   backLabel?: string;
+  onBack?: () => void;
   floating?: boolean;
+  hideTitleOnMobile?: boolean;
+  hideTitle?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
   backHref: "/",
   backLabel: "Back",
   floating: false,
+  hideTitleOnMobile: false,
+  hideTitle: false,
 });
 </script>
 
@@ -41,7 +61,6 @@ withDefaults(defineProps<Props>(), {
   align-items: center;
   gap: 1rem;
   padding: 0.6rem 1rem;
-  border-bottom: 1px solid var(--color-light);
 
   &--floating {
     position: absolute;
@@ -66,8 +85,10 @@ withDefaults(defineProps<Props>(), {
     color: var(--color-highlight);
     flex-shrink: 0;
 
-    @include vars.mobile-only {
-      display: none;
+    &--hide-mobile {
+      @include vars.mobile-only {
+        display: none;
+      }
     }
   }
 }

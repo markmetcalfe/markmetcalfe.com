@@ -60,9 +60,11 @@ test.describe("Country Guesser Multiplayer", () => {
       // Host sees both players, the host badge, and the round-length
       // controls (a slider plus a linked numeric field) and Start Game.
       await expect(
-        page.getByText("host", { exact: true }),
+        page.locator(".gamelobby-player-crown"),
       ).toBeVisible();
-      await expect(page.getByText("Mark")).toBeVisible();
+      await expect(
+        page.locator(".gamelobby-player-name.highlight"),
+      ).toHaveText("Mark");
       await expect(page.getByText("Steve")).toBeVisible();
       await expect(
         page.getByRole("slider", { name: "Game length (min)" }),
@@ -125,7 +127,7 @@ test.describe("Country Guesser Multiplayer", () => {
       // anywhere from 48s to 53s left), which Chromatic then flagged as
       // a diff every run. Waiting for a fixed value pins it.
       await waitForMapLoaded(page);
-      // A plain `expect(...).toHaveText("45s")` isn't tight enough to
+      // A plain `expect(...).toHaveText("45")` isn't tight enough to
       // reliably catch this -- the clock ticks every 250ms (4x speed,
       // see PLAYWRIGHT_TICK_SPEEDUP) but that assertion's own retry
       // interval is coarser than that, so it was observed skipping
@@ -136,7 +138,7 @@ test.describe("Country Guesser Multiplayer", () => {
         () =>
           document
             .querySelector(".scorebar-timer")
-            ?.textContent?.trim() === "45s",
+            ?.textContent?.trim() === "45",
       );
       await takeSnapshot(
         page,
@@ -237,17 +239,20 @@ test.describe("Country Guesser Multiplayer", () => {
         testInfo,
       );
 
-      // "Back to Lobby" isn't host-gated -- either player can leave the
-      // game-over screen on their own, but the host's click alone is
-      // enough to send both of them back (see "return_to_lobby" in
-      // api/play/src/lobby-room.ts, broadcast to every connected lobby
-      // session regardless of who sent it).
-      const backToLobbyButton = page.getByRole("button", {
-        name: "Back to Lobby",
-      });
+      // Only the host gets a "Back to Lobby" button on the game-over
+      // screen -- guests see a waiting message instead (see
+      // GameOverScreen.vue), though the host's click still sends
+      // everyone back (see "return_to_lobby" in api/play/src/lobby-room.ts,
+      // broadcast to every connected lobby session regardless of who
+      // sent it).
+      const backToLobbyButton = page
+        .getByRole("main")
+        .getByRole("button", { name: "Back to Lobby" });
       await expect(backToLobbyButton).toBeVisible();
       await expect(
-        guestPage.getByRole("button", { name: "Back to Lobby" }),
+        guestPage.getByText(
+          "Waiting for the host to return to the lobby…",
+        ),
       ).toBeVisible();
 
       await backToLobbyButton.click();

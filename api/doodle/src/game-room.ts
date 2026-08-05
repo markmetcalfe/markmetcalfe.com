@@ -145,6 +145,19 @@ export class GameRoom extends DurableObject<Env> {
 
   async alarm(): Promise<void> {
     if (this.game.alarmMode === "countdown") {
+      // The passive per-second decrement races against however long a
+      // Chromatic snapshot takes to reach mid-round -- e.g. the "Doodle
+      // Gameplay" snapshot showed 30 or 29 left depending on whether a
+      // tick landed before or after it (same class of flakiness as
+      // Country Guesser's clue reveal, see `clueIntervalSeconds` in its
+      // game-room.ts). No doodle e2e test relies on a round timing out
+      // -- both rounds always end via a correct guess -- so the clock
+      // (and hint-letter reveal below, tied to the same tick) is frozen
+      // entirely under Playwright instead.
+      if (this.env.IS_PLAYWRIGHT === "1") {
+        return;
+      }
+
       this.game.timeLeft--;
 
       if (this.game.timeLeft === 60 || this.game.timeLeft === 30) {
@@ -368,7 +381,10 @@ export class GameRoom extends DurableObject<Env> {
             type: "chat",
             playerId,
             name: session.player.name,
-            text: await censorText(text),
+            text: await censorText(
+              text,
+              this.env.IS_PLAYWRIGHT === "1",
+            ),
           });
         }
         break;
@@ -386,7 +402,10 @@ export class GameRoom extends DurableObject<Env> {
           type: "chat",
           playerId: session.player.id,
           name: session.player.name,
-          text: await censorText(text),
+          text: await censorText(
+            text,
+            this.env.IS_PLAYWRIGHT === "1",
+          ),
         });
         break;
       }

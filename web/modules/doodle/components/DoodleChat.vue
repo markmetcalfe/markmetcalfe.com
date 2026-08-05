@@ -69,6 +69,16 @@ watch(
   flex: 1;
   overflow: hidden;
 
+  @include vars.mobile-only {
+    grid-area: chat;
+  }
+
+  @include vars.desktop-only {
+    border: 1px solid var(--color-light);
+    margin-right: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
   &-messages {
     flex: 1;
     overflow-y: auto;
@@ -94,7 +104,7 @@ watch(
   &-msg {
     font-size: 0.8rem;
     line-height: 1.4;
-    word-break: break-word;
+    overflow-wrap: break-word;
 
     &-sender {
       font-weight: 600;
@@ -116,7 +126,6 @@ watch(
     height: 38px;
     gap: 0.4rem;
     padding: 0.5rem;
-    border-top: 1px solid var(--color-light);
     flex-shrink: 0;
 
     .textfield,
@@ -126,6 +135,17 @@ watch(
       input,
       button {
         flex: 1;
+      }
+    }
+
+    @include vars.mobile-only {
+      .textfield {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .linkbutton {
+        flex-shrink: 0;
       }
     }
   }

@@ -2,8 +2,9 @@
   <div class="countryguesser">
     <HeaderBar
       title="Country Guesser"
-      back-href="/"
-      back-label="Leave game"
+      back-label="Back to Lobby"
+      :on-back="handleBack"
+      :hide-title-on-mobile="store.phase === 'playing'"
       floating
     >
       <ScoreBar
@@ -54,10 +55,18 @@ const config = useRuntimeConfig();
 const store = useCountryGuesserRoomStore();
 const playLobby = usePlayLobbyStore();
 const { playCorrect, playIncorrect, playRoundEnd, playNextTarget } =
-  useCountryGuesserSound(
-    computed(() => store.timeLeft),
-    computed(() => store.phase === "playing"),
-  );
+  useCountryGuesserSound();
+
+// Only the host's "back" sends everyone back to the lobby -- anyone
+// else pressing it just leaves for themselves, landing back on /play's
+// fresh room rather than lingering in someone else's in-progress game.
+function handleBack() {
+  if (playLobby.isHost) {
+    playLobby.returnToLobby();
+  } else {
+    void navigateTo("/play");
+  }
+}
 
 const roomId = computed(() => route.params.room as string);
 const showLeaderboard = ref(false);
@@ -173,8 +182,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
-@use "/variables" as vars;
-
 .countryguesser {
   position: fixed;
   top: 0;
@@ -189,7 +196,6 @@ onUnmounted(() => {
   & > .headerbar {
     grid-area: header;
     flex-wrap: wrap;
-    border-bottom: none;
   }
 
   &-header {

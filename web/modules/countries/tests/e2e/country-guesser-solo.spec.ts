@@ -86,7 +86,7 @@ testPerProject(
     );
 
     // Once the countdown drops under a minute, the timer switches from
-    // "M:SS" back to a plain "Ns".
+    // "M:SS" back to a plain "N".
     await skipUntilTimerUnderOneMinute(page, skipButton);
 
     // Drain the clock via skips (10s penalty each, solo mode) to reach
@@ -151,7 +151,10 @@ testPerProject(
       page.locator(".gameoverscreen-solo-stats"),
     ).toHaveText(/^\d+ skipped · \+0s from correct guesses\s*$/);
 
-    await page.getByRole("button", { name: "Back to Lobby" }).click();
+    await page
+      .getByRole("main")
+      .getByRole("button", { name: "Back to Lobby" })
+      .click();
     await expect(
       page.getByRole("button", { name: "Start Game" }),
     ).toBeVisible();
