@@ -134,7 +134,7 @@ testPerProject(
       "elephant",
     );
     await expect(page.locator(".doodleroom-word-timer")).toHaveText(
-      /^\d+s\s*$/,
+      /^\d+\s*$/,
     );
 
     // Player list: Mark first (join order), host crown + drawing pencil
@@ -391,11 +391,14 @@ testPerProject(
 
     await takeSnapshot(page, "Doodle Game Over", testInfo);
 
-    // "Back to Lobby" isn't host-gated (see "return_to_lobby" in
-    // api/play/src/lobby-room.ts, broadcast to everyone regardless of
-    // sender) -- either player's click sends both back.
+    // Only the host gets a "Back to Lobby" button on the game-over
+    // screen (see GameResult.vue), but their click still sends everyone
+    // back (see "return_to_lobby" in api/play/src/lobby-room.ts,
+    // broadcast to everyone regardless of sender).
     await clickRobustly(
-      page.getByRole("button", { name: "Back to Lobby" }),
+      page
+        .getByRole("main")
+        .getByRole("button", { name: "Back to Lobby" }),
     );
     await expect(startGameButton).toBeVisible();
     await expect(

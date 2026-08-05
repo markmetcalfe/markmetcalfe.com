@@ -153,7 +153,7 @@ export async function skipUntilTimerUnderOneMinute(
   const timer = page.locator(".scorebar-timer");
   for (let i = 0; i < 20; i++) {
     if (
-      /^\d{1,2}s\s*$/.test(((await timer.textContent()) ?? "").trim())
+      /^\d{1,2}$/.test(((await timer.textContent()) ?? "").trim())
     ) {
       return;
     }
@@ -163,7 +163,7 @@ export async function skipUntilTimerUnderOneMinute(
       // Ignored -- same rationale as drainRoundViaSkips below.
     }
   }
-  await expect(timer).toHaveText(/^\d{1,2}s\s*$/);
+  await expect(timer).toHaveText(/^\d{1,2}\s*$/);
 }
 
 // Repeatedly skips until the round ends. Solo's clock under Playwright
