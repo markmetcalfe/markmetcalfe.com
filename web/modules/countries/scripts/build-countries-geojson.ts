@@ -1,8 +1,8 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S npx tsx
 // One-time/occasional data-prep step -- not part of the app build.
 // Regenerates public/countries.geojson from Natural Earth's
 // 1:10m admin-0 countries dataset. Run with:
-//   node web/modules/countries/scripts/build-countries-geojson.mjs
+//   npx tsx web/modules/countries/scripts/build-countries-geojson.ts
 //
 // Every landmass in the source (not just our 197 guessable countries)
 // is kept, so non-guessable territory (Greenland, Antarctica, Hong
@@ -16,10 +16,19 @@
 
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+// @ts-expect-error mapshaper doesn't ship its own types
 import mapshaper from "mapshaper";
+import type { Feature } from "geojson";
 
-const NE_SOURCE_URL =
-  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_countries.geojson";
+// geojson's `Position` is just `number[]`, which under
+// noUncheckedIndexedAccess makes every [x, y] destructure `number |
+// undefined`. Every ring here is genuinely a fixed [lng, lat] pair, so
+// a local tuple type is used instead and cast at the few points where
+// data crosses from the loosely-typed Natural Earth source.
+type Point = [number, number];
+type PolygonGeometry =
+  | { type: "Polygon"; coordinates: Point[][] }
+  | { type: "MultiPolygon"; coordinates: Point[][][] };
 
 // Below this footprint (largest-piece bbox, in square degrees),
 // landmasses are left completely unsimplified. Covers not just
@@ -71,11 +80,23 @@ const COUNTRIES_JSON_PATH = fileURLToPath(
   new URL("../../../../shared/countries.json", import.meta.url),
 );
 
-function round(n) {
+interface Country {
+  code: string;
+}
+
+interface Box {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+  area: number;
+}
+
+function round(n: number) {
   return Math.round(n * 10000) / 10000;
 }
 
-function ringBox(ring) {
+function ringBox(ring: Point[]): Box {
   let minX = Infinity,
     minY = Infinity,
     maxX = -Infinity,
@@ -95,12 +116,12 @@ function ringBox(ring) {
   };
 }
 
-function zoomBoxFor(geometry) {
+function zoomBoxFor(geometry: PolygonGeometry): Box {
   const polys =
     geometry.type === "MultiPolygon"
       ? geometry.coordinates
       : [geometry.coordinates];
-  const boxes = polys.map(poly => ringBox(poly[0]));
+  const boxes = polys.map(poly => ringBox(poly[0]!));
   const largest = boxes.reduce((a, b) => (b.area > a.area ? b : a));
   const refLng = (largest.minX + largest.maxX) / 2;
   const refLat = (largest.minY + largest.maxY) / 2;
@@ -138,8 +159,8 @@ function zoomBoxFor(geometry) {
   return { minX, minY, maxX, maxY, area: largest.area };
 }
 
-function roundGeometry(geometry) {
-  const roundRing = ring =>
+function roundGeometry(geometry: PolygonGeometry): PolygonGeometry {
+  const roundRing = (ring: Point[]): Point[] =>
     ring.map(([x, y]) => [round(x), round(y)]);
   if (geometry.type === "Polygon") {
     return {
@@ -155,7 +176,7 @@ function roundGeometry(geometry) {
   };
 }
 
-async function simplify(features, percent) {
+async function simplify(features: Feature[], percent: number) {
   const out = await mapshaper.applyCommands(
     `-i in.json -simplify ${percent}% -o out.json`,
     {
@@ -165,13 +186,18 @@ async function simplify(features, percent) {
       }),
     },
   );
-  return JSON.parse(out["out.json"]).features;
+  return JSON.parse(out["out.json"]!).features as Feature[];
 }
 
+const NE_SOURCE_URL =
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_countries.geojson";
+
 const [raw, ours] = await Promise.all([
-  fetch(NE_SOURCE_URL).then(r => r.json()),
+  fetch(NE_SOURCE_URL).then(r => r.json()) as Promise<{
+    features: Feature[];
+  }>,
   import(COUNTRIES_JSON_PATH, { with: { type: "json" } }).then(
-    m => m.default,
+    m => m.default as Country[],
   ),
 ]);
 
@@ -179,19 +205,19 @@ const [raw, ours] = await Promise.all([
 // Territories) share their parent's ISO_A2 code as a separate NE
 // feature. Prefer whichever feature isn't a Dependency so the parent
 // country's own geometry wins when there's a collision.
-const byIso2 = new Map();
+const byIso2 = new Map<string, Feature>();
 for (const f of raw.features) {
-  const p = f.properties;
+  const p = f.properties as Record<string, string>;
   const iso2 = (
     (p.ISO_A2_EH !== "-99" ? p.ISO_A2_EH : p.ISO_A2) ?? "-99"
   ).toLowerCase();
   const existing = byIso2.get(iso2);
-  if (!existing || existing.properties.TYPE === "Dependency") {
+  if (!existing || existing.properties?.TYPE === "Dependency") {
     byIso2.set(iso2, f);
   }
 }
 
-const codeByFeature = new Map();
+const codeByFeature = new Map<Feature, string>();
 for (const country of ours) {
   const f = byIso2.get(country.code);
   if (!f) {
@@ -210,16 +236,19 @@ for (const country of ours) {
 // stray white shape for a stray black one (the background showing
 // through that hole), so the matching hole is stripped too.
 const leaseFeatures = raw.features.filter(
-  f => f.properties.TYPE === "Lease",
+  f => f.properties?.TYPE === "Lease",
 );
 const leaseBoxes = leaseFeatures.map(f =>
-  ringBox(f.geometry.coordinates[0]),
+  ringBox(
+    (f.geometry as Extract<PolygonGeometry, { type: "Polygon" }>)
+      .coordinates[0]!,
+  ),
 );
 const keptFeatures = raw.features.filter(
-  f => f.properties.TYPE !== "Lease",
+  f => f.properties?.TYPE !== "Lease",
 );
 
-function boxesOverlap(a, b) {
+function boxesOverlap(a: Box, b: Box) {
   return (
     a.minX <= b.maxX &&
     a.maxX >= b.minX &&
@@ -228,12 +257,12 @@ function boxesOverlap(a, b) {
   );
 }
 
-function stripLeaseHoles(geometry) {
-  const stripPoly = poly =>
+function stripLeaseHoles(geometry: PolygonGeometry): PolygonGeometry {
+  const stripPoly = (poly: Point[][]): Point[][] =>
     poly.length === 1
       ? poly
       : [
-          poly[0],
+          poly[0]!,
           ...poly
             .slice(1)
             .filter(
@@ -255,13 +284,14 @@ function stripLeaseHoles(geometry) {
   };
 }
 
-const small = [];
-const sizeable = [];
+const small: Feature[] = [];
+const sizeable: { feature: Feature; area: number }[] = [];
 let maxArea = 0;
 for (const f of keptFeatures) {
   const code = codeByFeature.get(f);
-  const box = zoomBoxFor(f.geometry);
-  const properties = {};
+  const geometry = f.geometry as PolygonGeometry;
+  const box = zoomBoxFor(geometry);
+  const properties: Record<string, unknown> = {};
   if (code) {
     properties.code = code;
     properties.zoomBounds = [
@@ -271,14 +301,14 @@ for (const f of keptFeatures) {
       box.maxY,
     ].map(round);
   }
-  const feature = {
+  const feature: Feature = {
     type: "Feature",
     properties,
-    geometry: roundGeometry(stripLeaseHoles(f.geometry)),
+    geometry: roundGeometry(stripLeaseHoles(geometry)),
   };
   if (
     box.area < SMALL_AREA_THRESHOLD ||
-    ALWAYS_FULL_ACCURACY_CODES.has(code)
+    (code && ALWAYS_FULL_ACCURACY_CODES.has(code))
   ) {
     small.push(feature);
   } else {
@@ -287,7 +317,7 @@ for (const f of keptFeatures) {
   }
 }
 
-function simplifyPercentFor(area) {
+function simplifyPercentFor(area: number) {
   const t =
     Math.log(area / SMALL_AREA_THRESHOLD) /
     Math.log(maxArea / SMALL_AREA_THRESHOLD);
@@ -303,7 +333,7 @@ function simplifyPercentFor(area) {
   );
 }
 
-const buckets = new Map();
+const buckets = new Map<number, Feature[]>();
 for (const { feature, area } of sizeable) {
   const percent = simplifyPercentFor(area);
   const bucket = buckets.get(percent) ?? [];
