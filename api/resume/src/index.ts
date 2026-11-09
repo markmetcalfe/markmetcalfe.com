@@ -5,12 +5,12 @@ export default {
 
       return new Response(await assetResponse.arrayBuffer(), {
         headers: {
-          "Content-Type": "application/octet-stream",
-          "Content-Disposition":
-            'attachment; filename="Mark Metcalfe Resume.pdf"',
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `inline; filename="Mark Metcalfe Resume.pdf"`,
           "Cache-Control":
             "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
-          "X-Message-From-Mark": "Thanks for checking out my resume!",
+          "X-Message-From-Marko":
+            "Thanks for checking out my resume!",
         },
       });
     } catch (error) {
