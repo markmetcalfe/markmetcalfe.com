@@ -9,6 +9,10 @@
       "pattern": "markmetcalfe.com/api/play/*",
       "zone_name": "markmetcalfe.com",
     },
+    {
+      "pattern": "markometcalfe.com/api/play/*",
+      "zone_name": "markometcalfe.com",
+    },
   ],
   "durable_objects": {
     "bindings": [

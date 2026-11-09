@@ -2,7 +2,10 @@
   "name": "markmetcalfe.com",
   "private": true,
   "type": "module",
-  "workspaces": ["web", "api"],
+  "workspaces": [
+    "web",
+    "api"
+  ],
   "scripts": {
     "build": "npm --prefix web run build",
     "dev": "npm --prefix web run dev & npm --prefix api run dev",
@@ -20,6 +23,7 @@
     "oxfmt": "^0.63.0",
     "oxlint": "^1.71.0",
     "oxlint-tsgolint": "^7.0.0",
+    "postcss-html": "^2.0.0",
     "typescript": "^6.0.0"
   },
   "engines": {

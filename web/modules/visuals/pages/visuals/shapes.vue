@@ -70,12 +70,12 @@ import {
 } from "@visuals/util/geometry";
 import { getColorName } from "@visuals/util/color";
 
-useSeoMeta({
-  title: "Edit Shapes - Mark Metcalfe",
-  ogTitle: "Edit Shapes - Mark Metcalfe",
+useSiteSeoMeta({
+  title: "Edit Shapes",
+  ogTitle: "Edit Shapes",
   description: "Interactive graphics generated live in the browser",
   ogDescription: "Interactive graphics generated live in the browser",
-  ogImage: "https://markmetcalfe.com/visuals-social-card.jpg?v=1",
+  ogImage: "/visuals-social-card.jpg?v=1",
 });
 
 const visualsStore = useVisualsStore();

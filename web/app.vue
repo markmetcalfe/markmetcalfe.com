@@ -10,13 +10,12 @@
 
 <script setup lang="ts">
 const showDynamicBackground = useDynamicBackgroundVisible();
+const fullName = useFullName();
 
-useSeoMeta({
-  title: "Mark Metcalfe",
-  ogTitle: "Mark Metcalfe",
-  description: "Mark Metcalfe: Developer & Visual Artist",
-  ogDescription: "Mark Metcalfe: Developer & Visual Artist",
-  ogImage: "https://markmetcalfe.com/social-card.jpg?v=6",
+useSiteSeoMeta({
+  description: `${fullName}: Developer & Visual Artist`,
+  ogDescription: `${fullName}: Developer & Visual Artist`,
+  ogImage: "/social-card.jpg?v=6",
 });
 
 onMounted(() => {
@@ -150,7 +149,7 @@ button:focus:not(:disabled) {
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border-width: 0;
 }
