@@ -5,7 +5,11 @@ import { Leaderboard } from "./leaderboard";
 
 export { GameRoom, Leaderboard };
 
-const PRODUCTION_ORIGIN = "https://markmetcalfe.com";
+const DEFAULT_PRODUCTION_ORIGIN = "https://markmetcalfe.com";
+const PRODUCTION_ORIGINS = new Set([
+  DEFAULT_PRODUCTION_ORIGIN,
+  "https://markometcalfe.com",
+]);
 
 // In production only the live site may call this API. Locally
 // (env.ENVIRONMENT=development, set via .dev.vars) any origin is
@@ -19,15 +23,18 @@ function resolveAllowedOrigin(
   if (env.ENVIRONMENT === "development") {
     return origin ?? "*";
   }
-  if (origin === PRODUCTION_ORIGIN) {
-    return PRODUCTION_ORIGIN;
+  if (origin && PRODUCTION_ORIGINS.has(origin)) {
+    return origin;
   }
   // Browsers only send an `Origin` header on a same-origin request when
   // its method isn't GET/HEAD, so a same-origin GET (e.g. the site's own
   // leaderboard fetch) legitimately arrives with none. Only reject when
   // an Origin was actually sent and didn't match.
   if (origin === null && request.method === "GET") {
-    return PRODUCTION_ORIGIN;
+    const requestOrigin = new URL(request.url).origin;
+    return PRODUCTION_ORIGINS.has(requestOrigin)
+      ? requestOrigin
+      : DEFAULT_PRODUCTION_ORIGIN;
   }
   return null;
 }

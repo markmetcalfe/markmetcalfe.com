@@ -197,12 +197,12 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { isMobile } from "is-mobile";
 import { AutoZoomMode } from "@visuals/stores/visuals";
 
-useSeoMeta({
-  title: "Visualiser - Mark Metcalfe",
-  ogTitle: "Visualiser - Mark Metcalfe",
+useSiteSeoMeta({
+  title: "Visualiser",
+  ogTitle: "Visualiser",
   description: "Interactive graphics generated live in the browser",
   ogDescription: "Interactive graphics generated live in the browser",
-  ogImage: "https://markmetcalfe.com/visuals-social-card.jpg?v=1",
+  ogImage: "/visuals-social-card.jpg?v=1",
 });
 
 const visualsStore = useVisualsStore();

@@ -5,6 +5,55 @@ import {
 } from "@chromatic-com/playwright";
 
 test.describe("HomePage", () => {
+  for (const [hostname, firstName] of [
+    ["markmetcalfe.com", "Mark"],
+    ["markometcalfe.com", "Marko"],
+  ] as const) {
+    test(`uses the name ${firstName} on ${hostname}`, async ({
+      request,
+    }) => {
+      const response = await request.get("/", {
+        headers: { Host: hostname },
+      });
+
+      expect(response.ok()).toBe(true);
+      const html = await response.text();
+
+      expect(html).toContain(`<title>${firstName} Metcalfe</title>`);
+      expect(html).toContain(
+        `property="og:title" content="${firstName} Metcalfe"`,
+      );
+      expect(html).toContain(
+        `name="description" content="${firstName} Metcalfe: Developer & Visual Artist"`,
+      );
+      expect(html).toContain(
+        `property="og:description" content="${firstName} Metcalfe: Developer & Visual Artist"`,
+      );
+      expect(html).toMatch(
+        new RegExp(`<h1>${firstName} Metcalfe\\s*</h1>`),
+      );
+    });
+
+    test(`suffixes page titles with ${firstName} on ${hostname}`, async ({
+      request,
+    }) => {
+      const response = await request.get("/sequencer", {
+        headers: { Host: hostname },
+      });
+      const html = await response.text();
+
+      expect(html).toContain(
+        `<title>Sequencer - ${firstName} Metcalfe</title>`,
+      );
+      expect(html).toContain(
+        `property="og:title" content="Sequencer - ${firstName} Metcalfe"`,
+      );
+      expect(html).toContain(
+        `property="og:image" content="https://markmetcalfe.com/sequencer-social-card.jpg?v=1"`,
+      );
+    });
+  }
+
   test("can load page", async ({ page }, testInfo) => {
     await page.goto("/");
     await expect(page.locator('text="Mark Metcalfe"')).toBeVisible();

@@ -9,6 +9,10 @@
       "pattern": "markmetcalfe.com/api/network-status",
       "zone_name": "markmetcalfe.com",
     },
+    {
+      "pattern": "markometcalfe.com/api/network-status",
+      "zone_name": "markometcalfe.com",
+    },
   ],
   "kv_namespaces": [],
   "env": {},

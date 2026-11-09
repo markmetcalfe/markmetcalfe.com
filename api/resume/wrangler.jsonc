@@ -9,6 +9,10 @@
       "pattern": "markmetcalfe.com/resume.pdf",
       "zone_name": "markmetcalfe.com",
     },
+    {
+      "pattern": "markometcalfe.com/resume.pdf",
+      "zone_name": "markometcalfe.com",
+    },
   ],
   "kv_namespaces": [],
 }
