@@ -1,16 +1,20 @@
 <template>
   <div class="page-wrapper">
     <iframe
-      src="https://plex.markmetcalfe.com/minecraft/dynmap"
+      :src="`https://dynmap.${siteDomain}`"
       title="Map of the Minecraft Server"
       class="mapframe"
     />
     <div class="banner-overlay">
-      <span class="light">Server IP: </span
-      ><span class="highlight">minecraft.markmetcalfe.com</span>
+      <span class="light">Server IP: </span>
+      <span class="highlight">minecraft.{{ siteDomain }}</span>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const { siteDomain } = useAppConfig();
+</script>
 
 <style lang="scss">
 @use "/variables" as vars;
