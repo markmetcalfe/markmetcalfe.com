@@ -40,7 +40,6 @@ export default defineNuxtConfig({
     },
   },
   appConfig: {
-    siteDomain: "markmetcalfe.com",
     mailtoLink: "mailto:mark@markmetcalfe.com",
   },
   compatibilityDate: "2025-05-28",

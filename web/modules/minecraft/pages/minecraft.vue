@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-const { siteDomain } = useAppConfig();
+const siteDomain = useSiteDomain();
 </script>
 
 <style lang="scss">

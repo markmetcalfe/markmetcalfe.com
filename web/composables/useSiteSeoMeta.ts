@@ -13,7 +13,7 @@ export function useSiteSeoMeta({
   ogImage?: string;
 }) {
   const fullName = useFullName();
-  const { siteDomain } = useAppConfig();
+  const siteDomain = useSiteDomain();
   const withSuffix = (pageTitle?: string) =>
     pageTitle ? `${pageTitle} - ${fullName}` : fullName;
 

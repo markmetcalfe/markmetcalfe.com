@@ -488,5 +488,6 @@
 </template>
 
 <script setup lang="ts">
-const { siteDomain, mailtoLink } = useAppConfig();
+const { mailtoLink } = useAppConfig();
+const siteDomain = useSiteDomain();
 </script>
