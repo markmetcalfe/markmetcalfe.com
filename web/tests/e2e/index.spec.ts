@@ -49,7 +49,8 @@ test.describe("HomePage", () => {
         `property="og:title" content="Sequencer - ${firstName} Metcalfe"`,
       );
       expect(html).toContain(
-        `property="og:image" content="https://markmetcalfe.com/sequencer-social-card.jpg?v=1"`,
+        `property="og:image" content="https://${hostname}` +
+          `/sequencer-social-card.jpg?v=1"`,
       );
     });
   }
